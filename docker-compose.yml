@@ -1,0 +1,49 @@
+services:
+  backend:
+    build:
+      context: ./back-server
+    ports:
+      - "3008:3008"
+    volumes:
+      - ./back-server:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - database
+    networks:
+      - cms-network
+
+  frontend:
+    build:
+      context: ./front-server
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./front-server:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    networks:
+      - cms-network
+    
+  database:
+    image: postgres:17
+    container_name: numdiagcms-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: numdiagcms
+    ports:
+      - "5436:5432"
+    volumes:
+      - numdiagcms-data:/var/lib/postgresql/data
+    networks:
+      - cms-network
+
+networks:
+  cms-network:
+    driver: bridge
+
+volumes:
+  numdiagcms-data:
