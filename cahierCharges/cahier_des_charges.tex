@@ -25,7 +25,6 @@ Les questionnaires seront à destination d'utilisateurs, qui lorsqu'ils auront t
 	\item Création de questions avec differents types de reponses (QCM, entiers, reéponses libres), avec un coéfficient qui affectera le score global en fonction de la réponse.
 	\item Les questions seront regroupées dans une section, et ces sections composeront un questionnaire.
 	\item Les questions peuvent avoir des dépendances avec des réponses (\textit{ie :} une réponse pourra conditionner l'affichage ou non d'une question)
-	\item 
 \end{itemize}
 
 \section{Détails techniques}
@@ -75,7 +74,33 @@ L'edition d'une question vient se faire dans une pop-up qui va demander les diff
 \subsection{Fonctionnement Technique}
 Une creation va envoyer les informations au back afin de verifier s'il est possible de creer l'element demande.\\
 Lors d'une demande d'edition, le serveur va recuperer les toutes les informations du questionnaire associe demande dans la database, et les stocker en tampon, puis les envoyer a l'admin.\\
-L'admin va faire les modifications de son cote, puis les envoyer au serveur, il va alors comparer avec ce qu'il a de son cote pour verifier si la modification est possible.
+L'admin va faire les modifications de son cote, puis les envoyer au serveur, il va alors comparer avec ce qu'il a de son cote pour verifier si la modification est possible.\\
 Quand l'admin a termine toutes les operations, le serveur va envoyer toutes les modifications dans la database.
 
+Aucun element de la base de donnees ne sera fait directement dans le front, le serveur back fera office d'intermediaire pour transmettre les infos
+
+\subsection{Les routes}
+Les infos relatives aux differents appels API seront stockes dans le body des requetes\\
+On implementera une architecture CRUD et REST pour toutes les routes de l'application\\
+\underline{Les routes GET :}
+\begin{itemize}
+    \item url/questionnaire : renvoie les questionnaires avec toutes les infos ()
+    \item url/questionnaire/:idquestionnaire : renvoie les les infos d'un questionnaire specifique
+    \item url/questionnaire/:idquestionnaire/section : renvoie toutes infos de toutes les section d'un questionnaire 
+\end{itemize}
+\underline{Les routes POST :}
+\begin{itemize}
+    \item url/login : Permet a l'utilisateur de se connecter (mail + password)
+    \item url/register : Permet a l'utilisateur de s'enrgistrer (mail + password + ...)
+    \item url/questionnaire : Permet de creer un questionnaire (toutes les infos indiquees dans la database)
+    \item url/questionnaire/:idquestionnaire/section : Permet de rajouter une section a unn questionnaire
+    \item url/questionnaire/:idquestionnaire/section/:idsection/question : Une question a une section d'un questionnaire
+    \item url/questionnaire/:idquestionnaire/section/:idsection/question/:idquestion/reponse : Permet de rajouter une reponse a une question
+
+    \item url/document : creer un nouveau document
+    \item url/document/:idDocument : permet d'editer un document (tag associe, description, etc...)
+
+    \item url/createTag : permet de creer un tag
+    \item url/linkTag : permet de lier un tag a une question
+\end{itemize}
 \end{document}
