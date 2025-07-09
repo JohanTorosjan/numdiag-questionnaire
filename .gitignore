@@ -1,3 +1,11 @@
+# Latex
+*.fls
+*.aux
+*.xdv
+*.gz
+*.log
+*.fdb_latexmk
+
 # Logs
 logs
 *.log
@@ -22,3 +30,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
