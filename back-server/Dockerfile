@@ -3,7 +3,7 @@ FROM node:alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install && npm install --save-dev @types/node
-# RUN npm install express
+RUN npm install express
 COPY . .
 # RUN node app.js
 
