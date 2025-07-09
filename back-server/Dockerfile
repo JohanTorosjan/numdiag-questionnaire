@@ -1,12 +1,11 @@
-FROM node:alpine AS build
+FROM node:alpine
 
 WORKDIR /app
 COPY package*.json ./
 RUN npm install && npm install --save-dev @types/node
-RUN npm install express
 COPY . .
 # RUN node app.js
 
 EXPOSE 3008
 
-CMD ["node", "app.js"]
+CMD ["npm", "run", "dev"]
