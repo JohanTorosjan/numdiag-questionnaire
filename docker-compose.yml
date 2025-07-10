@@ -26,10 +26,10 @@ services:
       - NODE_ENV=development
     networks:
       - cms-network
-    
+
   database:
     image: postgres:17
-    container_name: numdiagcms-db
+    container_name: numdiagcmsdb
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
