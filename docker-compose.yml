@@ -27,7 +27,7 @@ services:
     networks:
       - cms-network
 
-  database:
+  cmsdatabase:
     image: postgres:17
     container_name: numdiagcmsdb
     environment:
@@ -38,6 +38,22 @@ services:
       - "5436:5432"
     volumes:
       - numdiagcms-data:/var/lib/postgresql/data
+    networks:
+      - cms-network
+
+  toherodb:
+    image: postgres:17
+    container_name: toherodb-container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: toheropuma
+      # POSTGRES_ROLE: postgres
+    ports:
+      - "5437:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    user: postgres
     networks:
       - cms-network
 
