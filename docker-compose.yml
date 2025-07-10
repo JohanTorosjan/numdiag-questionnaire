@@ -10,7 +10,8 @@ services:
     environment:
       - NODE_ENV=production
     depends_on:
-      - database
+      - cmsdatabase
+      - toherodb
     networks:
       - cms-network
 
@@ -27,17 +28,33 @@ services:
     networks:
       - cms-network
 
-  database:
+  cmsdatabase:
     image: postgres:17
     container_name: numdiagcmsdb
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
-      POSTGRES_DB: numdiagcms
+      POSTGRES_DB: numdiagcmsdb
     ports:
       - "5436:5432"
     volumes:
       - numdiagcms-data:/var/lib/postgresql/data
+    networks:
+      - cms-network
+
+  toherodb:
+    image: postgres:17
+    container_name: toherodb-cms-container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: toherocmsdb
+      # POSTGRES_ROLE: postgres
+    ports:
+      - "5437:5432"
+    volumes:
+      - toherocms-data:/var/lib/postgresql/data
+    user: postgres
     networks:
       - cms-network
 
@@ -47,3 +64,4 @@ networks:
 
 volumes:
   numdiagcms-data:
+  toherocms-data:
