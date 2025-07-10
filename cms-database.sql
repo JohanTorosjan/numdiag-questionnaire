@@ -5,11 +5,11 @@ CREATE TYPE question_type AS ENUM ('choix_multiple', 'choix_simple', 'entier');
 CREATE TABLE Questionnaires (
   id SERIAL PRIMARY KEY,
   label VARCHAR NOT NULL,
-  description TEXT NOT NULL,
+  description TEXT,
   code INTEGER NOT NULL,
   version VARCHAR NOT NULL,
-  insight VARCHAR NOT NULL,
-  tooltip VARCHAR NOT NULL,
+  insight VARCHAR,
+  tooltip VARCHAR,
   scoremax INTEGER NOT NULL
 );
 
@@ -17,9 +17,9 @@ CREATE TABLE Sections (
     id SERIAL PRIMARY KEY,
     questionnaire_id INTEGER NOT NULL,
     label VARCHAR NOT NULL,
-    description TEXT NOT NULL,
+    description TEXT,
     position INTEGER NOT NULL,
-    tooltip VARCHAR NOT NULL,
+    tooltip VARCHAR,
     scoremax INTEGER NOT NULL,
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE
 );
@@ -31,7 +31,7 @@ CREATE TABLE Questions (
     questionType question_type NOT NULL,
     position INTEGER NOT NULL,
     page INTEGER NOT NULL,
-    tooltip VARCHAR NOT NULL,
+    tooltip VARCHAR,
     coeff INTEGER NOT NULL,
     FOREIGN KEY (section_id) REFERENCES Sections(id) ON DELETE CASCADE
 );
@@ -41,18 +41,20 @@ CREATE TABLE Reponses (
     question_id INTEGER NOT NULL,
     label VARCHAR NOT NULL,
     position INTEGER NOT NULL,
-    tooltip VARCHAR NOT NULL,
+    tooltip VARCHAR,
+    plafond INTEGER,
+    recommandation TEXT,
     valeurScore INTEGER NOT NULL,
     FOREIGN KEY (question_id) REFERENCES Questions(id) ON DELETE CASCADE
 );
 
 -- Recommandation en fonction du questionnaire
-CREATE TABLE Recommandations (
+CREATE TABLE RecommandationsQuestionnaires (
     id SERIAL PRIMARY KEY,
     questionnaire_id INTEGER NOT NULL,
     min INTEGER NOT NULL,
     max INTEGER NOT NULL,
-    reco TEXT NOT NULL,
+    recommandation TEXT NOT NULL,
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE
 );
 
