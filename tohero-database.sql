@@ -1,6 +1,6 @@
 -- DROP DATABASE database;
 
-CREATE DATABASE toheropuma;
+CREATE DATABASE toherocmsdb;
 
 CREATE TYPE activite AS ENUM ('actif', 'inactif');
 CREATE TYPE etat AS ENUM ('en_cours', 'termine');
