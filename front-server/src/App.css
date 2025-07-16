@@ -1,6 +1,6 @@
 :root {
   --primary-color: #e4eefb;
-  --secondary-color: #ffffff;
+  --secondary-color: #aecdf2;
   --button-bleu-color: #4A90E2;
   --button-red-color: #e94b3c;
   --button-green-color: #00c896;
@@ -15,7 +15,7 @@
   --radius-container: 12px;
   --radius-button: 8px;
   
-  --background-color: white;
+  --background-color-white: white;
   --font-color: #1E3A4F;
 }
 
@@ -27,7 +27,7 @@
 }
 
 body {
-  background-color: var(--background-color);
+  background-color: var(--background-color-white);
   color: var(--font-color);
   line-height: 1.4;
   display: flex;
