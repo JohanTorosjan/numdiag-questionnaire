@@ -91,12 +91,10 @@ CREATE TABLE QuestionDependencies (
 
 CREATE TABLE Documents (
     id SERIAL PRIMARY KEY,
-    questionnaire_id INTEGER NOT NULL,
     label VARCHAR NOT NULL,
     description TEXT,
     file_path VARCHAR NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Tags (
