@@ -1,42 +1,152 @@
-#root {
-  max-width: 1280px;
+:root {
+  --primary-color: #e4eefb;
+  --secondary-color: #aecdf2;
+  --button-bleu-color: #4A90E2;
+  --button-red-color: #e94b3c;
+  --button-green-color: #00c896;
+  --button-yellow-color: #f5a623;
+
+  --hover-green-color: #00b894;
+  --hover-bleu-color: #3a7bd5;  
+  --hover-red-color: #e52f1e;
+  --hover-yellow-color: #e3b161;
+
+  --radius-main-container: 25px;
+  --radius-container: 12px;
+  --radius-button: 8px;
+  
+  --background-color-white: white;
+  --font-color: #1E3A4F;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui;
+}
+
+body {
+  min-height: 100vh;
+  min-width: 100vw;
+  background-color: var(--background-color-white);
+  color: var(--font-color);
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-container{
+  width: 80%;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 25px 25px;
+  background-color: var(--primary-color);
+  border-radius: var(--radius-main-container);
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.add-btn {
+  background: var(--button-bleu-color);
+  border: none;
+  border-radius: var(--radius-button);
+  width: 30px;
+  height: 30px;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.add-btn::before {
+  content: "+";
+  font-weight: bold;
+  padding: 2px;
 }
 
-.card {
-  padding: 2em;
+.add-btn:hover {
+  background: var(--hover-bleu-color);
 }
 
-.read-the-docs {
-  color: #888;
+.secondary-container {
+  background: var(--secondary-color);
+  padding: 12px;
+  border-radius: var(--radius-container);
+  margin: 15px 0 ;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.logo-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-button);
+  cursor: pointer;
+  justify-content: center;
+  font-size: 14px;
+  padding: 5px;
+  margin-right: 5px;
+}
+
+.edit-btn {
+  background: var(--button-green-color);
+  color: white;
+}
+
+.edit-btn:hover {
+  background: var(--hover-green-color);
+}
+
+.copy-btn {
+  background: var(--button-yellow-color);
+  color: white;
+}
+.copy-btn:hover {
+  background: var(--hover-yellow-color);
+}
+
+.delete-btn {
+  background: var(--button-red-color);
+  color: white;
+}
+.delete-btn:hover {
+  background: var(--hover-red-color);
+}
+
+.text-btn {
+  width: 500;
+  margin-top: 30px;
+  display: flex;
+  justify-content: flex-end;
+  padding: 5px 5px;
+  font-size: 14px;
+  gap: 10px;
+}
+
+.text-btn button {
+  width: 120px;
+  height: 30px;
+  border: none;
+  border-radius: var(--radius-button);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.text-btn button.save-btn {
+  background: var(--button-green-color);
+  color: white;
+}
+.text-btn button.save-btn:hover {
+  background: #00b894;
+}
+
+.text-btn button.publish-btn {
+  background: var(--button-bleu-color);
+  color: white;
+}
+
+.text-btn button.publish-btn:hover {
+  background: var(--hover-bleu-color);
 }
