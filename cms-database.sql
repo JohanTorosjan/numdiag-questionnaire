@@ -98,6 +98,7 @@ CREATE TABLE Documents (
 );
 
 CREATE TABLE Tags (
+    label VARCHAR NOT NULL,
     document_id INTEGER NOT NULL,
     question_id INTEGER NOT NULL,
     PRIMARY KEY (document_id, question_id),
