@@ -10,7 +10,10 @@ CREATE TABLE Questionnaires (
   version VARCHAR NOT NULL,
   insight VARCHAR,
   tooltip VARCHAR,
-  scoremax INTEGER NOT NULL
+  scoremax INTEGER NOT NULL,
+  nbPages INTEGER NOT NULL DEFAULT 1,
+  isActive BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Sections (
@@ -33,6 +36,7 @@ CREATE TABLE Questions (
     page INTEGER NOT NULL,
     tooltip VARCHAR,
     coeff INTEGER NOT NULL,
+    theme VARCHAR,
     FOREIGN KEY (section_id) REFERENCES Sections(id) ON DELETE CASCADE
 );
 
@@ -58,6 +62,13 @@ CREATE TABLE RecommandationsQuestionnaires (
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE
 );
 
+CREATE TABLE RecommandationsReponses (
+    id SERIAL PRIMARY KEY,
+    reponse_id INTEGER NOT NULL,
+    recommandation TEXT NOT NULL,
+    FOREIGN KEY (reponse_id) REFERENCES Reponses(id) ON DELETE CASCADE
+);
+
 -- Dépendances entre les sections et les réponses
 CREATE TABLE SectionDependencies (
     section_id INTEGER NOT NULL,
@@ -77,11 +88,22 @@ CREATE TABLE QuestionDependencies (
     FOREIGN KEY (reponse_id) REFERENCES Reponses(id) ON DELETE CASCADE
 );
 
-CREATE TABLE Tags (
+
+CREATE TABLE Documents (
+    id SERIAL PRIMARY KEY,
     questionnaire_id INTEGER NOT NULL,
+    label VARCHAR NOT NULL,
+    description TEXT,
+    file_path VARCHAR NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Tags (
+    document_id INTEGER NOT NULL,
     question_id INTEGER NOT NULL,
-    PRIMARY KEY (questionnaire_id, question_id),
-    FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE,
+    PRIMARY KEY (document_id, question_id),
+    FOREIGN KEY (document_id) REFERENCES Documents(id) ON DELETE CASCADE,
     FOREIGN KEY (question_id) REFERENCES Questions(id) ON DELETE CASCADE
 );
 
