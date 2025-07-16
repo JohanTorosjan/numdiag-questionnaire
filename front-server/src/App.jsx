@@ -2,6 +2,9 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+// import { editButton, deleteButton } from './components/button/button.jsx'
+import QuestionResume from './components/Question/questionResume.jsx'
+import QuestionnaireResume from './components/Questionnaire/questionnaireResume.jsx'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -28,6 +31,10 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+      <div>
+        <QuestionResume questionId={1} questionLabel="Question 1" />
+        <QuestionnaireResume idQuestionnaire={1} label="Questionnaire 1" />
+      </div>
     </>
   )
 }
