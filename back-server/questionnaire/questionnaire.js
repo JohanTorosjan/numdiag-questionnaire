@@ -19,7 +19,7 @@ function createQuestionnaire(req, res) {
 
 function getQuestionnaireById(req, res) {
     const { id } = req.params;
-    const query = 'SELECT * FROM questionnaires WHERE id_questionnaire = $1';
+    const query = 'SELECT * FROM questionnaires WHERE id = $1';
     executeQuery(numdiagPool, query, [id])
         .then(result => {
             if (result.length === 0) {
@@ -35,15 +35,15 @@ function getQuestionnaireById(req, res) {
 
 
 function getAllInfosQuestionnaire(idQuestionnaire){
-    let questionnaire = executeQuery(numdiagPool, 'SELECT * FROM questionnaires WHERE id_questionnaire = $1', [idQuestionnaire])
+    let questionnaire = executeQuery(numdiagPool, 'SELECT * FROM questionnaires WHERE id = $1', [idQuestionnaire])
     if (!questionnaire.length) {
         throw new Error('Questionnaire not found');
     }
 
-    let sections = executeQuery(numdiagPool, 'SELECT * FROM sections WHERE id_questionnaire = $1', [idQuestionnaire])
+    let sections = executeQuery(numdiagPool, 'SELECT * FROM sections WHERE questionnaire_id = $1', [idQuestionnaire])
     let questions = []
     for (const section of sections) {
-        const sectionQuestions = executeQuery(numdiagPool, 'SELECT * FROM questions WHERE id_section = $1', [section.id_section])
+        const sectionQuestions = executeQuery(numdiagPool, 'SELECT * FROM questions WHERE section_id = $1', [section.id_section])
         questions.push({
             ...section,
             questions: sectionQuestions

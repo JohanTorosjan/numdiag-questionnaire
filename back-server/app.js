@@ -2,7 +2,7 @@ import express from 'express'
 const app = express()
 const port = 3008
 
-import { numdiagPool, toHeroPool, connectToDatabase, executeQuery } from './database/client.js'
+import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase } from './database/client.js'
 import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire } from './questionnaire/questionnaire.js'
 
 app.get('/', (req, res) => {
@@ -45,11 +45,21 @@ app.get('/questionnaire/:questionnaireId', async (req, res) => {
 app.get('/question/:questionId', async (req, res) => {
   const { questionId } = req.params
   try {
-    const question = await getAllInfosQuestionnaire(questionId)
+    const question = await getAllInfosQuestion(questionId)
     res.json(question)
   } catch (error) {
     console.error('Error fetching question:', error)
     res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+app.post('/initDatabase', async (req, res) => {
+  try {
+    await initNumdiagDatabase()
+    res.status(200).json({ message: 'Database initialized successfully' })
+  } catch (error) {
+    console.error('Error initializing database:', error)
+    res.status(500).json({ error: 'Failed to initialize database' })
   }
 })
 

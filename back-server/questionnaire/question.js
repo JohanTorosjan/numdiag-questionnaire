@@ -1,15 +1,15 @@
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery } from '../database/client.js'
 
-function addQuestion(idQuestion, label, questionType, position, page, tooltip, coeff, theme, idSection) {
-    return executeQuery(numdiagPool, 'INSERT INTO questions (id_question, label, question_type, position, page, tooltip, coeff, theme, id_section) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *', [idQuestion, label, questionType, position, page, tooltip, coeff, theme, idSection])
+function addQuestion(label, questionType, position, page, tooltip, coeff, theme, idSection) {
+    return executeQuery(numdiagPool, 'INSERT INTO questions (label, question_type, position, page, tooltip, coeff, theme, id_section) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [label, questionType, position, page, tooltip, coeff, theme, idSection])
 }
 
 function getQuestionById(idQuestion) {
-    return executeQuery(numdiagPool, 'SELECT * FROM questions WHERE id_question = $1', [idQuestion])
+    return executeQuery(numdiagPool, 'SELECT * FROM questions WHERE id = $1', [idQuestion])
 }
 
 function deleteQuestion(idQuestion) {
-    return executeQuery(numdiagPool, 'DELETE FROM questions WHERE id_question = $1 RETURNING *', [idQuestion])
+    return executeQuery(numdiagPool, 'DELETE FROM questions WHERE id = $1 RETURNING *', [idQuestion])
 }
 
 function updateQuestion(idQuestion, label = null, questionType = null, position = null, page = null, tooltip = null, coeff = null, theme = null) {
@@ -56,10 +56,18 @@ function getAllReponsesByQuestion(idQuestion) {
     if (!question) {
         throw new Error('Question not found');
     }
-    reponses = executeQuery(numdiagPool, 'SELECT * FROM reponses WHERE id_question = $1', [idQuestion])
+    reponses = executeQuery(numdiagPool, 'SELECT * FROM reponses WHERE question_id = $1', [idQuestion])
     if (!reponses.length) {
         throw new Error('No responses found for this question');
     }
 
     return { ...question, reponses: reponses }
+}
+
+export {
+    addQuestion,
+    getQuestionById,
+    deleteQuestion,
+    updateQuestion,
+    getAllReponsesByQuestion
 }

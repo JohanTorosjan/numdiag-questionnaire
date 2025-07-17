@@ -1,6 +1,7 @@
 import { Pool } from 'pg'
 import fs from 'fs'
 import path from 'path'
+import { fileURLToPath } from 'url'
 
 const numdiagPool = new Pool({
   user: 'postgres',
@@ -38,7 +39,9 @@ function executeQuery(pool, query, params = []) {
 
 function initNumdiagDatabase() {
     connectToDatabase(numdiagPool)
-    const sqlFilePath = path.resolve(__dirname, 'cms-database.sql')
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = path.dirname(__filename)
+    const sqlFilePath = path.resolve(__dirname, './cms-database.sql')
     const sql = fs.readFileSync(sqlFilePath, 'utf8')
 
     numdiagPool.query(sql)
