@@ -62,8 +62,7 @@ body {
 
 .logo-btn {
   min-width: max-content;
-  width: 4.5vh;
-  height: 4.5vh;
+  min-height: max-content;
   border: none;
   border-radius: var(--radius-button);
   cursor: pointer;
@@ -132,7 +131,56 @@ body {
 .add-btn {
   background: var(--tertiary-color);
   color: var(--font-color);
+  margin-left: 2vh;
 }
 .add-btn:hover {
   background: var(--hover-tertiary-color);
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--primary-color);
+  padding: 2vh;
+  border-radius: var(--radius-container);
+  box-shadow: 0 1vh 3vh rgba(0,0,0,0.3);
+  color: var(--font-color);
+}
+
+.popup h2 {
+  margin-bottom: 1vh;
+  font-size: 2.5vh;
+}
+
+.popup p {
+  margin-bottom: 2vh;
+  font-size: 2vh;
+}
+
+.popup button {
+  margin-right: 1vh;
+  padding: 0.5vh 1vw;
+  font-size: 2vh;
+  border: none;
+  border-radius: var(--radius-button);
+  cursor: pointer;  
+  background-color: var(--tertiary-color);
+  color: var(--font-color);
+}
+
+.popup button:hover {
+  background-color: var(--fourthary-color);
+  color: #ffffff;
+}
+
+.popup input {
+  width: 100%;
+  padding: 0.5vh;
+  font-size: 2vh;
+  border: none;
+  border-radius: var(--radius-button);
+  margin-bottom: 1vh;
+  background-color: var(--tertiary-color);
 }

@@ -1,19 +1,34 @@
 import { handleEdit, handleDelete, handleAdd, handleSave, handlePublish } from "./buttonLogic";
+// function editButton(id, type) {
+//     return (
+//         <button className="green-btn" onClick={() => handleEdit(id, type)}>
+//             Edit
+//         </button>
+//     )
+// }
 
-function editButton(id, type) {
+function editButton(setButtonPopup) {
     return (
-        <button className="green-btn" onClick={() => handleEdit(id, type)}>
+        <button className="green-btn" onClick={() => setButtonPopup(true)}>
             Edit
         </button>
     )
 }
 
-function deleteButton(id, type) {
+// function deleteButton({onDeleteClick}) {
+//     return (
+//         <button className="red-btn" onClick={onDeleteClick}>
+//             Delete
+//         </button>
+//     )
+// }
+
+function deleteButton(setButtonPopup) {
     return (
-        <button className="red-btn" onClick={() => handleDelete(id, type)}>
+        <button className="red-btn" onClick={() => setButtonPopup(true)}>
             Delete
         </button>
-    )
+    );
 }
 
 function copyButton(id, type) {
