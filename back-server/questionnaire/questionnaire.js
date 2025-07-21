@@ -53,6 +53,10 @@ function getAllInfosQuestionnaire(idQuestionnaire){
     return { ...questionnaire, sections: questions }
 }
 
+function getSectionofQuestionnaire(idQuestionnaire) {
+    return executeQuery(numdiagPool, 'SELECT * FROM sections WHERE id_questionnaire = $1', [idQuestionnaire])
+}
+
 function getAllQuestionnaires(req, res) {
     const query = 'SELECT * FROM questionnaires';
     executeQuery(numdiagPool, query)
@@ -67,5 +71,6 @@ export {
     createQuestionnaire,
     getQuestionnaireById,
     getAllInfosQuestionnaire,
-    getAllQuestionnaires
+    getAllQuestionnaires,
+    getSectionofQuestionnaire
 }

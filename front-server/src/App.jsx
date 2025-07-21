@@ -1,9 +1,7 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 // import { editButton, deleteButton } from './components/button/button.jsx'
-import QuestionResume from './components/Question/questionResume.jsx'
+// import QuestionResume from './components/Question/questionResume.jsx'
 import QuestionnaireResume from './components/Questionnaire/questionnaireResume.jsx'
 import Section from './components/Section/section.jsx'
 
@@ -12,15 +10,7 @@ function App() {
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
+      {/* <h1>Vite + React</h1>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
@@ -31,7 +21,7 @@ function App() {
       </div>
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
-      </p>
+      </p> */}
       <div>
         <QuestionnaireResume idQuestionnaire={1} label="Questionnaire 1" />
         <Section sectionId={1} sectionTitle="Section 1" sectionContent="Content for Section 1" />

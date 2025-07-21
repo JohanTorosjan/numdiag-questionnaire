@@ -1,9 +1,21 @@
 import express from 'express'
-const app = express()
-const port = 3008
+import cors from 'cors'
 
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase } from './database/client.js'
 import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire } from './questionnaire/questionnaire.js'
+import { getAllQuestionBySection } from './questionnaire/section.js'
+
+const app = express()
+const port = 3008
+
+var corsOptions = {
+  origin: 'http://127.0.0.1:8081',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 200
+}
+app.use(cors(corsOptions))
 
 app.get('/', (req, res) => {
   res.json('Hello World !')
@@ -49,6 +61,17 @@ app.get('/question/:questionId', async (req, res) => {
     res.json(question)
   } catch (error) {
     console.error('Error fetching question:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+app.get('/sections/:sectionId', async (req, res) => {
+  const { sectionId } = req.params
+  try {
+    const questions = await getAllQuestionBySection(sectionId)
+    res.json({ questions })
+  } catch (error) {
+    console.error('Error fetching section questions:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })

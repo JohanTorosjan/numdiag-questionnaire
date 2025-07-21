@@ -46,3 +46,5 @@ function updateSection(idSection, label = null, description = null, position = n
 function deleteSection(idSection) {
     return executeQuery(numdiagPool, 'DELETE FROM sections WHERE id_section = $1 RETURNING *', [idSection])
 }
+
+export { addSection, getSectionById, getAllQuestionBySection, updateSection, deleteSection }
