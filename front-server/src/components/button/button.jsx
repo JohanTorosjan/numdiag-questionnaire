@@ -39,12 +39,12 @@ function copyButton(id, type) {
     )
 }
 
-function addButton(id, type) {
+function addButton(setButtonPopup) {
     // Bouton permettant d'ajouter un element au composant selectionne
     // Exemple : si id = 1 et type = section, on ajoute alors une question dans la section 1
     // Si id = 1 et type = questionnaire, on ajoute une section dans le questionnaire
     return (
-        <button className="add-btn" onClick={() => handleAdd(id, type)}>
+        <button className="add-btn" onClick={() => setButtonPopup(true)}>
             Add
         </button>
     )

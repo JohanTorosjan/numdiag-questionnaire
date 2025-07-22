@@ -30,7 +30,7 @@ function PopUpDeleteQuestion({ id, handleDelete, trigger, setTrigger }) {
                 </button>
             </div>
         </div>
-    ) : null;
+    ) : "";
 }
 
 

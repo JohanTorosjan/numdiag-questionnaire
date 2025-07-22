@@ -1,7 +1,7 @@
-import popUpEditSection from "../popups/editSection";
-import popUpEditQuestion from "../popups/editQuestion";
-import popUpDeleteSection from "../popups/deleteSection";
-import popUpDeleteQuestion from "../popups/deleteQuestion";
+import PopUpEditSection from "../popups/editSection";
+import PopUpEditQuestion from "../popups/editQuestion";
+import PopUpDeleteSection from "../popups/deleteSection";
+import PopUpDeleteQuestion from "../popups/deleteQuestion";
 
 const types = {
     questionnaire: "questionnaire",
@@ -12,10 +12,10 @@ const types = {
 function handleEdit(id, type) {
     switch (type) {
         case types.section:
-            popUpEditSection(id);
+            PopUpEditSection(id);
             break;
         case types.question:
-            popUpEditQuestion(id);
+            PopUpEditQuestion(id);
             break;
         default:
             console.error("Unknown type for edit:", type);
@@ -25,10 +25,10 @@ function handleEdit(id, type) {
 function handleDelete(id, type) {
     switch (type) {
         case types.section:
-            popUpDeleteSection(id);
+            PopUpDeleteSection(id);
             break;
         case types.question:
-            popUpDeleteQuestion(id);
+            PopUpDeleteQuestion(id);
             break;
         default:
             console.error("Unknown type for delete:", type);
