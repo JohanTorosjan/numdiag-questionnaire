@@ -1,3 +1,5 @@
+-- CREATE DATABASE  numdiagcmsdb;
+
 CREATE TYPE question_type AS ENUM ('choix_multiple', 'choix_simple', 'entier');
 
 CREATE TABLE Questionnaires (

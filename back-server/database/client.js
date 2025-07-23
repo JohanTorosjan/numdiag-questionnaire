@@ -1,4 +1,7 @@
 import { Pool } from 'pg'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
 const numdiagPool = new Pool({
   user: 'postgres',
@@ -34,4 +37,27 @@ function executeQuery(pool, query, params = []) {
         })
 }
 
-export { numdiagPool, toHeroPool, connectToDatabase, executeQuery }
+function initNumdiagDatabase() {
+    connectToDatabase(numdiagPool)
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = path.dirname(__filename)
+    const sqlFilePath = path.resolve(__dirname, './cms-database.sql')
+    const sql = fs.readFileSync(sqlFilePath, 'utf8')
+
+    numdiagPool.query(sql)
+        .then(() => console.log('SQL file executed successfully'))
+        .catch(err => console.error('Error executing SQL file:', err))
+}
+
+function populateNumdiagDatabase() {
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = path.dirname(__filename)
+    const sqlFilePath = path.resolve(__dirname, './cms-database-dataset.sql')
+    const sql = fs.readFileSync(sqlFilePath, 'utf8')
+
+    return numdiagPool.query(sql)
+        .then(() => console.log('Database populated successfully'))
+        .catch(err => console.error('Error populating database:', err))
+}
+
+export { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase }
