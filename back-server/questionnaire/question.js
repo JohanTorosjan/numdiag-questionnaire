@@ -1,7 +1,7 @@
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery } from '../database/client.js'
 
 function addQuestion(label, questionType, position, page, tooltip, coeff, theme, idSection) {
-    return executeQuery(numdiagPool, 'INSERT INTO questions (label, question_type, position, page, tooltip, coeff, theme, id_section) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [label, questionType, position, page, tooltip, coeff, theme, idSection])
+    return executeQuery(numdiagPool, 'INSERT INTO questions (label, question_type, position, page, tooltip, coeff, theme, section_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [label, questionType, position, page, tooltip, coeff, theme, idSection])
 }
 
 function getQuestionById(idQuestion) {
