@@ -1,3 +1,5 @@
+import { saveButton } from '../button/button';
+
 function PopUpEditSection({id,handleEdit, trigger, setTrigger}) {
     // Logic to display a popup for editing a section
     console.log("Editing section with id:", id);
@@ -9,7 +11,7 @@ function PopUpEditSection({id,handleEdit, trigger, setTrigger}) {
                 <input type="text" placeholder="Aide"/>
                 <p>Description</p>
                 <textarea className=""/>
-                <button className="text-btn" onClick={() => handleEdit(id)}>Sauvegarder</button>
+                {saveButton(id)}
                 <button className="close-btn" onClick={() => setTrigger(false)}>Annuler</button>
             </div>
         </div>

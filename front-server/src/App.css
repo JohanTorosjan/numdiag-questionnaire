@@ -170,7 +170,7 @@ body {
   font-size: 2vh;
 }
 
-.popup button {
+/* .popup button {
   margin-right: 1vh;
   padding: 0.5vh 1vw;
   font-size: 2vh;
@@ -179,7 +179,7 @@ body {
   cursor: pointer;  
   background-color: var(--tertiary-color);
   color: var(--font-color);
-}
+} */
 
 .popup button:hover {
   background-color: var(--fourthary-color);

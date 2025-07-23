@@ -1,4 +1,6 @@
-function PopupCreateQuestionnaire({handelCreation, trigger, setTrigger}){
+import { saveButton } from '../button/button';
+
+function PopupCreateQuestionnaire({id,handelCreation, trigger, setTrigger}){
     return (trigger) ? (
         <div className="popup">
             <div className="popup-inner">
@@ -11,7 +13,7 @@ function PopupCreateQuestionnaire({handelCreation, trigger, setTrigger}){
                 <label>Description</label>
                 <textarea/>
                 {/* ajouter tohero ou pas */}
-                <button className="text-btn" onClick={()=> handelCreation()}>Sauvegarder</button>
+                {saveButton(id)}
                 <button className='text-btn' onClick={()=> setTrigger(false)}>Annuler</button> 
             </div>
         </div>

@@ -1,33 +1,5 @@
 import { useState } from "react";
-
-// function PopUpEditQuestion({id,handleEdit,trigger,setTrigger}) {
-//     // Logic to display a popup for editing a question
-//     console.log("Editing question with id:", id);
-//     const [typeQuestion, setTypeQuestion] = useState("choix-simple")
-//     return (trigger) ? (
-//         <div className="popup">
-//             <div className="popup-inner">
-//                 <h2>Modifier la question</h2>
-//                 <input type="text" placeholder="Intitulé" />
-//                 <input type="number" placeholder="Coefficient"  step="1" min="0" onInput={(e) => {e.target.value = e.target.value.replace(/[^0-9]/g, ''); }}/>
-//                 <input type="number" placeholder="Page" />
-//                 <input type="text" placeholder="Aide" />
-//                 <button className="text-btn" onClick={() => handleEdit(id)}>Sauvegarder</button>
-//                 <button className="close-btn" onClick={() => setTrigger(false)}>Annuler</button>
-//             </div>
-//         </div>
-//     ) : "";
-// }
-
-// function TypeQuestion(props) {
-//     return (
-//         <div className="dropDownMenu">
-//             <ul>
-//                 <li>choix</li>
-//             </ul>
-//         </div>
-//     );
-// }
+import { saveButton } from '../button/button';
 
 function PopUpEditQuestion({ id, handleEdit, trigger, setTrigger }) {
   const [typeQuestion, setTypeQuestion] = useState("entier");
@@ -93,7 +65,7 @@ function PopUpEditQuestion({ id, handleEdit, trigger, setTrigger }) {
             <button className="text-btn">+</button>
         </div>
 
-        <button className="text-btn" onClick={() => handleEdit(id)}>Sauvegarder</button>
+        {saveButton(id)}
         <button className="close-btn" onClick={() => setTrigger(false)}>Annuler</button>
       </div>
     </div>
