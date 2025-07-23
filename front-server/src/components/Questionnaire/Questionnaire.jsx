@@ -9,6 +9,7 @@ async function getAllQuestionnaire(idQuestionnaire) {
             throw new Error('Erreur lors du chargement des sections');
         }
         const data = await response.json();
+        console.log('Response from server:', data);
         return data;
     } catch (error) {
         console.error('Error fetching sections:', error);

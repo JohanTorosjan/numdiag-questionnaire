@@ -1,12 +1,17 @@
+import React, { useState, useEffect } from 'react';
 import QuestionnaireResume from "../Questionnaire/questionnaireResume";
 
-function getAllQuestionnairesResume() {
+async function getAllQuestionnairesResume() {
     try {
-        const response = fetch('http://localhost:3008/questionnairesResume');
-        if (!response.ok) {
-            throw new Error('Erreur lors du chargement des questionnaires');
+        const response = await fetch('http://localhost:3008/questionnairesResume');
+        // if (!response.ok) {
+        //     throw new Error('Erreur lors du chargement des questionnaires');
+        // }
+        if (response.ok) {
+            const data = await response.json();
+            // console.log('Response from server:', data);
+            return data;
         }
-        return response.json();
     } catch (error) {
         console.error('Error fetching questionnaires:', error);
         return [];
@@ -14,9 +19,22 @@ function getAllQuestionnairesResume() {
 }
 
 function Home() {
-    const questionnaires = getAllQuestionnairesResume();
+    const [questionnaires, setQuestionnaires] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    if (!questionnaires || questionnaires.length === 0) {
+    useEffect(() => {
+        const fetchQuestionnaires = async () => {
+            const data = await getAllQuestionnairesResume();
+            setQuestionnaires(data);
+            setLoading(false);
+        };
+        
+        fetchQuestionnaires();
+    }, []);
+
+    console.log('Questionnaires:', questionnaires);
+
+    if (loading) {
         return (
             <div className="home">
                 <h1>Bienvenue sur le CMS NumDiag</h1>

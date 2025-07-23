@@ -34,22 +34,20 @@ function getQuestionnaireById(req, res) {
 }
 
 
-function getAllInfosQuestionnaire(idQuestionnaire){
-    let questionnaire = executeQuery(numdiagPool, 'SELECT * FROM questionnaires WHERE id = $1', [idQuestionnaire])
-    if (!questionnaire.length) {
-        throw new Error('Questionnaire not found');
-    }
+async function getAllInfosQuestionnaire(idQuestionnaire){
+    let questionnaire = await executeQuery(numdiagPool, 'SELECT * FROM questionnaires WHERE id = $1', [idQuestionnaire])
+    console.log('Questionnaire fetched:', questionnaire);
 
-    let sections = executeQuery(numdiagPool, 'SELECT * FROM sections WHERE questionnaire_id = $1', [idQuestionnaire])
+    let sections = await executeQuery(numdiagPool, 'SELECT * FROM sections WHERE questionnaire_id = $1', [idQuestionnaire])
     let questions = []
     for (const section of sections) {
-        const sectionQuestions = executeQuery(numdiagPool, 'SELECT * FROM questions WHERE section_id = $1', [section.id_section])
+        const sectionQuestions = await executeQuery(numdiagPool, 'SELECT * FROM questions WHERE section_id = $1', [section.id_section])
         questions.push({
             ...section,
             questions: sectionQuestions
         })
     }
-
+    console.log('Questionnaire with sections and questions:', questionnaire, sections, questions);
     return { ...questionnaire, sections: questions }
 }
 
@@ -67,14 +65,9 @@ function getAllQuestionnaires(req, res) {
         });
 }
 
-function getAllQuestionnaireResume(req, res) {
+function getAllQuestionnaireResume() {
     const query = 'SELECT id, label, created_at FROM questionnaires';
-    executeQuery(numdiagPool, query)
-        .then(result => res.json(result))
-        .catch(error => {
-            console.error('Error fetching questionnaire resumes:', error);
-            res.status(500).json({ error: 'Internal server error' });
-        });
+    return executeQuery(numdiagPool, query);
 }
 
 export {

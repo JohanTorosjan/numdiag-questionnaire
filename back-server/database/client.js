@@ -49,4 +49,15 @@ function initNumdiagDatabase() {
         .catch(err => console.error('Error executing SQL file:', err))
 }
 
-export { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase }
+function populateNumdiagDatabase() {
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = path.dirname(__filename)
+    const sqlFilePath = path.resolve(__dirname, './cms-database-dataset.sql')
+    const sql = fs.readFileSync(sqlFilePath, 'utf8')
+
+    return numdiagPool.query(sql)
+        .then(() => console.log('Database populated successfully'))
+        .catch(err => console.error('Error populating database:', err))
+}
+
+export { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase }

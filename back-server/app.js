@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 
-import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase } from './database/client.js'
+import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase } from './database/client.js'
 import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection } from './questionnaire/section.js'
 
@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 app.get('/numdiag', async (req, res) => {
   try {
     await connectToDatabase(numdiagPool)
-    const result = await executeQuery(numdiagPool, 'SELECT 1', [])
+    const result = await executeQuery(numdiagPool, 'SELECT * from questionnaires', [])
     res.json(result)
   } catch (error) {
     console.error('Error querying numdiag database:', error)
@@ -35,7 +35,7 @@ app.get('/numdiag', async (req, res) => {
 app.get('/tohero', async (req, res) => {
   try {
     await connectToDatabase(toHeroPool)
-    const result = await executeQuery(toHeroPool, 'SELECT 1')
+    const result = await executeQuery(toHeroPool, 'SELECT 1', [])
     res.json(result)
   } catch (error) {
     console.error('Error querying tohero database:', error)
@@ -93,6 +93,16 @@ app.post('/initDatabase', async (req, res) => {
   } catch (error) {
     console.error('Error initializing database:', error)
     res.status(500).json({ error: 'Failed to initialize database' })
+  }
+})
+
+app.post('/populateDatabase', async (req, res) => {
+  try {
+    await populateNumdiagDatabase()
+    res.status(200).json({ message: 'Database populated successfully' })
+  } catch (error) {
+    console.error('Error populating database:', error)
+    res.status(500).json({ error: 'Failed to populate database' })
   }
 })
 
