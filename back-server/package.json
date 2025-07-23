@@ -2,7 +2,7 @@
   "name": "back-server",
   "version": "1.0.0",
   "description": "Back server for Numdiag CMS",
-  "type":"module",
+  "type": "module",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -10,6 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^5.1.0",
     "pg": "^8.16.3"
   },
