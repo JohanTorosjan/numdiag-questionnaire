@@ -2,7 +2,7 @@ import { handleEdit, handleDelete, handleAdd, handleSave, handlePublish } from "
 
 function editButton(id, type) {
     return (
-        <button className="edit-button" onClick={() => handleEdit(id, type)}>
+        <button className="green-btn" onClick={() => handleEdit(id, type)}>
             Edit
         </button>
     )
@@ -10,7 +10,7 @@ function editButton(id, type) {
 
 function deleteButton(id, type) {
     return (
-        <button className="delete-button" onClick={() => handleDelete(id, type)}>
+        <button className="red-btn" onClick={() => handleDelete(id, type)}>
             Delete
         </button>
     )
@@ -18,7 +18,7 @@ function deleteButton(id, type) {
 
 function copyButton(id, type) {
     return (
-        <button className="copy-button" onClick={() => handleCopy(id, type)}>
+        <button className="yellow-btn" onClick={() => handleCopy(id, type)}>
             Copy
         </button>
     )
@@ -29,7 +29,7 @@ function addButton(id, type) {
     // Exemple : si id = 1 et type = section, on ajoute alors une question dans la section 1
     // Si id = 1 et type = questionnaire, on ajoute une section dans le questionnaire
     return (
-        <button className="add-button" onClick={() => handleAdd(id, type)}>
+        <button className="add-btn" onClick={() => handleAdd(id, type)}>
             Add
         </button>
     )
@@ -37,7 +37,7 @@ function addButton(id, type) {
 
 function saveButton(idQuestionnaire) {
     return (
-        <button className="save-button" onClick={() => handleSave(idQuestionnaire)}>
+        <button className="green-btn" onClick={() => handleSave(idQuestionnaire)}>
             Save
         </button>
     )
@@ -45,7 +45,7 @@ function saveButton(idQuestionnaire) {
 
 function publishButton(idQuestionnaire) {
     return (
-        <button className="publish-button" onClick={() => handlePublish(idQuestionnaire)}>
+        <button className="blue-btn" onClick={() => handlePublish(idQuestionnaire)}>
             Publish
         </button>
     )
