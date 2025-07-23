@@ -6,10 +6,10 @@ import PopUpDeleteSection from './popups/deleteSection'
 import PopUpEditQuestion from './popups/editQuestion'
 import PopUpEditSection from './popups/editSection'
 import PopupCreateSection from './popups/createSection'
-import PopupCreateQuestionnaire from './Questionnaire/createQuestionnaire'
+import PopupCreateQuestionnaire from './popups/createQuestionnaire'
 
 
-function TestPopups({ id, handleDelete, handleEdit, handleAdd}){
+function TestPopups({ id, handleDelete, handleEdit}){
     const [DeleteQuestion, setDeletQuestion] = useState(false) //test popup delete question 
     const [EditQuestion, setEditQuestion] = useState(false) //test edit question
     const [deletSection , setDeleteSection] = useState(false) //test delete section
@@ -48,46 +48,16 @@ function TestPopups({ id, handleDelete, handleEdit, handleAdd}){
             </div>
             <div>
                 {/* QUESTION */}
-                <PopUpDeleteQuestion 
-                id={id}
-                handleDelete={handleDelete}
-                trigger={DeleteQuestion}          
-                setTrigger={setDeletQuestion}   
-                /> 
-                <PopUpEditQuestion
-                    id={id}
-                    handleEdit={handleEdit}
-                    trigger={EditQuestion}          
-                    setTrigger={setEditQuestion}   
-                />
+                <PopUpDeleteQuestion id={id} handleDelete={handleDelete} trigger={DeleteQuestion} setTrigger={setDeletQuestion}/> 
+                <PopUpEditQuestion id={id} handleEdit={handleEdit} trigger={EditQuestion} setTrigger={setEditQuestion} />
 
                 {/* SECTIONS */}
-                <PopUpDeleteSection
-                    id={id}
-                    handleEdit={handleDelete}
-                    trigger={deletSection}          
-                    setTrigger={setDeleteSection}   
-                />
-                <PopUpEditSection
-                    id = {id}
-                    handleEdit={handleEdit}
-                    trigger={editSection}          
-                    setTrigger={setEditSection}  
-                />
-                <PopupCreateSection
-                    id = {id}
-                    handleAdd={handleAdd}
-                    trigger={createSection}          
-                    setTrigger={setCreateSection}  
-                />
+                <PopUpDeleteSection id={id} handleEdit={handleDelete} trigger={deletSection} setTrigger={setDeleteSection} />
+                <PopUpEditSection id = {id} handleEdit={handleEdit} trigger={editSection} setTrigger={setEditSection} />
+                <PopupCreateSection  id = {id} trigger={createSection} setTrigger={setCreateSection} />
 
                 {/* Questionnaire create */}
-                <PopupCreateQuestionnaire
-                    id = {id}
-                    handleAdd={handleAdd}
-                    trigger={createQuestionnaire}          
-                    setTrigger={setCreateQuestionnaire}  
-                />
+                <PopupCreateQuestionnaire id = {id} trigger={createQuestionnaire} setTrigger={setCreateQuestionnaire} />
             </div>
 
 

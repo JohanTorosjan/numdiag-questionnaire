@@ -37,7 +37,6 @@ function PopUpEditQuestion({ id, handleEdit, trigger, setTrigger }) {
                 <input type="text" placeholder="Aide"/>
               </div>
               </>
-
             )}
             {typeQuestion === "choix-multiple" && (
               <>
@@ -66,7 +65,7 @@ function PopUpEditQuestion({ id, handleEdit, trigger, setTrigger }) {
         </div>
 
         {saveButton(id)}
-        <button className="close-btn" onClick={() => setTrigger(false)}>Annuler</button>
+        <button className="red-btn" onClick={() => setTrigger(false)}>Annuler</button>
       </div>
     </div>
   ) : "";

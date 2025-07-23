@@ -1,6 +1,6 @@
 import { saveButton } from '../button/button';
 
-function PopUpEditSection({id,handleEdit, trigger, setTrigger}) {
+function PopUpEditSection({id, trigger, setTrigger}) {
     // Logic to display a popup for editing a section
     console.log("Editing section with id:", id);
     return (trigger)?  (
@@ -12,7 +12,7 @@ function PopUpEditSection({id,handleEdit, trigger, setTrigger}) {
                 <p>Description</p>
                 <textarea className=""/>
                 {saveButton(id)}
-                <button className="close-btn" onClick={() => setTrigger(false)}>Annuler</button>
+                <button className="red-btn" onClick={() => setTrigger(false)}>Annuler</button>
             </div>
         </div>
     ): "";

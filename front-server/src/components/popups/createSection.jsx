@@ -14,7 +14,7 @@ function PopupCreateSection({id, trigger, setTrigger}){
 
                 {saveButton(id)}
                 {/* <button className="text-btn" onClick={() => handleAdd(id)}>Sauvegarder</button> */}
-                <button className="text-btn" onClick={() => setTrigger(false)}>Annuler</button>
+                <button className="red-btn" onClick={() => setTrigger(false)}>Annuler</button>
             </div>
         </div>
     ): ""

@@ -3,20 +3,6 @@ import { editButton, deleteButton } from '../button/button.jsx';
 import PopUpDeleteQuestion from '../popups/deleteQuestion.jsx';
 import PopUpEditQuestion from '../popups/editQuestion.jsx'
 
-// function QuestionResume({ questionId, questionLabel }) {
-//     const [showDeletePopup, setShowDeletePopup] = useState(false)
-//     return (
-//         <div className="question-resume">
-//             <h2>{questionLabel}</h2>
-//             <div>
-//                 {editButton(questionId, 'question')}
-//                 {deleteButton(questionId, 'question')}
-//             </div>
-//             <p>{questionId}</p>
-//         </div>
-//     );
-// }
-
 function QuestionResume({ questionId, questionLabel, handleDelete,handleEdit }) {
     const [popupDelete, setPopupDelete] = useState(false);  // teste popup
     const [popupEdit, setPopupEdit] = useState(false);
@@ -48,6 +34,5 @@ function QuestionResume({ questionId, questionLabel, handleDelete,handleEdit }) 
         </div>
     );
 }
-
 
 export default QuestionResume

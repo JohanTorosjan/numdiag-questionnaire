@@ -1,4 +1,6 @@
 import { handleEdit, handleDelete, handleAdd, handleSave, handlePublish } from "./buttonLogic";
+import { Search, Edit, Copy, Trash2, Plus, ChevronDown, ChevronRight, Menu, Save, Send } from 'lucide-react';
+
 // function editButton(id, type) {
 //     return (
 //         <button className="green-btn" onClick={() => handleEdit(id, type)}>
@@ -10,7 +12,7 @@ import { handleEdit, handleDelete, handleAdd, handleSave, handlePublish } from "
 function editButton(setButtonPopup) {
     return (
         <button className="green-btn" onClick={() => setButtonPopup(true)}>
-            Edit
+            <Edit className="icone" size={18} />
         </button>
     )
 }
@@ -26,7 +28,7 @@ function editButton(setButtonPopup) {
 function deleteButton(setButtonPopup) {
     return (
         <button className="red-btn" onClick={() => setButtonPopup(true)}>
-            Delete
+            <Trash2 className="icon" size={18} />
         </button>
     );
 }
@@ -34,7 +36,7 @@ function deleteButton(setButtonPopup) {
 function copyButton(id, type) {
     return (
         <button className="yellow-btn" onClick={() => handleCopy(id, type)}>
-            Copy
+            <Copy className="icon" size={18} />
         </button>
     )
 }
@@ -45,7 +47,7 @@ function addButton(setButtonPopup) {
     // Si id = 1 et type = questionnaire, on ajoute une section dans le questionnaire
     return (
         <button className="add-btn" onClick={() => setButtonPopup(true)}>
-            Add
+            <Plus className="icon" size={18} />
         </button>
     )
 }
@@ -53,7 +55,7 @@ function addButton(setButtonPopup) {
 function saveButton(idQuestionnaire) {
     return (
         <button className="green-btn" onClick={() => handleSave(idQuestionnaire)}>
-            Save
+            <Save className="icon" size={18} />
         </button>
     )
 }
@@ -61,10 +63,11 @@ function saveButton(idQuestionnaire) {
 function publishButton(idQuestionnaire) {
     return (
         <button className="blue-btn" onClick={() => handlePublish(idQuestionnaire)}>
-            Publish
+            <Send className="icon" size={18} />
         </button>
     )
 }
+
 
 
 export {
