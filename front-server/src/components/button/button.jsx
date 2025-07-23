@@ -1,5 +1,5 @@
 import { handleEdit, handleDelete, handleAdd, handleSave, handlePublish } from "./buttonLogic";
-import { Search, Edit, Copy, Trash2, Plus, ChevronDown, ChevronRight, Menu, Save, Send } from 'lucide-react';
+// import { Search, Edit, Copy, Trash2, Plus, ChevronDown, ChevronRight, Menu, Save, Send } from 'lucide-react';
 
 // function editButton(id, type) {
 //     return (
@@ -12,7 +12,8 @@ import { Search, Edit, Copy, Trash2, Plus, ChevronDown, ChevronRight, Menu, Save
 function editButton(setButtonPopup) {
     return (
         <button className="green-btn" onClick={() => setButtonPopup(true)}>
-            <Edit className="icone" size={18} />
+            {/* <Edit className="icone" size={18} /> */}
+            Edit
         </button>
     )
 }
@@ -28,7 +29,8 @@ function editButton(setButtonPopup) {
 function deleteButton(setButtonPopup) {
     return (
         <button className="red-btn" onClick={() => setButtonPopup(true)}>
-            <Trash2 className="icon" size={18} />
+            {/* <Trash2 className="icon" size={18} /> */}
+            Delete
         </button>
     );
 }
@@ -36,7 +38,8 @@ function deleteButton(setButtonPopup) {
 function copyButton(id, type) {
     return (
         <button className="yellow-btn" onClick={() => handleCopy(id, type)}>
-            <Copy className="icon" size={18} />
+            {/* <Copy className="icon" size={18} /> */}
+            Copy
         </button>
     )
 }
@@ -47,7 +50,8 @@ function addButton(setButtonPopup) {
     // Si id = 1 et type = questionnaire, on ajoute une section dans le questionnaire
     return (
         <button className="add-btn" onClick={() => setButtonPopup(true)}>
-            <Plus className="icon" size={18} />
+            {/* <Plus className="icon" size={18} /> */}
+            Add
         </button>
     )
 }
@@ -55,7 +59,8 @@ function addButton(setButtonPopup) {
 function saveButton(idQuestionnaire) {
     return (
         <button className="green-btn" onClick={() => handleSave(idQuestionnaire)}>
-            <Save className="icon" size={18} />
+            {/* <Save className="icon" size={18} /> */}
+            Save
         </button>
     )
 }
@@ -63,7 +68,8 @@ function saveButton(idQuestionnaire) {
 function publishButton(idQuestionnaire) {
     return (
         <button className="blue-btn" onClick={() => handlePublish(idQuestionnaire)}>
-            <Send className="icon" size={18} />
+            {/* <Send className="icon" size={18} /> */}
+            Publish
         </button>
     )
 }
