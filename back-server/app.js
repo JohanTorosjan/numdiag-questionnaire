@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase } from './database/client.js'
-import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire } from './questionnaire/questionnaire.js'
+import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection } from './questionnaire/section.js'
 
 const app = express()
@@ -72,6 +72,16 @@ app.get('/sections/:sectionId', async (req, res) => {
     res.json({ questions })
   } catch (error) {
     console.error('Error fetching section questions:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+app.get('/questionnairesResume', async (req, res) => {
+  try {
+    const questionnaires = await getAllQuestionnaireResume()
+    res.json(questionnaires)
+  } catch (error) {
+    console.error('Error fetching questionnaires resume:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })

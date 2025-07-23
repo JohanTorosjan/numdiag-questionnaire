@@ -67,10 +67,21 @@ function getAllQuestionnaires(req, res) {
         });
 }
 
+function getAllQuestionnaireResume(req, res) {
+    const query = 'SELECT id, label, created_at FROM questionnaires';
+    executeQuery(numdiagPool, query)
+        .then(result => res.json(result))
+        .catch(error => {
+            console.error('Error fetching questionnaire resumes:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        });
+}
+
 export {
     createQuestionnaire,
     getQuestionnaireById,
     getAllInfosQuestionnaire,
     getAllQuestionnaires,
+    getAllQuestionnaireResume,
     getSectionofQuestionnaire
 }

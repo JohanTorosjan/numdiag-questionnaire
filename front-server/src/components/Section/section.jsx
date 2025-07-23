@@ -1,4 +1,5 @@
 import QuestionResume from '../Question/questionResume';
+import React from 'react';
 
 async function getQuestionofSection(sectionId) {
     try {
@@ -15,8 +16,16 @@ async function getQuestionofSection(sectionId) {
 }
 
 function Section({ sectionId, sectionTitle, sectionContent }) {
-  const questions = getQuestionofSection(sectionId);
-  
+  const [questions, setQuestions] = React.useState([]);
+
+  React.useEffect(() => {
+    async function fetchQuestions() {
+      const data = await getQuestionofSection(sectionId);
+      setQuestions(data);
+    }
+    fetchQuestions();
+  }, [sectionId]);
+
   return (
     <div className="section">
       <h2>{sectionTitle}</h2>

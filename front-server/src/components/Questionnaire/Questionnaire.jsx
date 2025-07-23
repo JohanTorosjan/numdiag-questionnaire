@@ -1,3 +1,7 @@
+import { useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import Section from '../Section/section.jsx';
+
 async function getAllQuestionnaire(idQuestionnaire) {
     try {
         const response = await fetch(`http://localhost:3008/questionnaire/${idQuestionnaire}`);
@@ -8,16 +12,29 @@ async function getAllQuestionnaire(idQuestionnaire) {
         return data;
     } catch (error) {
         console.error('Error fetching sections:', error);
-        return [];
+        return null;
     }
 }
 
-function Questionnaire({ questionnaireId }) {
-    let questionnaire = getAllQuestionnaire(questionnaireId);
+function Questionnaire() {
+    const { id } = useParams();
+    const [questionnaire, setQuestionnaire] = useState(null);
+
+    useEffect(() => {
+        async function fetchQuestionnaire() {
+            const data = await getAllQuestionnaire(id);
+            setQuestionnaire(data);
+        }
+        fetchQuestionnaire();
+    }, [id]);
+
+    if (!questionnaire) {
+        return <div>Ca charge (vous pouvez aller faire un cafe en attendant ^^)...</div>;
+    }
 
     return (
         <div className="questionnaire">
-            {questionnaire.sections.map(section => (
+            {questionnaire.sections?.map(section => (
                 <Section
                     key={section.id}
                     sectionId={section.id}
@@ -28,3 +45,5 @@ function Questionnaire({ questionnaireId }) {
         </div>
     );
 }
+
+export default Questionnaire;
