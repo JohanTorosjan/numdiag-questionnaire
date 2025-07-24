@@ -74,4 +74,7 @@ function QuestionResume({ questionId, questionLabel}) {
 
 }
 
+
+
+
 export default QuestionResume
