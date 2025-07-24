@@ -32,7 +32,7 @@ function PopUpDeleteQuestion({ idQuestion, setTrigger }) {
 
 async function handelDelete(idQuestion){
     try {
-        const response = await fetch(`http://localhost:8081/question/${idQuestion}`, {
+        const response = await fetch(`http://127.0.0.1:3008//question/${idQuestion}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
