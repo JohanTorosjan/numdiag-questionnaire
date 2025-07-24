@@ -14,7 +14,7 @@ function PopUpEditSection({idSection, trigger, setTrigger}) {
 
     async function fetchSectionInfo(idSection) {
     try {
-      const response = await fetch(`/getSection/${idSection}`)
+      const response = await fetch(`http://127.0.0.1:3008/getSection/${idSection}`)
 
       const data = await response.json();
       console.log('Success:', data);
@@ -41,7 +41,7 @@ function PopUpEditSection({idSection, trigger, setTrigger}) {
 
   async function postSection(idSection) {
     try {
-      const response = await fetch(`/updateSection/${idSection}`, {
+      const response = await fetch(`http://127.0.0.1:3008/updateSection/${idSection}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,12 +69,12 @@ function PopUpEditSection({idSection, trigger, setTrigger}) {
         <div className="popup">
             <div className="popup-inner">
                 <h2>Modification section</h2>
-                <input type="text" placeholder={label}/>
-                <textarea placeholder={description}></textarea>
-                <input type="number" placeholder={position}/>
-                <textarea placeholder={tooltip}> </textarea>
+                <input type="text" placeholder={label} name="label" value="formData.label" onChange={handleChange}/>
+                <textarea placeholder={description} name="description" value="formData.description" onChange={handleChange}></textarea>
+                <input type="number" placeholder={position} name="position" value="formData.position" onChange={handleChange}/>
+                <textarea placeholder={tooltip} name="tooltip" value="formData.tooltip" onChange={handleChange}> </textarea>
                 <input type="number" placeholder={scoreMax} name="scoreMax" step="1" min="0" value={formData.scoreMax} onChange={handleChange} />
-                {saveButton(id)}
+                <button class='green-btn' onClick={()=> postSection()}>Sauvegarder</button>
                 <button className="red-btn" onClick={() => setTrigger(false)}>Annuler</button>
             </div>
         </div>
