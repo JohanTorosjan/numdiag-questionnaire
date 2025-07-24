@@ -1,0 +1,150 @@
+Brouillon html
+
+<!-- <!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Éditeur de questionnaire</title>
+    <link rel="stylesheet" href="src/App.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <button class="menu-btn"></button>
+            <h1 class="title">Éditeur de questionnaire</h1>
+        </div>
+
+        <!-- Main container -->
+        <div class="main-container">
+            <div class="edition-header">
+                <span class="edition-label">Edition :</span>
+                <input type="text" class="edition-input" value="Privacy Check - Collège" readonly>
+                <button class="logo-btn add-btn">+</button>
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Rechercher">
+                </div>
+            </div>
+
+            <div class="questionnaire-desc">
+                Questionnaire à destination des collégien.nes pour tester leur sensibilisation au numérique
+                <div class="version-info">Version : 1.0 - Nombre de Pages : 2 -</div>
+            </div>
+
+            <!-- Section 1 - Expanded -->
+            <div class="secondary-container ">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="section-arrow">▼</span>
+                        Section 1 - Réseaux Sociaux
+                    </div>
+                    <div class="section-actions">
+                        <button class="logo-btn green-btn">✏️</button>
+                        <button class="logo-btn yellow-btn">📋</button>
+                        <button class="logo-btn red-btn">🗑️</button>
+                    </div>
+                </div>
+                
+                <div class="questions-container">
+                    <div class="question-item">
+                        <span class="question-text">Question 1 - Quels réseaux sociaux utilises-tu ?</span>
+                        <div class="question-actions">
+                            <button class="logo-btn green-btn">✏️</button>
+                            <button class="logo-btn yellow-btn">📋</button>
+                            <button class="logo-btn red-btn">🗑️</button>
+                            <button class="expand-btn">▼</button>
+                        </div>
+                    </div>
+
+                    <div class="question-item">
+                        <span class="question-text">Question 2 -</span>
+                        <div class="question-actions">
+                            <button class="logo-btn green-btn">✏️</button>
+                            <button class="logo-btn yellow-btn">📋</button>
+                            <button class="logo-btn red-btn">🗑️</button>
+                            <button class="expand-btn">▼</button>
+                        </div>
+                    </div>
+
+                    <div class="question-item">
+                        <span class="question-text">Question 3 -</span>
+                        <div class="question-actions">
+                            <button class="logo-btn green-btn">✏️</button>
+                            <button class="logo-btn yellow-btn">📋</button>
+                            <button class="logo-btn red-btn">🗑️</button>
+                            <button class="expand-btn">▼</button>
+                        </div>
+                    </div>
+
+                    <div class="page-separator">Nouvelle Page</div>
+
+                    <div class="question-item">
+                        <span class="question-text">Question 4 -</span>
+                        <div class="question-actions">
+                            <button class="logo-btn green-btn">✏️</button>
+                            <button class="logo-btn yellow-btn">📋</button>
+                            <button class="logo-btn red-btn">🗑️</button>
+                            <button class="expand-btn">▼</button>
+                        </div>
+                    </div>
+
+                    <button class="logo-btn add-btn">+</button>
+                </div>
+            </div>
+
+            <!-- Section 2 - Collapsed -->
+            <div class="secondary-container ">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="section-arrow">▶</span>
+                        Section 2 - Jeux Vidéo
+                    </div>
+                    <div class="section-actions">
+                        <button class="logo-btn green-btn">✏️</button>
+                        <button class="logo-btn yellow-btn">📋</button>
+                        <button class="logo-btn red-btn">🗑️</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3 - Collapsed -->
+            <div class="secondary-container">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="section-arrow">▶</span>
+                        Section 3 - Navigation
+                    </div>
+                    <div class="section-actions">
+                        <button class="logo-btn green-btn">✏️</button>
+                        <button class="logo-btn yellow-btn">📋</button>
+                        <button class="logo-btn red-btn">🗑️</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom actions -->
+            <div class="text-btn">
+                <button class="green-btn">Sauvegarder</button>
+                <button class="blue-btn">Publier</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

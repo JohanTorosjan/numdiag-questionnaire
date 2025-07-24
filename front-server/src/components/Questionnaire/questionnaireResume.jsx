@@ -1,3 +1,14 @@
+// Censé aller dans l'éditeur de questionnaire (composant questionnaire)
+// function QuestionnaireResume( { idQuestionnaire, label, version } ) {
+//    return (
+//        <div className="questionnaire-resume">
+//            <label>Edition : {lable}</label>
+//            <Search className = "icone" />
+//            <input type="text" placeholder="Rechercher" />
+//            <input type="text"placeholder="Nom questionnaire" />
+//            <input type="text" placeholder="Description"/>
+//            <p>Version {version} - Nombre de pages : N</p>
+
 import { useNavigate } from 'react-router-dom';
 
 function QuestionnaireResume({ idQuestionnaire, label }) {
