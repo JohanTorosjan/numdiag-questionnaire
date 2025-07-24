@@ -1,4 +1,5 @@
 import { saveButton } from '../button/button';
+import { useNavigate } from 'react-router-dom';
 
 function PopupCreateQuestionnaire({trigger, setTrigger}){
   const [formData, setFormData] = useState({
@@ -21,7 +22,7 @@ function PopupCreateQuestionnaire({trigger, setTrigger}){
 
   async function postQuestionnaire() {
     try {
-      const response = await fetch('/createQuestionnaire', {
+      const response = await fetch('http://127.0.0.1:3008/createQuestionnaire', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,7 +32,7 @@ function PopupCreateQuestionnaire({trigger, setTrigger}){
 
       const data = await response.json();
       console.log('Success:', data);
-      window.location.href = '/';
+      navigate('/');
     } catch (error) {
       console.error('Failed to create questionnaire: ', error);
       const errData = await response.json();
