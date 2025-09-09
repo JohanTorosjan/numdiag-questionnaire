@@ -1,4 +1,6 @@
 import QuestionResume from '../Question/questionResume';
+import PopUpEditQuestion from '../popups/editQuestion';
+
 import React from 'react';
 
 async function getQuestionofSection(sectionId) {
@@ -17,6 +19,9 @@ async function getQuestionofSection(sectionId) {
 
 function Section({ sectionId, sectionTitle, sectionContent }) {
   const [questions, setQuestions] = React.useState([]);
+  const [popUpEdit, setPopUpEdit] = React.useState({state:false});
+  // const [selectedQuestion, setSelectedQuestion] = React.useState();
+
 
   React.useEffect(() => {
     async function fetchQuestions() {
@@ -25,22 +30,54 @@ function Section({ sectionId, sectionTitle, sectionContent }) {
     }
     fetchQuestions();
   }, [sectionId]);
-
-  return (
+    if(popUpEdit.state==false){
+    return (
     <div className="section">
+      
       <h2>{sectionTitle}</h2>
-      <div>
+  
+      <div> 
         {Array.isArray(questions) && questions.map(question => (
           <QuestionResume
             key={question.id}
             questionId={question.id}
             questionLabel={question.label}
+            onShow = {() =>{setPopUpEdit({
+              state:true,selectedQuestion:question.id
+            })}}
           />
         ))}
       </div>
       <p>{sectionContent}</p>
     </div>
   );
+      }
+      else{
+        return (
+          <div className="edit-question-popup">
+            <PopUpEditQuestion
+            id = {popUpEdit.selectedQuestion}
+            onClose = {() =>{setPopUpEdit({
+              state:false
+            })}}
+            />
+                   <h1>
+            ICI COMPOSANt POPUP 
+            pour cette question :{popUpEdit.selectedQuestion}
+          </h1>
+
+                      <button className="red-btn" onClick={() =>setPopUpEdit({state:false})}>
+            X
+        </button>
+
+            </div>
+
+   
+   
+          
+        )
+      }
+
 }
 
 

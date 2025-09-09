@@ -24,6 +24,7 @@ function Questionnaire() {
     useEffect(() => {
         async function fetchQuestionnaire() {
             const data = await getAllQuestionnaire(id);
+            debugger
             setQuestionnaire(data);
         }
         fetchQuestionnaire();

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { saveButton } from '../button/button';
 
-function PopUpEditQuestion({ id, handleEdit, trigger, setTrigger }) {
+function PopUpEditQuestion({ id, }) {
   const [typeQuestion, setTypeQuestion] = useState("entier");
-
-  return trigger ? (
+  
+  return  (
     <div className="popup">
       <div className="popup-inner">
         <h2>Créer une question</h2>
@@ -65,10 +65,10 @@ function PopUpEditQuestion({ id, handleEdit, trigger, setTrigger }) {
         </div>
 
         {saveButton(id)}
-        <button className="red-btn" onClick={() => setTrigger(false)}>Annuler</button>
+        <button className="red-btn" onClick={() => set}>Annuler</button>
       </div>
     </div>
-  ) : "";
+  );
 }
 
 

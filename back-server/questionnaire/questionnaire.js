@@ -34,21 +34,64 @@ function getQuestionnaireById(req, res) {
 }
 
 
-async function getAllInfosQuestionnaire(idQuestionnaire){
-    let questionnaire = await executeQuery(numdiagPool, 'SELECT * FROM questionnaires WHERE id = $1', [idQuestionnaire])
-    console.log('Questionnaire fetched:', questionnaire);
+async function getAllInfosQuestionnaire(idQuestionnaire) {
+    // Récupération du questionnaire
+    const [questionnaire] = await executeQuery(
+        numdiagPool,
+        'SELECT * FROM questionnaires WHERE id = $1',
+        [idQuestionnaire]
+    );
+    if (!questionnaire) return null;
 
-    let sections = await executeQuery(numdiagPool, 'SELECT * FROM sections WHERE questionnaire_id = $1', [idQuestionnaire])
-    let questions = []
-    for (const section of sections) {
-        const sectionQuestions = await executeQuery(numdiagPool, 'SELECT * FROM questions WHERE section_id = $1', [section.id_section])
-        questions.push({
-            ...section,
-            questions: sectionQuestions
-        })
+    // Récupération des sections
+    const sections = await executeQuery(
+        numdiagPool,
+        'SELECT * FROM sections WHERE questionnaire_id = $1 ORDER BY position',
+        [idQuestionnaire]
+    );
+
+    // Récupération des questions (pour toutes les sections en une seule fois)
+    const questions = await executeQuery(
+        numdiagPool,
+        'SELECT * FROM questions WHERE section_id = ANY($1) ORDER BY position',
+        [sections.map(s => s.id)]
+    );
+
+    // Récupération des réponses (pour toutes les questions en une seule fois)
+    const reponses = await executeQuery(
+        numdiagPool,
+        'SELECT * FROM reponses WHERE question_id = ANY($1) ORDER BY position',
+        [questions.map(q => q.id)]
+    );
+
+    // On indexe les réponses par question_id
+    const reponsesByQuestion = {};
+    for (const rep of reponses) {
+        if (!reponsesByQuestion[rep.question_id]) {
+            reponsesByQuestion[rep.question_id] = [];
+        }
+        reponsesByQuestion[rep.question_id].push(rep);
     }
-    console.log('Questionnaire with sections and questions:', questionnaire, sections, questions);
-    return { ...questionnaire, sections: questions }
+
+    // On indexe les questions par section_id
+    const questionsBySection = {};
+    for (const q of questions) {
+        q.reponses = reponsesByQuestion[q.id] || [];
+        if (!questionsBySection[q.section_id]) {
+            questionsBySection[q.section_id] = [];
+        }
+        questionsBySection[q.section_id].push(q);
+    }
+
+    // On rattache les questions à leur section
+    for (const s of sections) {
+        s.questions = questionsBySection[s.id] || [];
+    }
+
+    // On rattache les sections au questionnaire
+    questionnaire.sections = sections;
+
+    return questionnaire;
 }
 
 function getSectionofQuestionnaire(idQuestionnaire) {
