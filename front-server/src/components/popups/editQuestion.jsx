@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import './PopUpEditQuestion.css';
+import { useParams } from 'react-router-dom';
+import QuestionDependencies from '../Question/questionDependencies';
 
 function PopUpEditQuestion({ question, onSave, onClose }) {
     const [formData, setFormData] = useState({
@@ -12,6 +14,8 @@ function PopUpEditQuestion({ question, onSave, onClose }) {
         theme: question?.theme || null,
         tooltip: question?.tooltip || ''
     });
+    const { id } = useParams();
+
 
     // Listes fixes pour les select
     const questionTypes = [
@@ -185,6 +189,20 @@ function PopUpEditQuestion({ question, onSave, onClose }) {
                             
                         </label>
                     </div>
+
+
+                    <div className="form-group depencies-component">
+                        <label htmlFor="tooltip">Dépendances:</label>
+                        <p>
+                          Cochez les réponses qui permettront l'affichage de la question
+                        </p>
+                      
+                       <QuestionDependencies
+                      key={question.id}
+                      questionnaire = {id}
+                      />
+                    </div>
+
 
                     <div className="popup-actions">
                         <button type="button" onClick={onClose} className="cancel-button">

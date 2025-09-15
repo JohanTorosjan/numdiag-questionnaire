@@ -106,6 +106,18 @@ app.post('/populateDatabase', async (req, res) => {
   }
 })
 
+app.get('/questions/:questionnaireId', async (req, res) => {
+  const { questionnaireId } = req.params
+  try {
+    const questionnaire = await getAllQuestionsByQuestionnaire(questionnaireId)
+    res.json(questionnaire)
+  } catch (error) {
+    console.error('Error fetching questionnaire:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
