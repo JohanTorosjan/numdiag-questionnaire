@@ -1,99 +1,50 @@
-// import { useState } from "react";
-// import { saveButton } from '../button/button';
-
-// function PopUpEditQuestion({ id, }) {
-//   const [typeQuestion, setTypeQuestion] = useState("entier");
-  
-//   return  (
-//     <div className="popup">
-//       <div className="popup-inner">
-//         <h2>Créer une question</h2>
-//         <input type="text" placeholder="Intitulé" />
-//         <input type="number" placeholder="Coefficient" step="1" min="0" onInput={(e) => { e.target.value = e.target.value.replace(/[^0-9]/g, "");}} />
-//         <input type="number" placeholder="Page" step="1" min="0" onInput={(e) => { e.target.value = e.target.value.replace(/[^0-9]/g, "");}} />
-//         <input type="text" placeholder="Aide" />
-//         <select value={typeQuestion} onChange={(e) => setTypeQuestion(e.target.value)}>
-//           <option value="choix-simple">Choix simple</option>
-//           <option value="choix-multiple">Choix multiple</option>
-//           <option value="entier">Entier</option>
-//         </select>
-
-  
-//         <div className="reponses">
-//           <h2>Reponses</h2>
-//             {typeQuestion === "choix-simple" && (
-//               <>
-//                 <div className="reponse">
-//                   <p>°</p>
-//                   <input type="text" name="reponse" placeholder="Reponse" />
-//                   <input type="number" placeholder="Score"onInput={(e)=> {e.target.value = e.target.value.replace(/[^0-9.-]/g,"")}} />
-//                   <input type="text" placeholder="Aide"/>
-//                 </div>
-              
-//                 <div className="reponse">
-//                 <p>°</p>
-//                 <input type="text" name="reponse" placeholder="Reponse" />
-//                 <input type="number" placeholder="Score"onInput={(e)=> {e.target.value = e.target.value.replace(/[^0-9.-]/g,"")}} />
-//                 <input type="text" placeholder="Aide"/>
-//               </div>
-//               </>
-//             )}
-//             {typeQuestion === "choix-multiple" && (
-//               <>
-//                 <div className="reponse">
-//                   <p>x</p>
-//                   <input type="text" name="reponse" placeholder="Reponse" />
-//                   <input type="number" placeholder="Score"onInput={(e)=> {e.target.value = e.target.value.replace(/[^0-9.-]/g,"")}} />
-//                   <input type="text" placeholder="Aide"/>
-//                 </div>
-              
-//                 <div className="reponse">
-//                 <p>x</p>
-//                 <input type="text" name="reponse" placeholder="Reponse" />
-//                 <input type="number" placeholder="Score"onInput={(e)=> {e.target.value = e.target.value.replace(/[^0-9.-]/g,"")}} />
-//                 <input type="text" placeholder="Aide"/>
-//               </div>
-//               </>
-//             )}
-//             {typeQuestion === "entier" && (
-//               <div className="reponse">
-//                 <input placeholder="Réponse attendue..." />
-//               </div>  
-//             )}
-
-//             <button className="text-btn">+</button>
-//         </div>
-
-//         {saveButton(id)}
-//         <button className="red-btn" onClick={() => set}>Annuler</button>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-// export default PopUpEditQuestion;
-
-
-
-
-
 import { useState } from 'react';
-import './PopUpEditQuestion.css'; // Pour le styling
+import './PopUpEditQuestion.css';
 
 function PopUpEditQuestion({ question, onSave, onClose }) {
     const [formData, setFormData] = useState({
-        title: question.label || '',
-        description: question.description || '',
-        type: question.type || '',
-        // Ajoute d'autres champs selon ta structure
+        coeff: question?.coeff || 1,
+        label: question?.label || '',
+        mandatory: question?.mandatory || false,
+        page: question?.page || 1,
+        position: question?.position || 1,
+        questiontype: question?.questiontype || '',
+        theme: question?.theme || null,
+        tooltip: question?.tooltip || ''
     });
 
+    // Listes fixes pour les select
+    const questionTypes = [
+        { value: 'entier', label: 'Entier' },
+        { value: 'choix_simple', label: 'Choix simple' },
+        { value: 'choix_multiple', label: 'Choix multiple' },
+    ];
+
+    const themes = [
+        { value: null, label: 'Aucun thème' },
+        { value: 'general', label: 'Général' },
+        { value: 'personnel', label: 'Personnel' },
+        { value: 'professionnel', label: 'Professionnel' },
+        { value: 'technique', label: 'Technique' }
+    ];
+
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
+        
+        let newValue = value;
+        
+        // Gestion des types spéciaux
+        if (type === 'checkbox') {
+            newValue = checked;
+        } else if (type === 'number') {
+            newValue = parseInt(value) || 0;
+        } else if (name === 'theme' && value === '') {
+            newValue = null;
+        }
+
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: newValue
         }));
     };
 
@@ -118,41 +69,121 @@ function PopUpEditQuestion({ question, onSave, onClose }) {
                 
                 <form onSubmit={handleSubmit} className="popup-form">
                     <div className="form-group">
-                        <label htmlFor="title">Titre de la question :</label>
+                        <label htmlFor="label">Intitulé de la question :</label>
                         <input
                             type="text"
-                            id="title"
-                            name="title"
-                            value={formData.title}
+                            id="label"
+                            name="label"
+                            value={formData.label}
                             onChange={handleInputChange}
+                            placeholder="Ex: Combien d'employés sont présents dans votre entreprise"
                             required
                         />
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="description">Description :</label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            value={formData.description}
-                            onChange={handleInputChange}
-                            rows="4"
-                        />
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label htmlFor="coeff">Coefficient :</label>
+                            <input
+                                type="number"
+                                id="coeff"
+                                name="coeff"
+                                value={formData.coeff}
+                                onChange={handleInputChange}
+                                min="0"
+                                step="1"
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="page">Page :</label>
+                            <input
+                                type="number"
+                                id="page"
+                                name="page"
+                                value={formData.page}
+                                onChange={handleInputChange}
+                                min="1"
+                                step="1"
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="position">Position :</label>
+                            <input
+                                type="number"
+                                id="position"
+                                name="position"
+                                value={formData.position}
+                                onChange={handleInputChange}
+                                min="1"
+                                step="1"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label htmlFor="questiontype">Type de question :</label>
+                            <select
+                                id="questiontype"
+                                name="questiontype"
+                                value={formData.questiontype}
+                                onChange={handleInputChange}
+                                required
+                            >
+                                {questionTypes.map(type => (
+                                    <option key={type.value} value={type.value}>
+                                        {type.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="theme">Thème :</label>
+                            <select
+                                id="theme"
+                                name="theme"
+                                value={formData.theme || ''}
+                                onChange={handleInputChange}
+                            >
+                                {themes.map(theme => (
+                                    <option key={theme.value || 'null'} value={theme.value || ''}>
+                                        {theme.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="type">Type de question :</label>
-                        <select
-                            id="type"
-                            name="type"
-                            value={formData.type}
+                        <label htmlFor="tooltip">Aide/Tooltip :</label>
+                        <input
+                            type="text"
+                            id="tooltip"
+                            name="tooltip"
+                            value={formData.tooltip}
                             onChange={handleInputChange}
-                        >
-                            <option value="">Sélectionner un type</option>
-                            <option value="text">Texte libre</option>
-                            <option value="multiple">Choix multiple</option>
-                            <option value="single">Choix unique</option>
-                        </select>
+                            placeholder="Texte d'aide pour l'utilisateur"
+                        />
+                    </div>
+
+                    <div className="form-group checkbox-group">
+                        <label htmlFor="mandatory" className="checkbox-label">
+                          Question obligatoire
+                            <input
+                                type="checkbox"
+                                id="mandatory"
+                                name="mandatory"
+                                checked={formData.mandatory}
+                                onChange={handleInputChange}
+                            />
+                            
+                        </label>
                     </div>
 
                     <div className="popup-actions">

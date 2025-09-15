@@ -11,7 +11,6 @@ CREATE TABLE Questionnaires (
   insight VARCHAR,
   tooltip VARCHAR,
   scoremax INTEGER NOT NULL,
-  nbPages INTEGER NOT NULL DEFAULT 1,
   isPublished BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -24,6 +23,8 @@ CREATE TABLE Sections (
     position INTEGER NOT NULL,
     tooltip VARCHAR,
     scoremax INTEGER NOT NULL,
+    nbPages INTEGER NOT NULL DEFAULT 1,
+
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE
 );
 
@@ -37,6 +38,7 @@ CREATE TABLE Questions (
     tooltip VARCHAR,
     coeff INTEGER NOT NULL,
     theme VARCHAR,
+    mandatory BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (section_id) REFERENCES Sections(id) ON DELETE CASCADE
 );
 

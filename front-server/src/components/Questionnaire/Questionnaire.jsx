@@ -74,9 +74,7 @@ function Questionnaire() {
         <p>
         {questionnaire.insight}
         </p>  
-        <p>
-        Nombre de pages : {questionnaire.nbpages}
-        </p>    
+
 
             {questionnaire.sections?.map(section => (
                 <Section

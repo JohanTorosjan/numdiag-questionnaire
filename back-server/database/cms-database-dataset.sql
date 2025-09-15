@@ -2,9 +2,9 @@
 -- Mapped from toherodb-population-test.sql to cms-database structure
 
 -- Insert Questionnaires (mapped from audit table)
-INSERT INTO Questionnaires (id, label, description, code, version, insight, tooltip, scoremax, nbPages, isPublished) VALUES
-(1, 'Audit RGPD', 'Évaluation complète de la conformité RGPD', 1, '1.0', 'Analyse détaillée de la conformité aux exigences du RGPD', NULL, 100, 1, true),
-(2, 'Audit AI Act', 'Évaluation complète de la conformité AI Act', 2, '1.0', 'Analyse détaillée de la conformité aux exigences du AI Act', NULL, 100, 1, true);
+INSERT INTO Questionnaires (id, label, description, code, version, insight, tooltip, scoremax, isPublished) VALUES
+(1, 'Audit RGPD', 'Évaluation complète de la conformité RGPD', 1, '1.0', 'Analyse détaillée de la conformité aux exigences du RGPD', NULL, 100, true),
+(2, 'Audit AI Act', 'Évaluation complète de la conformité AI Act', 2, '1.0', 'Analyse détaillée de la conformité aux exigences du AI Act', NULL, 100, true);
 
 -- Insert Sections (mapped from Section table)
 INSERT INTO Sections (id, questionnaire_id, label, description, position, tooltip, scoremax) VALUES

@@ -57,7 +57,9 @@ function Section({ section,onUpdateSection,onUpdateQuestion }) {
       {/* Container des questions avec animation */}
       <div className={`questions-container ${isQuestionsOpen ? 'open' : 'closed'}`}>
               <p>{section.description}</p>
-
+        <p>
+        Nombre de pages : {section.nbpages}
+        </p>    
         <div className="questions-list">
           {Array.isArray(section.questions) && section.questions.map(question => (
             <QuestionResume
