@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Section from '../Section/section.jsx';
 
-async function getAllQuestionnaire(idQuestionnaire) {
+async function getQuestionnaire(idQuestionnaire) {
     try {
         const response = await fetch(`http://localhost:3008/questionnaire/${idQuestionnaire}`);
         if (!response.ok) {
@@ -23,12 +23,40 @@ function Questionnaire() {
 
     useEffect(() => {
         async function fetchQuestionnaire() {
-            const data = await getAllQuestionnaire(id);
-            debugger
+            const data = await getQuestionnaire(id);
             setQuestionnaire(data);
         }
         fetchQuestionnaire();
     }, [id]);
+
+
+     const updateSection = (sectionId, updatedSection) => {
+        setQuestionnaire(prevQuestionnaire => ({
+            ...prevQuestionnaire,
+            sections: prevQuestionnaire.sections.map(section => 
+                section.id === sectionId ? { ...section, ...updatedSection } : section
+            )
+        }));
+    };
+
+
+    const updateQuestion = (sectionId, questionId, updatedQuestion) => {
+        setQuestionnaire(prevQuestionnaire => ({
+            ...prevQuestionnaire,
+            sections: prevQuestionnaire.sections.map(section => 
+                section.id === sectionId 
+                    ? {
+                        ...section,
+                        questions: section.questions.map(question =>
+                            question.id === questionId ? { ...question, ...updatedQuestion } : question
+                        )
+                    }
+                    : section
+            )
+        }));
+    };
+
+
 
     if (!questionnaire) {
         return <div>Ca charge (vous pouvez aller faire un cafe en attendant ^^)...</div>;
@@ -36,12 +64,26 @@ function Questionnaire() {
 
     return (
         <div className="questionnaire">
+            
+        <h1>
+        {questionnaire.label}
+        </h1>
+        <h2>
+        {questionnaire.description}
+        </h2>         
+        <p>
+        {questionnaire.insight}
+        </p>  
+        <p>
+        Nombre de pages : {questionnaire.nbpages}
+        </p>    
+
             {questionnaire.sections?.map(section => (
                 <Section
                     key={section.id}
-                    sectionId={section.id}
-                    sectionTitle={section.label}
-                    sectionContent={section.description}
+                    section={section}
+                    onUpdateSection={updateSection}
+                    onUpdateQuestion={updateQuestion}
                 />
             ))}
         </div>

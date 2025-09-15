@@ -1,6 +1,6 @@
 import QuestionResume from '../Question/questionResume';
 import PopUpEditQuestion from '../popups/editQuestion';
-
+import './Section.css'; // Import du CSS
 import React from 'react';
 
 async function getQuestionofSection(sectionId) {
@@ -17,66 +17,61 @@ async function getQuestionofSection(sectionId) {
     }
 }
 
-function Section({ sectionId, sectionTitle, sectionContent }) {
-  const [questions, setQuestions] = React.useState([]);
-  const [popUpEdit, setPopUpEdit] = React.useState({state:false});
-  // const [selectedQuestion, setSelectedQuestion] = React.useState();
+function Section({ section,onUpdateSection,onUpdateQuestion }) {
 
+ const [isQuestionsOpen, setIsQuestionsOpen] = React.useState(false);
 
-  React.useEffect(() => {
-    async function fetchQuestions() {
-      const data = await getQuestionofSection(sectionId);
-      setQuestions(data);
-    }
-    fetchQuestions();
-  }, [sectionId]);
-    if(popUpEdit.state==false){
+    const toggleQuestions = () => {
+      setIsQuestionsOpen(!isQuestionsOpen);
+    };
+
     return (
-    <div className="section">
-      
-      <h2>{sectionTitle}</h2>
-  
-      <div> 
-        {Array.isArray(questions) && questions.map(question => (
-          <QuestionResume
-            key={question.id}
-            questionId={question.id}
-            questionLabel={question.label}
-            onShow = {() =>{setPopUpEdit({
-              state:true,selectedQuestion:question.id
-            })}}
-          />
-        ))}
+ <div className="section">
+
+      {/* Bouton chevron pour déplier/replier les questions */}
+      {Array.isArray(section.questions) && section.questions.length > 0 && (
+        <div className="questions-toggle">
+          <button onClick={toggleQuestions} className="chevron-button">
+            <svg
+              className={`chevron-icon ${isQuestionsOpen ? 'rotated' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+            <span>
+                  {section.label}  ({section.questions.length})
+            </span>
+          </button>
+        </div>
+      )}
+
+      {/* Container des questions avec animation */}
+      <div className={`questions-container ${isQuestionsOpen ? 'open' : 'closed'}`}>
+              <p>{section.description}</p>
+
+        <div className="questions-list">
+          {Array.isArray(section.questions) && section.questions.map(question => (
+            <QuestionResume
+              key={question.id}
+              question={question}
+              sectionId={section.id} // Passe l'ID de la section
+              onUpdateQuestion={onUpdateQuestion} // Passe le callback
+            />
+          ))}
+        </div>
       </div>
-      <p>{sectionContent}</p>
+
     </div>
   );
-      }
-      else{
-        return (
-          <div className="edit-question-popup">
-            <PopUpEditQuestion
-            id = {popUpEdit.selectedQuestion}
-            onClose = {() =>{setPopUpEdit({
-              state:false
-            })}}
-            />
-                   <h1>
-            ICI COMPOSANt POPUP 
-            pour cette question :{popUpEdit.selectedQuestion}
-          </h1>
-
-                      <button className="red-btn" onClick={() =>setPopUpEdit({state:false})}>
-            X
-        </button>
-
-            </div>
-
-   
-   
-          
-        )
-      }
 
 }
 
