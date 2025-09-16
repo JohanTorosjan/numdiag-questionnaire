@@ -200,30 +200,25 @@ async function getAllQuestionsByQuestionnaire(questionnaireId) {
     throw error;
   }
 }
-
 const getDependenciesForQuestion = async (questionId) => {
   try {
     const query = `
       SELECT 
-        qd.question_id,
+        r.question_id,
         qd.reponse_id as answer_id
       FROM QuestionDependencies qd
+      INNER JOIN Reponses r ON qd.reponse_id = r.id
       WHERE qd.question_id = $1
-      ORDER BY qd.reponse_id
+      ORDER BY r.question_id, qd.reponse_id
     `;
     
-    const result = await executeQuery(numdiagPool,query,[questionId])
+    const result = await executeQuery(numdiagPool, query, [questionId]);
 
-
-    let dependencies = []
     // Transformation des résultats en tableau de clés de dépendance
-    if(result){
-        dependencies = result.map(row => {
+    // Maintenant question_id correspond à la question associée à la réponse
+    const dependencies = result.map(row => {
         return `${row.question_id}_${row.answer_id}`;
     });
-
-    }
-
 
     return dependencies;
     

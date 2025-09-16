@@ -120,9 +120,10 @@ app.get('/questions/:questionnaireId', async (req, res) => {
 
 
 app.get('/questions/dependencies/:question', async (req, res) => {
-  const { questionId } = req.params
+
   try {
-    const questions = await getDependenciesForQuestion(questionId)
+    console.log(req.params.question)
+    const questions = await getDependenciesForQuestion(req.params.question)
     res.json(questions)
   } catch (error) {
     console.error('Error fetching questionnaire:', error)

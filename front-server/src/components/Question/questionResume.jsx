@@ -30,6 +30,8 @@ function QuestionResume({ question, sectionId, onUpdateQuestion }) {
 
             // Met à jour le state local via le callback du parent
             onUpdateQuestion(sectionId, question.id, updatedQuestion);
+
+            
             
             // Ferme la popup
             setIsEditPopupOpen(false);

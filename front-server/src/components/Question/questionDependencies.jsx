@@ -46,7 +46,12 @@ function QuestionDependencies({ questionnaire, question,onUpdate }) {
     }, [questionnaire]);
     // Initialiser les dépendances existantes (si la question en a déjà)
     useEffect(() => {
-        fetchExistingDependencies()
+        if (question?.dependencies) {
+            setSelectedDependencies(question.dependencies);
+        }
+        else{
+             fetchExistingDependencies()
+        }
     }, [question]);
 
     const handleAnswerToggle = (questionId, answerId) => {
