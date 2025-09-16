@@ -2,11 +2,13 @@ import express from 'express'
 import cors from 'cors'
 
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase } from './database/client.js'
-import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume } from './questionnaire/questionnaire.js'
+import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection } from './questionnaire/section.js'
 
 const app = express()
 const port = 3008
+
+app.use(express.json())
 
 var corsOptions = {
   origin: 'http://127.0.0.1:8081',
@@ -120,4 +122,16 @@ app.get('/questions/:questionnaireId', async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
+})
+
+app.put('/updateQuestionnaire/:questionnaireId', async (req, res) => {
+  const { questionnaireId } = req.params;
+  const { label, description, insight } = req.body; // Get data from request body
+  try {
+    const questionnaireUpdate = await updateQuestionnaireInfo(questionnaireId, label, description, insight)
+    res.status(200).json({ message: 'Questionnaire Updated successfully' })
+  } catch (error) {
+    console.error('Error populating database:', error)
+    res.status(500).json({ error: 'Failed to update questionnaire' })
+  }
 })

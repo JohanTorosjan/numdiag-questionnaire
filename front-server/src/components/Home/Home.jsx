@@ -28,7 +28,7 @@ function Home() {
             setQuestionnaires(data);
             setLoading(false);
         };
-        
+
         fetchQuestionnaires();
     }, []);
 

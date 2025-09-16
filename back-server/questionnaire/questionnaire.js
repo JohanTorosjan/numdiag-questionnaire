@@ -5,7 +5,7 @@ function createQuestionnaire(req, res) {
   if (!questionnaire || !questionnaire.name) {
     questionnaire.name = 'Nouveau questionnaire';
   }
-  
+
   const query = 'INSERT INTO questionnaires (label, description) VALUES ($1, $2) RETURNING *';
   const values = [questionnaire.label || 'Nouveau questionnaire', questionnaire.description || ''];
 
@@ -113,11 +113,35 @@ function getAllQuestionnaireResume() {
     return executeQuery(numdiagPool, query);
 }
 
+function updateQuestionnaireInfo(idQuestionnaire, label = null, description = null, insight = null) {
+    const fields = []
+    const values = []
+    let index = 1
+
+    if (label !== null) {
+        fields.push(`label = $${index++}`)
+        values.push(label)
+    }
+    if (description !== null) {
+        fields.push(`description = $${index++}`)
+        values.push(description)
+    }
+    if (insight !== null) {
+        fields.push(`insight = $${index++}`)
+        values.push(insight)
+    }
+
+    values.push(idQuestionnaire);
+
+    executeQuery(numdiagPool, `UPDATE Questionnaires SET ${fields.join(', ')} WHERE id = $${index} RETURNING *`, values)
+}
+
 export {
     createQuestionnaire,
     getQuestionnaireById,
     getAllInfosQuestionnaire,
     getAllQuestionnaires,
     getAllQuestionnaireResume,
-    getSectionofQuestionnaire
+    getSectionofQuestionnaire,
+    updateQuestionnaireInfo
 }

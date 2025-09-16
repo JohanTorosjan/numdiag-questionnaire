@@ -33,8 +33,7 @@ function PopUpEditSection({idSection, trigger, setTrigger}) {
   function handleChange(element) {
     const { name, value } = element.target;
     const cleanValue = name === 'scoreMax' ? value.replace(/[^0-9]/g, '') : value;
-    setFormData((dataset) => ({
-      ...dataset,
+    setFormData((dataset) => ({      ...dataset,
       [name]: cleanValue,
     }));
   };
