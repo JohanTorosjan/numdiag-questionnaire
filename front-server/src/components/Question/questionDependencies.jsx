@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './QuestionDependencies.css';
 
-function QuestionDependencies({ questionnaire, question }) {
+function QuestionDependencies({ questionnaire, question,onUpdate }) {
     const [availableQuestions, setAvailableQuestions] = useState([]);
     const [selectedDependencies, setSelectedDependencies] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -10,55 +10,17 @@ function QuestionDependencies({ questionnaire, question }) {
     // Simulation d'un appel API pour récupérer les questions et réponses
     const fetchQuestionsAndAnswers = async (questionnaireId) => {
         try {
-            setLoading(false);
+            setLoading(true);
             
             // Simulation d'un délai d'API
-            
-            // Données simulées - remplacez par votre vraie API
-            const mockData = [
-                {
-                    id: 1,
-                    label: "Quel est votre secteur d'activité ?",
-                    questiontype: "choix-simple",
-                    answers: [
-                        { id: 101, text: "Industrie", value: "industrie" },
-                        { id: 102, text: "Services", value: "services" },
-                        { id: 103, text: "Commerce", value: "commerce" },
-                        { id: 104, text: "Agriculture", value: "agriculture" }
-                    ]
-                },
-                {
-                    id: 2,
-                    label: "Quels outils utilisez-vous ?",
-                    questiontype: "choix-multiple",
-                    answers: [
-                        { id: 201, text: "CRM", value: "crm" },
-                        { id: 202, text: "ERP", value: "erp" },
-                        { id: 203, text: "Excel", value: "excel" },
-                        { id: 204, text: "Logiciel métier", value: "logiciel_metier" }
-                    ]
-                },
-                {
-                    id: 3,
-                    label: "Combien d'employés avez-vous ?",
-                    questiontype: "entier",
-                    answers: [] // Pas de réponses prédéfinies pour les questions de type entier
-                },
-                {
-                    id: 4,
-                    label: "Êtes-vous satisfait de vos outils actuels ?",
-                    questiontype: "choix-simple",
-                    answers: [
-                        { id: 401, text: "Très satisfait", value: "tres_satisfait" },
-                        { id: 402, text: "Satisfait", value: "satisfait" },
-                        { id: 403, text: "Peu satisfait", value: "peu_satisfait" },
-                        { id: 404, text: "Pas du tout satisfait", value: "pas_satisfait" }
-                    ]
-                }
-            ];
 
-            // Filtrer pour exclure la question courante
-            const filteredQuestions = mockData.filter(q => q.id !== question?.id);
+            const response = await fetch(`http://localhost:3008/questions/${questionnaireId}`);
+            if (!response.ok) {
+                throw new Error('Erreur lors du chargement des questions');
+            }
+            const data = await response.json();
+
+            const filteredQuestions = data.filter(q => q.id !== question?.id).filter(q=>q.questiontype !=='entier');
             
             setAvailableQuestions(filteredQuestions);
             setError(null);
@@ -70,27 +32,33 @@ function QuestionDependencies({ questionnaire, question }) {
         }
     };
 
+    const fetchExistingDependencies = async () =>{
+        const response = await fetch(`http://localhost:3008/questions/dependencies/${question.id}`);
+        const data = await response.json()
+        console.log(data)
+        setSelectedDependencies(data)
+    }
+
     useEffect(() => {
         if (questionnaire) {
             fetchQuestionsAndAnswers(questionnaire);
         }
     }, [questionnaire]);
-
     // Initialiser les dépendances existantes (si la question en a déjà)
     useEffect(() => {
-        if (question?.dependencies) {
-            setSelectedDependencies(question.dependencies);
-        }
+        fetchExistingDependencies()
     }, [question]);
 
     const handleAnswerToggle = (questionId, answerId) => {
         const dependencyKey = `${questionId}_${answerId}`;
         
-        setSelectedDependencies(prev => {
+        setSelectedDependencies(prev => {    
             if (prev.includes(dependencyKey)) {
+              
                 // Retirer la dépendance
                 return prev.filter(dep => dep !== dependencyKey);
             } else {
+
                 // Ajouter la dépendance
                 return [...prev, dependencyKey];
             }
@@ -122,7 +90,9 @@ function QuestionDependencies({ questionnaire, question }) {
         // Ici vous pouvez déclencher un callback vers le composant parent
         // pour mettre à jour la question avec les nouvelles dépendances
         if (question && question.id) {
+            
             // Par exemple: onDependenciesChange(selectedDependencies);
+            onUpdate(selectedDependencies)
             console.log("Dépendances mises à jour:", selectedDependencies);
         }
     }, [selectedDependencies]);

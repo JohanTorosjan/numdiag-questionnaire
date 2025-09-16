@@ -12,7 +12,9 @@ function PopUpEditQuestion({ question, onSave, onClose }) {
         position: question?.position || 1,
         questiontype: question?.questiontype || '',
         theme: question?.theme || null,
-        tooltip: question?.tooltip || ''
+        tooltip: question?.tooltip || '',
+        public_cible: question?.public_cible || '',
+        dependencies : []
     });
     const { id } = useParams();
 
@@ -32,6 +34,12 @@ function PopUpEditQuestion({ question, onSave, onClose }) {
         { value: 'technique', label: 'Technique' }
     ];
 
+        const publics = [
+        { value: 'Tous', label: 'Tous' },
+        { value: 'Jeune', label: 'Jeune' },
+        { value: 'Professionnel', label: 'Professionnel' },
+        { value: 'Entreprises', label: 'Entreprises' }
+    ];
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         
@@ -62,6 +70,17 @@ function PopUpEditQuestion({ question, onSave, onClose }) {
             onClose();
         }
     };
+
+
+    const updateDependencies = (answerId)=>{
+        setFormData(prev => ({
+            ...prev,
+           dependencies: answerId
+        }));       
+    }
+
+
+    
 
     return (
         <div className="popup-overlay" onClick={handleBackdropClick}>
@@ -162,6 +181,21 @@ function PopUpEditQuestion({ question, onSave, onClose }) {
                                 ))}
                             </select>
                         </div>
+                         <div className="form-group">
+                            <label htmlFor="public_cible">Public :</label>
+                            <select
+                                id="public_cible"
+                                name="public_cible"
+                                value={formData.public_cible || ''}
+                                onChange={handleInputChange}
+                            >
+                                {publics.map(public_cible => (
+                                    <option key={public_cible.value || 'null'} value={public_cible.value || ''}>
+                                        {public_cible.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     <div className="form-group">
@@ -200,6 +234,8 @@ function PopUpEditQuestion({ question, onSave, onClose }) {
                        <QuestionDependencies
                       key={question.id}
                       questionnaire = {id}
+                      question={question}
+                      onUpdate={updateDependencies}
                       />
                     </div>
 

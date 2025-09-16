@@ -113,11 +113,135 @@ function getAllQuestionnaireResume() {
     return executeQuery(numdiagPool, query);
 }
 
+async function getAllQuestionsByQuestionnaire(questionnaireId) {
+  try {
+    // Requête pour récupérer toutes les questions d'un questionnaire avec leurs réponses
+    const query = `
+      SELECT 
+        q.id as question_id,
+        q.label as question_label,
+        q.questionType as question_type,
+        q.position as question_position,
+        q.page as question_page,
+        q.tooltip as question_tooltip,
+        q.coeff as question_coeff,
+        q.theme as question_theme,
+        q.mandatory as question_mandatory,
+        q.public_cible as question_public_cible,
+        r.id as answer_id,
+        r.label as answer_label,
+        r.position as answer_position,
+        r.tooltip as answer_tooltip,
+        r.plafond as answer_plafond,
+        r.recommandation as answer_recommandation,
+        r.valeurScore as answer_value_score
+      FROM Questions q
+      INNER JOIN Sections s ON q.section_id = s.id
+      LEFT JOIN Reponses r ON q.id = r.question_id
+      WHERE s.questionnaire_id = $1
+      ORDER BY q.position ASC, r.position ASC
+    `;
+
+    const result = await executeQuery(numdiagPool,query, [questionnaireId]);
+    
+    // Transformation des données pour le format attendu
+    const questionsMap = new Map();
+    
+    result.forEach(row => {
+      const questionId = row.question_id;
+      
+      // Si la question n'existe pas encore dans le Map, on l'ajoute
+      if (!questionsMap.has(questionId)) {
+        questionsMap.set(questionId, {
+          id: questionId,
+          label: row.question_label,
+          questiontype: row.question_type.replace('_', '-'), // Conversion choix_multiple -> choix-multiple
+          position: row.question_position,
+          page: row.question_page,
+          tooltip: row.question_tooltip,
+          coeff: row.question_coeff,
+          theme: row.question_theme,
+          mandatory: row.question_mandatory,
+          public_cible: row.question_public_cible,
+          answers: []
+        });
+      }
+      
+      // Si il y a une réponse associée, on l'ajoute
+      if (row.answer_id) {
+        const question = questionsMap.get(questionId);
+        question.answers.push({
+          id: row.answer_id,
+          text: row.answer_label,
+          value: row.answer_label.toLowerCase()
+            .replace(/[àáâãäå]/g, 'a')
+            .replace(/[èéêë]/g, 'e')
+            .replace(/[ìíîï]/g, 'i')
+            .replace(/[òóôõö]/g, 'o')
+            .replace(/[ùúûü]/g, 'u')
+            .replace(/[ç]/g, 'c')
+            .replace(/[^a-z0-9]/g, '_')
+            .replace(/_+/g, '_')
+            .replace(/^_|_$/g, ''),
+          position: row.answer_position,
+          tooltip: row.answer_tooltip,
+          plafond: row.answer_plafond,
+          recommandation: row.answer_recommandation,
+          valeurScore: row.answer_value_score
+        });
+      }
+    });
+    
+    // Conversion du Map en array
+    return Array.from(questionsMap.values());
+    
+  } catch (error) {
+    console.error('Error in getAllQuestionsByQuestionnaire:', error);
+    throw error;
+  }
+}
+
+const getDependenciesForQuestion = async (questionId) => {
+  try {
+    const query = `
+      SELECT 
+        qd.question_id,
+        qd.reponse_id as answer_id
+      FROM QuestionDependencies qd
+      WHERE qd.question_id = $1
+      ORDER BY qd.reponse_id
+    `;
+    
+    const result = await executeQuery(numdiagPool,query,[questionId])
+
+
+    let dependencies = []
+    // Transformation des résultats en tableau de clés de dépendance
+    if(result){
+        dependencies = result.map(row => {
+        return `${row.question_id}_${row.answer_id}`;
+    });
+
+    }
+
+
+    return dependencies;
+    
+  } catch (error) {
+    console.error('Error in getDependenciesForQuestion:', error);
+    throw error;
+  }
+};
+
+
+
 export {
     createQuestionnaire,
     getQuestionnaireById,
     getAllInfosQuestionnaire,
     getAllQuestionnaires,
     getAllQuestionnaireResume,
-    getSectionofQuestionnaire
+    getSectionofQuestionnaire,
+    getAllQuestionsByQuestionnaire,
+    getDependenciesForQuestion
 }

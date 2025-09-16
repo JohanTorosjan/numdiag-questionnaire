@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase } from './database/client.js'
-import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume } from './questionnaire/questionnaire.js'
+import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, getAllQuestionsByQuestionnaire,getDependenciesForQuestion } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection } from './questionnaire/section.js'
 
 const app = express()
@@ -109,13 +109,27 @@ app.post('/populateDatabase', async (req, res) => {
 app.get('/questions/:questionnaireId', async (req, res) => {
   const { questionnaireId } = req.params
   try {
-    const questionnaire = await getAllQuestionsByQuestionnaire(questionnaireId)
-    res.json(questionnaire)
+    const questions = await getAllQuestionsByQuestionnaire(questionnaireId)
+    res.json(questions)
   } catch (error) {
     console.error('Error fetching questionnaire:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
+
+
+
+app.get('/questions/dependencies/:question', async (req, res) => {
+  const { questionId } = req.params
+  try {
+    const questions = await getDependenciesForQuestion(questionId)
+    res.json(questions)
+  } catch (error) {
+    console.error('Error fetching questionnaire:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
 
 
 app.listen(port, () => {

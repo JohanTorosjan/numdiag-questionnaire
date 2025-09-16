@@ -1,6 +1,6 @@
 -- CREATE DATABASE  numdiagcmsdb;
 
-CREATE TYPE question_type AS ENUM ('choix_multiple', 'choix_simple', 'entier');
+CREATE TYPE question_type AS ENUM ('choix_multiple', 'choix_simple', 'entier', 'libre');
 
 CREATE TABLE Questionnaires (
   id SERIAL PRIMARY KEY,
@@ -39,6 +39,7 @@ CREATE TABLE Questions (
     coeff INTEGER NOT NULL,
     theme VARCHAR,
     mandatory BOOLEAN NOT NULL DEFAULT FALSE,
+    public_cible VARCHAR DEFAULT 'Tous',
     FOREIGN KEY (section_id) REFERENCES Sections(id) ON DELETE CASCADE
 );
 
