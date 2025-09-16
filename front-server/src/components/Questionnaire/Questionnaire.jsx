@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Section from '../Section/section.jsx';
 import QuestionnaireTitle from './questionnaireTitle.jsx';
 import QuestionnaireTitleForm from './questionnaireTitleForm';
+import PopUpEditSection from '../popups/editSection.jsx';
 
 async function getQuestionnaire(idQuestionnaire) {
     try {
@@ -119,14 +120,16 @@ function Questionnaire() {
         <div className="questionnaire">
           <button type="button" id="editButton" onClick={toggleButton}>{button}</button>
           {button === "Modifier" ? <QuestionnaireTitle questionnaire={questionnaire}  /> : <QuestionnaireTitleForm questionnaire={questionnaire} onChange={handleInputChange} />}
-
           {questionnaire.sections?.map(section => (
+            <div>
               <Section
                   key={section.id}
                   section={section}
                   onUpdateSection={updateSection}
                   onUpdateQuestion={updateQuestion}
               />
+              {/* <PopUpEditSection idSection={section_id} /> */}
+            </div>
           ))}
         </div>
     );

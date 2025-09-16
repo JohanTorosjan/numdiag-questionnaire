@@ -1,6 +1,7 @@
 import { saveButton } from '../button/button';
+import { useState } from 'react';
 
-function PopUpEditSection({idSection, trigger, setTrigger}) {
+function PopUpEditSection({idSection}) {
     // Logic to display a popup for editing a section
     console.log("Editing section with id:", idSection);
 
@@ -50,7 +51,6 @@ function PopUpEditSection({idSection, trigger, setTrigger}) {
 
       const data = await response.json();
       console.log('Success:', data);
-      setTrigger(false);
     } catch (error) {
       console.error('Fetch failed', error);
       const errData = await response.json();
@@ -64,20 +64,25 @@ function PopUpEditSection({idSection, trigger, setTrigger}) {
 
   const {label, description, position, tooltip, scoreMax} = fetchSectionInfo(idSection);
 
-    return (trigger)?  (
+    return  (
         <div className="popup">
             <div className="popup-inner">
                 <h2>Modification section</h2>
-                <input type="text" placeholder={label} name="label" value="formData.label" onChange={handleChange}/>
+                <label for="label">Titre de la section</label>
+                <input type="text" placeholder={label} name="label" value={label} onChange={handleChange}/>
+                <label for="description">Description</label>
                 <textarea placeholder={description} name="description" value="formData.description" onChange={handleChange}></textarea>
+                <label for="position">Position de la section</label>
                 <input type="number" placeholder={position} name="position" value="formData.position" onChange={handleChange}/>
+                <label for="tooltip">Tooltip</label>
                 <textarea placeholder={tooltip} name="tooltip" value="formData.tooltip" onChange={handleChange}> </textarea>
+                <label for="scoreMax">Score maximum de la section</label>
                 <input type="number" placeholder={scoreMax} name="scoreMax" step="1" min="0" value={formData.scoreMax} onChange={handleChange} />
-                <button class='green-btn' onClick={()=> postSection()}>Sauvegarder</button>
+                <button className='green-btn' onClick={()=> postSection()}>Sauvegarder</button>
                 <button className="red-btn" onClick={() => setTrigger(false)}>Annuler</button>
             </div>
         </div>
-    ): "";
+    );
 }
 
 export default PopUpEditSection;
