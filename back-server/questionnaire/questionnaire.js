@@ -132,7 +132,7 @@ function updateQuestionnaireInfo(idQuestionnaire, label = null, description = nu
     }
     if (isActive !== true) {
         fields.push(`isactive = $${index++}`)
-        values.push(insight)
+        values.push(isActive)
     }
 
     values.push(idQuestionnaire);

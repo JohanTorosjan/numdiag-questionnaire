@@ -25,7 +25,7 @@ async function updateQuestionnaire(idQuestionnaire, isActive) {
     headers: {
     'Content-Type': 'application/json',
   },
-    body: JSON.stringify({isActive}) // Pass the updated questionnaire data
+    body: JSON.stringify({isActive})
   });
     if (!response.ok) {
         throw new Error('Erreur lors du chargement des sections');
@@ -42,7 +42,7 @@ async function updateQuestionnaire(idQuestionnaire, isActive) {
 export default function Home() {
     const [questionnaires, setQuestionnaires] = useState([]);
     const [loading, setLoading] = useState(true);
-    // const [button, setButton] = useState("Actif")
+    const [buttonAffichage, setButtonAffichage] = useState(false)
 
     useEffect(() => {
         const fetchQuestionnaires = async () => {
@@ -59,7 +59,6 @@ export default function Home() {
     const toggleButton = async (id, currentStatus) => {
     try {
       const newStatus = !currentStatus;
-      console.log(newStatus);
       const updateQuest = await updateQuestionnaire(id, newStatus);
 
       // Update the local state to reflect the change
@@ -89,8 +88,9 @@ export default function Home() {
         <div className="home">
             <h1>Bienvenue sur le CMS NumDiag</h1>
             <p>Voici la liste des questionnaires disponibles :</p>
+            <button type="button" onClick={() => setButtonAffichage(!buttonAffichage)}>{buttonAffichage ? "Afficher les actifs" : "Tout afficher"}</button>
             {questionnaires.map(q => (
-              q.isactive === true ? (
+              (q.isactive || buttonAffichage) ? (
                 <div key={q.id}>
                 <QuestionnaireResume key={q.id} idQuestionnaire={q.id} label={q.label} />
                 <button type="button" onClick={() => toggleButton(q.id, q.isactive)}>{q.isactive ? "Désactiver" : "Activer"}</button>
