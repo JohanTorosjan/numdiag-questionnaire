@@ -98,7 +98,7 @@ export default function Home() {
                 <QuestionnaireResume key={q.id} idQuestionnaire={q.id} label={q.label}  />
                 <button type="button" onClick={() => toggleButton(q.id, q.isactive)}>{q.isactive ? "Désactiver" : "Activer"}</button>
                 </div>
-              ) : (<div key={q.id} className="hidden"></div>)
+              ) : (<div key={q.id+1000} className="hidden"></div>)
               ))}
 
         </div>
