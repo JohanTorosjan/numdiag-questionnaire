@@ -35,7 +35,7 @@ function updateSection(idSection, label = null, description = null, position = n
     }
     if (scoremax !== null) {
         fields.push(`scoremax = $${index++}`)
-        values.push(tooltip)
+        values.push(scoremax)
     }
     if (idQuestionnaire !== null) {
         fields.push(`id_questionnaire = $${index++}`)
