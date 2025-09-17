@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import QuestionnaireResume from "../Questionnaire/questionnaireResume";
+import './home.css';
 
 async function getAllQuestionnairesResume() {
     try {
@@ -18,14 +19,14 @@ async function getAllQuestionnairesResume() {
     }
 }
 
-async function updateQuestionnaire(idQuestionnaire, isActive) {
+async function updateQuestionnaire(idQuestionnaire, isactive) {
   try {
     const response = await fetch(`http://localhost:3008/updateQuestionnaire/${idQuestionnaire}`, {
     method: 'PUT',
     headers: {
     'Content-Type': 'application/json',
   },
-    body: JSON.stringify({isActive})
+    body: JSON.stringify({isactive})
   });
     if (!response.ok) {
         throw new Error('Erreur lors du chargement des sections');
@@ -44,6 +45,7 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const [buttonAffichage, setButtonAffichage] = useState(false)
 
+
     useEffect(() => {
         const fetchQuestionnaires = async () => {
             const data = await getAllQuestionnairesResume();
@@ -59,6 +61,7 @@ export default function Home() {
     const toggleButton = async (id, currentStatus) => {
     try {
       const newStatus = !currentStatus;
+      console.log(newStatus);
       const updateQuest = await updateQuestionnaire(id, newStatus);
 
       // Update the local state to reflect the change
@@ -91,11 +94,11 @@ export default function Home() {
             <button type="button" onClick={() => setButtonAffichage(!buttonAffichage)}>{buttonAffichage ? "Afficher les actifs" : "Tout afficher"}</button>
             {questionnaires.map(q => (
               (q.isactive || buttonAffichage) ? (
-                <div key={q.id}>
-                <QuestionnaireResume key={q.id} idQuestionnaire={q.id} label={q.label} />
+                <div key={q.id} className={q.isactive ? "bg-green-300" : "bg-red-300"} >
+                <QuestionnaireResume key={q.id} idQuestionnaire={q.id} label={q.label}  />
                 <button type="button" onClick={() => toggleButton(q.id, q.isactive)}>{q.isactive ? "Désactiver" : "Activer"}</button>
                 </div>
-              ) : (<p>et non</p>)
+              ) : (<div key={q.id} className="hidden"></div>)
               ))}
 
         </div>

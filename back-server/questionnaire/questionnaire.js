@@ -109,11 +109,11 @@ function getAllQuestionnaires(req, res) {
 }
 
 function getAllQuestionnaireResume() {
-    const query = 'SELECT id, label, isActive, created_at FROM questionnaires';
+    const query = 'SELECT id, label, isactive, created_at FROM questionnaires';
     return executeQuery(numdiagPool, query);
 }
 
-function updateQuestionnaireInfo(idQuestionnaire, label = null, description = null, insight = null, isActive=true) {
+function updateQuestionnaireInfo(idQuestionnaire, label = null, description = null, insight = null, isactive=null) {
     const fields = []
     const values = []
     let index = 1
@@ -130,9 +130,9 @@ function updateQuestionnaireInfo(idQuestionnaire, label = null, description = nu
         fields.push(`insight = $${index++}`)
         values.push(insight)
     }
-    if (isActive !== true) {
+    if (isactive !== null) {
         fields.push(`isactive = $${index++}`)
-        values.push(isActive)
+        values.push(isactive)
     }
 
     values.push(idQuestionnaire);
