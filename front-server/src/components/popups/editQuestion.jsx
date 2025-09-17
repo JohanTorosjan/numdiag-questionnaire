@@ -34,9 +34,9 @@ function PopUpEditQuestion({ question, onSave, onClose }) {
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
-        
+
         let newValue = value;
-        
+
         // Gestion des types spéciaux
         if (type === 'checkbox') {
             newValue = checked;
@@ -70,7 +70,7 @@ function PopUpEditQuestion({ question, onSave, onClose }) {
                     <h3>Éditer la question</h3>
                     <button onClick={onClose} className="close-button">×</button>
                 </div>
-                
+
                 <form onSubmit={handleSubmit} className="popup-form">
                     <div className="form-group">
                         <label htmlFor="label">Intitulé de la question :</label>
@@ -186,7 +186,7 @@ function PopUpEditQuestion({ question, onSave, onClose }) {
                                 checked={formData.mandatory}
                                 onChange={handleInputChange}
                             />
-                            
+
                         </label>
                     </div>
 
@@ -196,7 +196,7 @@ function PopUpEditQuestion({ question, onSave, onClose }) {
                         <p>
                           Cochez les réponses qui permettront l'affichage de la question
                         </p>
-                      
+
                        <QuestionDependencies
                       key={question.id}
                       questionnaire = {id}

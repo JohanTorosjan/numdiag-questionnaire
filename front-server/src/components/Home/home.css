@@ -1,0 +1,9 @@
+.bg-green-300 {
+  background-color: rgb(43, 213, 43);
+  opacity: 0.4;
+}
+
+.bg-red-300 {
+  background-color: rgb(231, 97, 97);
+  opacity: 0.4;
+}
