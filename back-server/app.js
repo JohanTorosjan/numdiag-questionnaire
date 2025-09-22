@@ -4,6 +4,7 @@ import cors from 'cors'
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase } from './database/client.js'
 import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, getAllQuestionsByQuestionnaire,getDependenciesForQuestion } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection } from './questionnaire/section.js'
+import {updateQuestion} from './questionnaire/question.js'
 
 const app = express()
 const port = 3008
@@ -16,6 +17,8 @@ var corsOptions = {
   optionsSuccessStatus: 200
 }
 app.use(cors(corsOptions))
+
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.json('Hello World !')
@@ -120,9 +123,7 @@ app.get('/questions/:questionnaireId', async (req, res) => {
 
 
 app.get('/questions/dependencies/:question', async (req, res) => {
-
   try {
-    console.log(req.params.question)
     const questions = await getDependenciesForQuestion(req.params.question)
     res.json(questions)
   } catch (error) {
@@ -131,7 +132,33 @@ app.get('/questions/dependencies/:question', async (req, res) => {
   }
 })
 
+app.put('/questions/:id', async (req, res) => {
+  try {
+    const questionId = req.params.id;
 
+    const { 
+      section_id, 
+      label, 
+      questiontype, 
+      position, 
+      page, 
+      tooltip, 
+      coeff, 
+      theme, 
+      mandatory, 
+      public_cible,
+      dependencies // Array de reponse_id : ['2_6', '3_4']
+    } = req.body;
+    
+
+    const updatedQuestion =  await updateQuestion(questionId,section_id,label,questiontype,position,page,tooltip,coeff,theme,mandatory,public_cible,dependencies)
+    
+    res.status(200).json(updatedQuestion)
+  } catch (error) {
+    console.error('Error populating database:', error)
+    res.status(500).json({ error: 'Failed to populate database' })
+  }
+})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
