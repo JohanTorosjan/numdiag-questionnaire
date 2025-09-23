@@ -138,20 +138,20 @@ app.put('/questions/:id', async (req, res) => {
   try {
     const questionId = req.params.id;
 
-    const { 
-      section_id, 
-      label, 
-      questiontype, 
-      position, 
-      page, 
-      tooltip, 
-      coeff, 
-      theme, 
-      mandatory, 
+    const {
+      section_id,
+      label,
+      questiontype,
+      position,
+      page,
+      tooltip,
+      coeff,
+      theme,
+      mandatory,
       public_cible,
       dependencies // Array de reponse_id : ['2_6', '3_4']
     } = req.body;
-    
+
 
     
     const updatedQuestion =  await updateQuestion(questionId,section_id,label,questiontype,tooltip,coeff,theme,mandatory,public_cible,dependencies)
@@ -173,8 +173,19 @@ app.put('/updateQuestionnaire/:questionnaireId', async (req, res) => {
     const questionnaireUpdate = await updateQuestionnaireInfo(questionnaireId, label, description, insight, isactive)
     res.status(200).json({ message: 'Questionnaire Updated successfully' })
   } catch (error) {
-    console.error('Error updating questionnaires infos:', error)
+    console.error('Error updating questionnaire infos:', error)
     res.status(500).json({ error: 'Failed to update questionnaire' })
+  }
+})
+
+app.post('/createQuestionnaire', async (req,res) => {
+  const { label, description, insight, tooltip, code } = req.body; // Get data from request body
+  try {
+    const questionnaireCreate = await createQuestionnaire(label, description, insight, tooltip, code)
+    res.status(200).json({success: true})
+  } catch (error) {
+    console.error('Error creating questionnaire:', error)
+    res.status(500).json({ error: 'Failed to create questionnaire' })
   }
 })
 
@@ -183,7 +194,7 @@ app.put('/updateSection/:sectionId', async (req, res) => {
   const { sectionId } = req.params;
   const { label, description } = req.body; // Get data from request body
   try {
-    const questionnaireUpdate = await updateSection(sectionId, label, description)
+    const sectionUpdate = await updateSection(sectionId, label, description)
     res.status(200).json({ message: 'Section Updated successfully' })
   } catch (error) {
     console.error('Error updating section infos:', error)
