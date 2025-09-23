@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PopUpEditQuestion from '../popups/editQuestion';
 
-function QuestionResume({ question, sectionId, onUpdateQuestion }) {
+function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages}) {
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
 
@@ -80,6 +80,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion }) {
                     question={question}
                     onSave={handleSaveQuestion}
                     onClose={handleClosePopup}
+                    sectionNbPages={sectionNbPages}
                 />
             )}
         </div>

@@ -2,8 +2,10 @@ import { useState } from 'react';
 import './editQuestion.css';
 import { useParams } from 'react-router-dom';
 import QuestionDependencies from '../Question/questionDependencies';
+import { useToast } from '../../ToastSystem';
 
-function PopUpEditQuestion({ question, onSave, onClose }) {
+function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
+  const toast = useToast();
     const [formData, setFormData] = useState({
         coeff: question?.coeff || 1,
         label: question?.label || '',
@@ -52,6 +54,13 @@ function PopUpEditQuestion({ question, onSave, onClose }) {
             newValue = parseInt(value) || 0;
         } else if (name === 'theme' && value === '') {
             newValue = null;
+        }
+
+
+        if(name==="page" && newValue>sectionNbPages){
+            toast.showWarning('Page ne peut pas dépasser le nombre de pages de la section ('+sectionNbPages+')');
+
+            return
         }
 
         setFormData(prev => ({

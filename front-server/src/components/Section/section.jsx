@@ -53,6 +53,7 @@ function Section({ section,onUpdateSection,onUpdateQuestion }) {
               question={question}
               sectionId={section.id} // Passe l'ID de la section
               onUpdateQuestion={onUpdateQuestion} // Passe le callback
+              sectionNbPages = {section.nbpages}
             />
           ))}
         </div>
