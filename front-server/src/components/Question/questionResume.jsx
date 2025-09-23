@@ -41,7 +41,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
 
         ////// ICI ON AJOUTERA PAREIL SI IL MODIFIE LE TYPE DE QUESTION ON SUPPRIME TOUTES LES RÉPONSES 
 
-        
+
             const response = await fetch(`http://localhost:3008/questions/${question.id}`, {
                 method: 'PUT',
                 headers: { 
@@ -74,7 +74,6 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                         throw new Error('Erreur lors du chargement des sections');
                     }
                 const data = await response.json();
-                console.log('XXXXXXXXXXXXXXXXXXXX:', data);
 
                 setQuestionnaire(data)
                 setIsEditPopupOpen(false);
