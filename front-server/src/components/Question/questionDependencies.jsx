@@ -35,7 +35,7 @@ function QuestionDependencies({ questionnaire, question,onUpdate }) {
     const fetchExistingDependencies = async () =>{
         const response = await fetch(`http://localhost:3008/questions/dependencies/${question.id}`);
         const data = await response.json()
-        console.log(data)
+        console.log("Dépendances initiales :",data)
         setSelectedDependencies(data)
     }
 
@@ -95,7 +95,6 @@ function QuestionDependencies({ questionnaire, question,onUpdate }) {
         // Ici vous pouvez déclencher un callback vers le composant parent
         // pour mettre à jour la question avec les nouvelles dépendances
         if (question && question.id) {
-            
             // Par exemple: onDependenciesChange(selectedDependencies);
             onUpdate(selectedDependencies)
             console.log("Dépendances mises à jour:", selectedDependencies);

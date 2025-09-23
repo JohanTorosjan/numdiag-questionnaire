@@ -65,20 +65,19 @@ function getAllReponsesByQuestion(idQuestion) {
 }
 
 
-async function updateQuestion(questionId,section_id,label,questiontype,position,page,tooltip,coeff,theme,mandatory,public_cible,dependencies){
+async function updateQuestion(questionId,section_id,label,questiontype,tooltip,coeff,theme,mandatory,public_cible,dependencies){
     try{
         await numdiagPool.query('BEGIN')
             // 1. Mise à jour de la question principale
         const updateQuestionQuery = `
         UPDATE Questions 
-        SET section_id = $1, label = $2, questionType = $3, position = $4, 
-            page = $5, tooltip = $6, coeff = $7, theme = $8, 
-            mandatory = $9, public_cible = $10
-        WHERE id = $11
+        SET section_id = $1, label = $2, questionType = $3, tooltip = $4, coeff = $5, theme = $6, 
+            mandatory = $7, public_cible = $8
+        WHERE id = $9
         RETURNING *
         `;
         const questionResult = await executeQuery(numdiagPool,updateQuestionQuery, [
-            section_id, label, questiontype, position, page, 
+            section_id, label, questiontype, 
             tooltip, coeff, theme, mandatory, public_cible, questionId
         ]);
         ``
@@ -134,7 +133,7 @@ async function updateQuestion(questionId,section_id,label,questiontype,position,
     catch (error) {
         await numdiagPool.query('ROLLBACK');
         console.error('Erreur lors de la mise à jour:', error);
-        res.status(500).json({
+       return({
         success: false,
         error: error.message
         });
@@ -145,10 +144,148 @@ async function updateQuestion(questionId,section_id,label,questiontype,position,
 }
 
 
+
+
+// Fonction utilitaire pour réorganiser les questions
+function reorganizeQuestions(existingQuestions, movedQuestion) {
+  const result = [];
+  
+  // Ajouter la question déplacée à sa nouvelle position
+  const allQuestions = [...existingQuestions, movedQuestion];
+  
+  // Trier par page, puis insérer la question déplacée à la bonne position dans sa page
+  const questionsByPage = {};
+  
+  // Grouper par page
+  allQuestions.forEach(q => {
+    if (!questionsByPage[q.page]) {
+      questionsByPage[q.page] = [];
+    }
+    questionsByPage[q.page].push(q);
+  });
+  
+  // Réorganiser chaque page
+  Object.keys(questionsByPage).forEach(pageNum => {
+    const questionsInPage = questionsByPage[pageNum];
+    
+    // Séparer la question déplacée des autres
+    const movedInThisPage = questionsInPage.find(q => q.id === movedQuestion.id);
+    const othersInThisPage = questionsInPage.filter(q => q.id !== movedQuestion.id)
+      .sort((a, b) => a.position - b.position);
+    
+    if (movedInThisPage) {
+      // Insérer la question déplacée à sa nouvelle position
+      const newPosition = Math.max(1, Math.min(movedQuestion.position, othersInThisPage.length + 1));
+      
+      // Reconstruire la liste avec les bonnes positions
+      const pageQuestions = [];
+      let insertIndex = newPosition - 1;
+      
+      // Ajouter les questions avant la position d'insertion
+      for (let i = 0; i < insertIndex && i < othersInThisPage.length; i++) {
+        pageQuestions.push({
+          ...othersInThisPage[i],
+          position: i + 1,
+          page: parseInt(pageNum)
+        });
+      }
+      
+      // Ajouter la question déplacée
+      pageQuestions.push({
+        ...movedInThisPage,
+        position: insertIndex + 1,
+        page: parseInt(pageNum)
+      });
+      
+      // Ajouter les questions après la position d'insertion
+      for (let i = insertIndex; i < othersInThisPage.length; i++) {
+        pageQuestions.push({
+          ...othersInThisPage[i],
+          position: i + 2,
+          page: parseInt(pageNum)
+        });
+      }
+      
+      result.push(...pageQuestions);
+    } else {
+      // Page sans la question déplacée, juste réorganiser les positions
+      othersInThisPage.forEach((q, index) => {
+        result.push({
+          ...q,
+          position: index + 1,
+          page: parseInt(pageNum)
+        });
+      });
+    }
+  });
+  
+  return result.sort((a, b) => {
+    if (a.page !== b.page) return a.page - b.page;
+    return a.position - b.position;
+  });
+}
+
+async function updatePositions(questionId,newPosition,newPage) {
+    try{
+        await numdiagPool.query('BEGIN')
+        const questionResult = await executeQuery(numdiagPool, 'SELECT id, section_id, position, page FROM Questions WHERE id = $1',[questionId]);
+        if (questionResult.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'Question non trouvée' });
+        }
+        const question = questionResult[0];
+        const sectionId = question.section_id;
+        const allQuestions = await executeQuery(numdiagPool,'SELECT id, position, page FROM Questions WHERE section_id = $1 ORDER BY page, position',[sectionId])       
+        const otherQuestions = allQuestions.filter(q => q.id != questionId);
+
+        let effectivePosition = Math.max(1, parseInt(newPosition) || 1);
+        let effectivePage = Math.max(1, parseInt(newPage) || question.page);
+    
+        const questionsOnSamePage = otherQuestions.filter(q => q.page == effectivePage);
+        if (effectivePosition > questionsOnSamePage.length + 1) {
+            effectivePosition = questionsOnSamePage.length + 1;
+        }
+    
+        const reorganizedQuestions = reorganizeQuestions(otherQuestions, {
+            id: parseInt(questionId),
+            position: effectivePosition,
+            page: effectivePage
+        });
+        for (const q of reorganizedQuestions) {
+            await executeQuery(numdiagPool,
+                'UPDATE Questions SET position = $1, page = $2 WHERE id = $3',
+                [q.position, q.page, q.id]
+            );
+    }
+    await executeQuery(numdiagPool,"COMMIT")
+
+
+    const updatedQuestionsResult = await executeQuery(numdiagPool,
+    'SELECT id, position, page, label FROM Questions WHERE section_id = $1 ORDER BY page, position',
+    [sectionId]
+    );
+
+    
+    return({
+      message: 'Questions réorganisées avec succès',
+      questions: updatedQuestionsResult
+    });
+
+    }
+    catch(err){
+        await executeQuery(numdiagPool,'ROLLBACK');
+        console.error('Erreur lors de la réorganisation des questions:', err);
+        res.status(500).json({ error: 'Erreur interne du serveur' });
+    }
+    
+}
+
+
 export {
     addQuestion,
     getQuestionById,
     deleteQuestion,
     getAllReponsesByQuestion,
-    updateQuestion
+    updateQuestion,
+    updatePositions
 }

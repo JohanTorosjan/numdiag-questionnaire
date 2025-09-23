@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import PopUpEditQuestion from '../popups/editQuestion';
+import { useToast } from '../../ToastSystem';
 
-function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages}) {
+function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,setQuestionnaire,questionnaireId}) {
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
+    const toast = useToast();
 
     const handleEditClick = () => {
         setIsEditPopupOpen(true);
@@ -15,14 +17,31 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages}
 
     const handleSaveQuestion = async (updatedQuestion) => {
         try {
-            // Ici tu feras ton appel API plus tard
-            console.log('Appel API pour sauvegarder:', {
-                sectionId,
-                questionId: question.id,
-                updatedData: updatedQuestion
-            });
-
             setIsUpdating(true)
+            if((question.position!==updatedQuestion.position) || (question.page!==updatedQuestion.page)){
+                const updatePositionResponse = await fetch(`http://localhost:3008/questions/${question.id}/position`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    // Ajoute l'auth si nécessaire
+                    // 'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    position:updatedQuestion.position,
+                    page:updatedQuestion.page
+                })
+                });
+
+                if (!updatePositionResponse.ok) {
+                    toast.showError('Erreur lors de la mise a jour de la position')
+                    throw new Error(`Erreur HTTP: ${updatePositionResponse.status}`);
+                }
+            
+            }
+
+        ////// ICI ON AJOUTERA PAREIL SI IL MODIFIE LE TYPE DE QUESTION ON SUPPRIME TOUTES LES RÉPONSES 
+
+        
             const response = await fetch(`http://localhost:3008/questions/${question.id}`, {
                 method: 'PUT',
                 headers: { 
@@ -38,23 +57,37 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages}
 
 
             if (!response.ok) {
+                toast.showError('Erreur lors de la mise a jour de la question')
                 throw new Error(`Erreur HTTP: ${response.status}`);
             }
             
             const result = await response.json();
     
             if (!result.success) {
+            toast.showError('Erreur')
             throw new Error(result.error || 'Erreur lors de la sauvegarde');
             }
-
-            onUpdateQuestion(sectionId, question.id, updatedQuestion); //// Changer updatedQUestion ???
-
           
+            try {
+                const response = await fetch(`http://localhost:3008/questionnaire/${questionnaireId}`);
+                if (!response.ok) {
+                        throw new Error('Erreur lors du chargement des sections');
+                    }
+                const data = await response.json();
+                console.log('XXXXXXXXXXXXXXXXXXXX:', data);
 
-            
+                setQuestionnaire(data)
+                setIsEditPopupOpen(false);
+                toast.showSuccess("Question mise à jour")
+
+                } catch (error) {
+                toast.showError('Erreur fetching questionnaire')
+                console.error('Error fetching questionnaire:', error);
+                 return null;
+            }
             // Ferme la popup
-            setIsEditPopupOpen(false);
         } catch (error) {
+            toast.showError('Erreur lors de la sauvegarde')
             console.error('Erreur lors de la sauvegarde:', error);
         }
         finally{

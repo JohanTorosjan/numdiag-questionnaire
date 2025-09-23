@@ -4,7 +4,7 @@ import cors from 'cors'
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase } from './database/client.js'
 import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection, updateSection } from './questionnaire/section.js'
-import {updateQuestion} from './questionnaire/question.js'
+import {updateQuestion,updatePositions} from './questionnaire/question.js'
 
 const app = express()
 const port = 3008
@@ -153,8 +153,8 @@ app.put('/questions/:id', async (req, res) => {
     } = req.body;
     
 
-    const updatedQuestion =  await updateQuestion(questionId,section_id,label,questiontype,position,page,tooltip,coeff,theme,mandatory,public_cible,dependencies)
     
+    const updatedQuestion =  await updateQuestion(questionId,section_id,label,questiontype,tooltip,coeff,theme,mandatory,public_cible,dependencies)
     res.status(200).json(updatedQuestion)
   } catch (error) {
     console.error('Error populating database:', error)
@@ -190,3 +190,18 @@ app.put('/updateSection/:sectionId', async (req, res) => {
     res.status(500).json({ error: 'Failed to update section' })
   }
 })
+
+app.put('/questions/:questionId/position', async (req, res) => {
+  const { questionId } = req.params;
+  const { position: newPosition, page: newPage } = req.body;
+
+  try{
+    const positionsUpdated = await updatePositions(questionId,newPosition,newPage)
+    res.status(200).json(positionsUpdated)
+  }
+  catch(err){
+    console.error('Error updating positions:', err)
+    res.status(500).json({ error: 'Failed to update positions' })
+  }
+
+});

@@ -18,6 +18,7 @@ function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
         public_cible: question?.public_cible || '',
         dependencies : []
     });
+
     const { id } = useParams();
 
 
@@ -59,9 +60,9 @@ function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
 
         if(name==="page" && newValue>sectionNbPages){
             toast.showWarning('Page ne peut pas dépasser le nombre de pages de la section ('+sectionNbPages+')');
-
             return
         }
+
 
         setFormData(prev => ({
             ...prev,
@@ -160,6 +161,7 @@ function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
                     <div className="form-row">
                         <div className="form-group">
                             <label htmlFor="questiontype">Type de question :</label>
+                            <p>Attention, la modification de ce champs entrainera la suppression de toutes les réponses</p>
                             <select
                                 id="questiontype"
                                 name="questiontype"

@@ -11,10 +11,10 @@ async function getQuestionnaire(idQuestionnaire) {
             throw new Error('Erreur lors du chargement des sections');
         }
         const data = await response.json();
-        console.log('Response from server:', data);
+        console.log('Questionnaire : ', data);
         return data;
     } catch (error) {
-        console.error('Error fetching sections:', error);
+        console.error('Error fetching questionnaire:', error);
         return null;
     }
 }
@@ -32,10 +32,10 @@ async function updateQuestionnaire(idQuestionnaire, label, description, insight)
         throw new Error('Erreur lors du chargement des sections');
     }
     const data = await response.json();
-    console.log('Response from server:', data);
+    console.log('Mise à jour du questionnaire :', data);
     return data;
   } catch (error) {
-    console.error('Error fetching sections:', error);
+    console.error('Error updating questionnaire:', error);
     return null;
   }
 }
@@ -126,6 +126,8 @@ function Questionnaire() {
                   section={section}
                   onUpdateSection={updateSection}
                   onUpdateQuestion={updateQuestion}
+                  setQuestionnaire={setQuestionnaire}
+                  questionnaireId={id}
               />
               {/* <PopUpEditSection idSection={section_id} /> */}
             </div>

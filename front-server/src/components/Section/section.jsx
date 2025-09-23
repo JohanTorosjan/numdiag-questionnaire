@@ -3,7 +3,7 @@ import PopUpEditQuestion from '../popups/editQuestion';
 import './Section.css'; // Import du CSS
 import React from 'react';
 
-function Section({ section,onUpdateSection,onUpdateQuestion }) {
+function Section({ section,onUpdateSection,onUpdateQuestion,setQuestionnaire,questionnaireId }) {
 
  const [isQuestionsOpen, setIsQuestionsOpen] = React.useState(false);
 
@@ -46,17 +46,28 @@ function Section({ section,onUpdateSection,onUpdateQuestion }) {
         <p>
         Nombre de pages : {section.nbpages}
         </p>    
-        <div className="questions-list">
-          {Array.isArray(section.questions) && section.questions.map(question => (
-            <QuestionResume
-              key={question.id}
-              question={question}
-              sectionId={section.id} // Passe l'ID de la section
-              onUpdateQuestion={onUpdateQuestion} // Passe le callback
-              sectionNbPages = {section.nbpages}
-            />
-          ))}
-        </div>
+      <div className="questions-list">
+        {Array.isArray(section.questions) &&
+          [...section.questions]
+            .sort((a, b) => {
+              if (a.page !== b.page) {
+                return a.page - b.page; // d'abord tri par page
+              }
+              return a.position - b.position; // puis tri par position
+            })
+            .map(question => (
+              <QuestionResume
+                key={question.id}
+                question={question}
+                sectionId={section.id}
+                onUpdateQuestion={onUpdateQuestion}
+                sectionNbPages={section.nbpages}
+                setQuestionnaire={setQuestionnaire}
+                questionnaireId={questionnaireId}
+              />
+            ))}
+      </div>
+
       </div>
 
     </div>
