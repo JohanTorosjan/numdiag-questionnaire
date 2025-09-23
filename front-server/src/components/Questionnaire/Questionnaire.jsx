@@ -108,7 +108,7 @@ function Questionnaire() {
           // Optionally show user feedback about the error
         }
       }
-}
+    }
 
 
     if (!questionnaire) {
