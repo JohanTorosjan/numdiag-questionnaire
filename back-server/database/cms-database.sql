@@ -52,7 +52,7 @@ CREATE TABLE Reponses (
     tooltip VARCHAR,
     plafond INTEGER,
     recommandation TEXT,
-    valeurScore INTEGER NOT NULL,
+    valeurScore INTEGER,
     FOREIGN KEY (question_id) REFERENCES Questions(id) ON DELETE CASCADE
 );
 

@@ -1,10 +1,19 @@
 import { useState } from 'react';
 import PopUpEditQuestion from '../popups/editQuestion';
+import AnswersResume from '../../Answers/answersResume';
+
 import { useToast } from '../../ToastSystem';
+import './questionResume.css'; // Import du CSS
 
 function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,setQuestionnaire,questionnaireId}) {
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
+    const [isAnswersOpen, setIsAnwersOpen] = useState(false);
+    
+    const toggleAnswers = () => {
+      setIsAnwersOpen(!isAnswersOpen);
+    };
+    
     const toast = useToast();
 
     const handleEditClick = () => {
@@ -107,6 +116,48 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                 Éditer
             </button>
 
+            <div className='answers'>
+
+      {Array.isArray(question.reponses) && question.reponses.length > 0 && (
+        <div className="answers-toggle">
+          <button onClick={toggleAnswers} className="chevron-button">
+            <svg
+              className={`chevron-icon ${isAnswersOpen ? 'rotated' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+            <span>
+                  Réponses ({question.reponses.length})
+            </span>
+          </button>
+        </div>
+      )}
+
+    <div className={`answers-container ${isAnswersOpen ? 'open' : 'closed'}`}>
+
+
+      {Array.isArray(question.reponses) && question.reponses.map(answer => (
+        
+        <AnswersResume
+        key={answer.id}
+        answer={answer}
+        answerType={question.questiontype}
+        />        
+      ))
+
+      }
+      </div>
+            </div>
             {/* Popup d'édition */}
             {isEditPopupOpen && (
                 <PopUpEditQuestion
