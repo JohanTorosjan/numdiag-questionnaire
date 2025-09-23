@@ -58,8 +58,8 @@ function PopupCreateQuestionnaire({trigger, setTrigger}){
               <textarea placeholder='Description' name="description" value={formData.description} onChange={handleChange}></textarea>
 
               {/* ajouter tohero ou pas */}
-              <button class='green-btn' onClick={()=> postQuestionnaire()}>Sauvegarder</button>
-              <button class='red-btn' onClick={()=> setTrigger(false)}>Annuler</button>
+              <button className='green-btn' onClick={()=> postQuestionnaire()}>Sauvegarder</button>
+              <button className='red-btn' onClick={()=> setTrigger(false)}>Annuler</button>
             </form>
           </div>
       </div>

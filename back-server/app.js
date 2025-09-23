@@ -2,12 +2,14 @@ import express from 'express'
 import cors from 'cors'
 
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase } from './database/client.js'
-import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, getAllQuestionsByQuestionnaire,getDependenciesForQuestion } from './questionnaire/questionnaire.js'
-import { getAllQuestionBySection } from './questionnaire/section.js'
+import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion } from './questionnaire/questionnaire.js'
+import { getAllQuestionBySection, updateSection } from './questionnaire/section.js'
 import {updateQuestion} from './questionnaire/question.js'
 
 const app = express()
 const port = 3008
+
+app.use(express.json())
 
 var corsOptions = {
   origin: 'http://127.0.0.1:8081',
@@ -162,4 +164,29 @@ app.put('/questions/:id', async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
+})
+
+app.put('/updateQuestionnaire/:questionnaireId', async (req, res) => {
+  const { questionnaireId } = req.params;
+  const { label, description, insight, isactive } = req.body; // Get data from request body
+  try {
+    const questionnaireUpdate = await updateQuestionnaireInfo(questionnaireId, label, description, insight, isactive)
+    res.status(200).json({ message: 'Questionnaire Updated successfully' })
+  } catch (error) {
+    console.error('Error updating questionnaires infos:', error)
+    res.status(500).json({ error: 'Failed to update questionnaire' })
+  }
+})
+
+
+app.put('/updateSection/:sectionId', async (req, res) => {
+  const { sectionId } = req.params;
+  const { label, description } = req.body; // Get data from request body
+  try {
+    const questionnaireUpdate = await updateSection(sectionId, label, description)
+    res.status(200).json({ message: 'Section Updated successfully' })
+  } catch (error) {
+    console.error('Error updating section infos:', error)
+    res.status(500).json({ error: 'Failed to update section' })
+  }
 })

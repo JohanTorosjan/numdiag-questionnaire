@@ -1,6 +1,9 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Section from '../Section/section.jsx';
+import QuestionnaireTitle from './questionnaireTitle.jsx';
+import QuestionnaireTitleForm from './questionnaireTitleForm';
+import PopUpEditSection from '../popups/editSection.jsx';
 
 async function getQuestionnaire(idQuestionnaire) {
     try {
@@ -17,9 +20,32 @@ async function getQuestionnaire(idQuestionnaire) {
     }
 }
 
+async function updateQuestionnaire(idQuestionnaire, label, description, insight) {
+  try {
+    const response = await fetch(`http://localhost:3008/updateQuestionnaire/${idQuestionnaire}`, {
+    method: 'PUT',
+    headers: {
+    'Content-Type': 'application/json',
+  },
+    body: JSON.stringify({label, description, insight}) // Pass the updated questionnaire data
+  });
+    if (!response.ok) {
+        throw new Error('Erreur lors du chargement des sections');
+    }
+    const data = await response.json();
+    console.log('Response from server:', data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching sections:', error);
+    return null;
+  }
+}
+
+
 function Questionnaire() {
     const { id } = useParams();
     const [questionnaire, setQuestionnaire] = useState(null);
+    const [button, setButton] = useState("Modifier")
 
     useEffect(() => {
         async function fetchQuestionnaire() {
@@ -33,7 +59,7 @@ function Questionnaire() {
      const updateSection = (sectionId, updatedSection) => {
         setQuestionnaire(prevQuestionnaire => ({
             ...prevQuestionnaire,
-            sections: prevQuestionnaire.sections.map(section => 
+            sections: prevQuestionnaire.sections.map(section =>
                 section.id === sectionId ? { ...section, ...updatedSection } : section
             )
         }));
@@ -43,8 +69,8 @@ function Questionnaire() {
     const updateQuestion = (sectionId, questionId, updatedQuestion) => {
         setQuestionnaire(prevQuestionnaire => ({
             ...prevQuestionnaire,
-            sections: prevQuestionnaire.sections.map(section => 
-                section.id === sectionId 
+            sections: prevQuestionnaire.sections.map(section =>
+                section.id === sectionId
                     ? {
                         ...section,
                         questions: section.questions.map(question =>
@@ -56,6 +82,34 @@ function Questionnaire() {
         }));
     };
 
+    const handleInputChange = (e) => {
+     const { name, value } = e.target;
+
+      setQuestionnaire(prev => ({
+          ...prev,
+          [name]: value
+      }));
+    };
+
+    async function toggleButton() {
+      if (button === "Modifier") {
+        setButton("Valider");
+      } else {
+        try {
+          const updateQuest = await updateQuestionnaire(
+            id,
+            questionnaire.label,
+            questionnaire.description,
+            questionnaire.insight
+          );
+          setButton("Modifier");
+          console.log('Questionnaire updated:', updateQuest);
+        } catch (error) {
+          console.error('Error updating questionnaire:', error);
+          // Optionally show user feedback about the error
+        }
+      }
+}
 
 
     if (!questionnaire) {
@@ -64,26 +118,19 @@ function Questionnaire() {
 
     return (
         <div className="questionnaire">
-            
-        <h1>
-        {questionnaire.label}
-        </h1>
-        <h2>
-        {questionnaire.description}
-        </h2>         
-        <p>
-        {questionnaire.insight}
-        </p>  
-
-
-            {questionnaire.sections?.map(section => (
-                <Section
-                    key={section.id}
-                    section={section}
-                    onUpdateSection={updateSection}
-                    onUpdateQuestion={updateQuestion}
-                />
-            ))}
+          <button type="button" id="editButton" onClick={toggleButton}>{button}</button>
+          {button === "Modifier" ? <QuestionnaireTitle questionnaire={questionnaire}  /> : <QuestionnaireTitleForm questionnaire={questionnaire} onChange={handleInputChange} />}
+          {questionnaire.sections?.map(section => (
+            <div>
+              <Section
+                  key={section.id}
+                  section={section}
+                  onUpdateSection={updateSection}
+                  onUpdateQuestion={updateQuestion}
+              />
+              {/* <PopUpEditSection idSection={section_id} /> */}
+            </div>
+          ))}
         </div>
     );
 }
