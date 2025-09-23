@@ -129,27 +129,27 @@ function updateQuestionnaireInfo(idQuestionnaire, label = null, description = nu
     const values = [];
     let index = 1;
 
-    if (label !== null) {
+    if (label !== null && label!=='') {
       fields.push(`label`);
       placeholders.push(`$${index++}`);
       values.push(label);
     }
-    if (description !== null) {
+    if (description !== null && description!=='') {
       fields.push(`description`);
       placeholders.push(`$${index++}`);
       values.push(description);
     }
-    if (insight !== null) {
+    if (insight !== null && insight!=='') {
       fields.push(`insight`);
       placeholders.push(`$${index++}`);
       values.push(insight);
     }
-    if (tooltip !== null) {
+    if (tooltip !== null && tooltip!=='') {
       fields.push(`tooltip`);
       placeholders.push(`$${index++}`);
       values.push(tooltip);
     }
-    if (code !== null) {
+    if (code !== null && code!=='') {
       fields.push(`code`);
       placeholders.push(`$${index++}`);
       values.push(code);

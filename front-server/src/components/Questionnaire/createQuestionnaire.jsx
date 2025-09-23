@@ -5,11 +5,11 @@ import { useParams } from 'react-router-dom';
 
 function CreateQuestionnaire({ onSave, onClose }) {
     const [formData, setFormData] = useState({
-        label: null,
-        description: null,
-        insight: null,
-        tooltip: null,
-        code: null,
+        label: '',
+        description: '',
+        insight: '',
+        tooltip: '',
+        code: '',
     });
 
     const handleInputChange = (e) => {
