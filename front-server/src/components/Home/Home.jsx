@@ -94,11 +94,11 @@ export default function Home() {
             <button type="button" onClick={() => setButtonAffichage(!buttonAffichage)}>{buttonAffichage ? "Afficher les actifs" : "Tout afficher"}</button>
             {questionnaires.map(q => (
               (q.isactive || buttonAffichage) ? (
-                <div key={q.id} className={q.isactive ? "bg-green-300" : "bg-red-300"} >
+                <div key={q.id+'questionnaire'} className={q.isactive ? "bg-green-300" : "bg-red-300"} >
                 <QuestionnaireResume key={q.id} idQuestionnaire={q.id} label={q.label}  />
                 <button type="button" onClick={() => toggleButton(q.id, q.isactive)}>{q.isactive ? "Désactiver" : "Activer"}</button>
                 </div>
-              ) : (<div key={q.id} className="hidden"></div>)
+              ) : (<div key={q.id+'error'} className="hidden"></div>)
               ))}
 
         </div>

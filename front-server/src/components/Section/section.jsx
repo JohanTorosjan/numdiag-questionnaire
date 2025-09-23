@@ -3,20 +3,6 @@ import PopUpEditQuestion from '../popups/editQuestion';
 import './Section.css'; // Import du CSS
 import React from 'react';
 
-async function getQuestionofSection(sectionId) {
-    try {
-        const response = await fetch(`http://localhost:3008/sections/${sectionId}`);
-        if (!response.ok) {
-            throw new Error('Erreur lors du chargement des questions');
-        }
-        const data = await response.json();
-        return data.questions;
-    } catch (error) {
-        console.error('Error fetching questions:', error);
-        return {};
-    }
-}
-
 function Section({ section,onUpdateSection,onUpdateQuestion }) {
 
  const [isQuestionsOpen, setIsQuestionsOpen] = React.useState(false);
