@@ -97,11 +97,12 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
     return (
         
         <div className="question-resume">
-            <h4>{question.label}</h4>
+            <h4>{question.label} {question.mandatory?"*":""} </h4>
                       <p> {isUpdating}</p>    
 
             <p>{question.description}</p>
-            {/* Bouton pour ouvrir la popup d'édition */}
+ 
+          {/* Bouton pour ouvrir la popup d'édition */}
             <button onClick={handleEditClick} className="edit-button">
                 Éditer
             </button>

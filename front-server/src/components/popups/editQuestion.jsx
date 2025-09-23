@@ -7,7 +7,7 @@ import { useToast } from '../../ToastSystem';
 function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
   const toast = useToast();
     const [formData, setFormData] = useState({
-        coeff: question?.coeff || 1,
+        coeff: question?.coeff ?? 1,
         label: question?.label || '',
         mandatory: question?.mandatory || false,
         page: question?.page || 1,
