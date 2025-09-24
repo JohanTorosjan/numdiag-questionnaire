@@ -147,20 +147,27 @@ function Questionnaire() {
           }
 
           const result = await response.json();
-
+          console.log('Creation section, result:', result);
           if (!result.success) {
           throw new Error(result.error || 'Erreur lors de la sauvegarde');
           }
-          const data = await getQuestionnaire(id);
-          setQuestionnaire(data);
-          // Ferme la popup
+
+          await new Promise(resolve => setTimeout(resolve, 100));
+
+          // Refresh the questionnaire data
+          const updatedQuestionnaire = await getQuestionnaire(id);
+          console.log('Updated questionnaire:', updatedQuestionnaire); // Add this for debugging
+
+          if (updatedQuestionnaire) {
+              setQuestionnaire(updatedQuestionnaire);
+
+          } else {
+              throw new Error('Failed to fetch updated questionnaire');
+          }
           setIsCreateSectionPopupOpen(false);
-      } catch (error) {
-          console.error('Erreur lors de la sauvegarde:', error);
-      }
-      // finally{
-      //     setIsCreating(false)
-      // }
+        } catch (error) {
+            console.error('Erreur lors de la sauvegarde:', error);
+        }
     }
 
 
@@ -182,6 +189,7 @@ function Questionnaire() {
                   setQuestionnaire={setQuestionnaire}
                   questionnaireId={id}
               />
+              {console.log(section.id)}
               {/* <PopUpEditSection idSection={section_id} /> */}
             </div>
           ))}
