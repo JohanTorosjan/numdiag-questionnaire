@@ -13,11 +13,7 @@ function Section({ section,onUpdateSection,onUpdateQuestion,setQuestionnaire,que
 
     return (
  <div className="section">
-      <div className="section-header">
-          <h3>{section.label}</h3>
-          <p>{section.description}</p>
-          <p>Nombre de pages : {section.nbpages}</p>
-      </div>
+
       {/* Bouton chevron pour déplier/replier les questions */}
       {Array.isArray(section.questions) && section.questions.length > 0 && (
         <div className="questions-toggle">
@@ -37,7 +33,6 @@ function Section({ section,onUpdateSection,onUpdateQuestion,setQuestionnaire,que
                 d="M9 5l7 7-7 7"
               />
             </svg>
-            {/* span nécessaire du coup ? */}
             <span>
                   {section.label}  ({section.questions.length})
             </span>
@@ -50,7 +45,7 @@ function Section({ section,onUpdateSection,onUpdateQuestion,setQuestionnaire,que
               <p>{section.description}</p>
         <p>
         Nombre de pages : {section.nbpages}
-        </p>
+        </p>    
       <div className="questions-list">
         {Array.isArray(section.questions) &&
           [...section.questions]

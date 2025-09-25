@@ -23,7 +23,7 @@ CREATE TABLE Sections (
     description TEXT,
     position INTEGER NOT NULL,
     tooltip VARCHAR,
-    scoremax INTEGER NOT NULL DEFAULT 100,
+    scoremax INTEGER NOT NULL,
     nbPages INTEGER NOT NULL DEFAULT 1,
 
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE

@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import Section from '../Section/section.jsx';
 import QuestionnaireTitle from './questionnaireTitle.jsx';
 import QuestionnaireTitleForm from './questionnaireTitleForm';
-import CreateSection from '../Section/createSection.jsx';
 
 async function getQuestionnaire(idQuestionnaire) {
     try {
@@ -45,8 +44,7 @@ async function updateQuestionnaire(idQuestionnaire, label, description, insight)
 function Questionnaire() {
     const { id } = useParams();
     const [questionnaire, setQuestionnaire] = useState(null);
-    const [buttonModifierQuest, setButtonModifierQuest] = useState("Modifier");
-    const [isCreateSectionPopupOpen, setIsCreateSectionPopupOpen] = useState(false);
+    const [button, setButton] = useState("Modifier")
 
     useEffect(() => {
         async function fetchQuestionnaire() {
@@ -92,9 +90,9 @@ function Questionnaire() {
       }));
     };
 
-    async function toggleButtonModifierQuest() {
-      if (buttonModifierQuest === "Modifier") {
-        setButtonModifierQuest("Valider");
+    async function toggleButton() {
+      if (button === "Modifier") {
+        setButton("Valider");
       } else {
         try {
           const updateQuest = await updateQuestionnaire(
@@ -103,71 +101,13 @@ function Questionnaire() {
             questionnaire.description,
             questionnaire.insight
           );
-          setButtonModifierQuest("Modifier");
+          setButton("Modifier");
           console.log('Questionnaire updated:', updateQuest);
         } catch (error) {
           console.error('Error updating questionnaire:', error);
           // Optionally show user feedback about the error
         }
       }
-    }
-
-    const handleCreateSectionClick = () => {
-        setIsCreateSectionPopupOpen(true);
-    };
-
-  const handleClosePopupSection = () => {
-      setIsCreateSectionPopupOpen(false);
-  };
-
-  const handleSaveSection = async (newSection, questionnaire_id=id) => {
-      try {
-          // Ici tu feras ton appel API plus tard
-          console.log('Appel API sauvegarde section:', {
-              updatedData: newSection,
-              questionnaire_id: questionnaire_id,
-          });
-          // setIsCreating(true)
-          const response = await fetch(`http://localhost:3008/createSection`, {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-                  // Ajoute l'auth si nécessaire
-                  // 'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify({
-                  ...newSection,
-                  questionnaire_id: questionnaire_id,
-              })
-              });
-
-
-          if (!response.ok) {
-              throw new Error(`Erreur HTTP: ${response.status}`);
-          }
-
-          const result = await response.json();
-          console.log('Creation section, result:', result);
-          if (!result.success) {
-          throw new Error(result.error || 'Erreur lors de la sauvegarde');
-          }
-
-          await new Promise(resolve => setTimeout(resolve, 100));
-
-          // Refresh the questionnaire data
-          const updatedQuestionnaire = await getQuestionnaire(id);
-          console.log('Updated questionnaire:', updatedQuestionnaire); // Add this for debugging
-
-          if (updatedQuestionnaire) {
-              setQuestionnaire(updatedQuestionnaire);
-
-          } else {
-              throw new Error('Failed to fetch updated questionnaire');
-          }
-          setIsCreateSectionPopupOpen(false);
-        } catch (error) {
-            console.error('Erreur lors de la sauvegarde:', error);
-        }
     }
 
 
@@ -177,8 +117,8 @@ function Questionnaire() {
 
     return (
         <div className="questionnaire">
-          <button type="button" id="editQuestButton" onClick={toggleButtonModifierQuest}>{buttonModifierQuest}</button>
-          {buttonModifierQuest === "Modifier" ? <QuestionnaireTitle questionnaire={questionnaire}  /> : <QuestionnaireTitleForm questionnaire={questionnaire} onChange={handleInputChange} />}
+          <button type="button" id="editButton" onClick={toggleButton}>{button}</button>
+          {button === "Modifier" ? <QuestionnaireTitle questionnaire={questionnaire}  /> : <QuestionnaireTitleForm questionnaire={questionnaire} onChange={handleInputChange} />}
           {questionnaire.sections?.map(section => (
             <div key={section.id+'section'}>
               <Section
@@ -189,21 +129,9 @@ function Questionnaire() {
                   setQuestionnaire={setQuestionnaire}
                   questionnaireId={id}
               />
-              {console.log(section.id)}
               {/* <PopUpEditSection idSection={section_id} /> */}
             </div>
           ))}
-          <button onClick={handleCreateSectionClick} className="edit-button">
-                Créer une section
-            </button>
-
-            {/* Popup de création de section */}
-            {isCreateSectionPopupOpen && (
-                <CreateSection
-                    onSave={handleSaveSection}
-                    onClose={handleClosePopupSection}
-                />
-            )}
         </div>
     );
 }
