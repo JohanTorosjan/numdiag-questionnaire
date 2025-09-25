@@ -156,7 +156,7 @@ export default function Home() {
                 Créer un questionnaire
             </button>
 
-            {/* Popup d'édition */}
+            {/* Popup de création de questionnaire */}
             {isCreateQuestPopupOpen && (
                 <CreateQuestionnaire
                     onSave={handleSaveQuestionnaire}
