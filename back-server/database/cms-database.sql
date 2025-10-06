@@ -25,6 +25,7 @@ CREATE TABLE Sections (
     tooltip VARCHAR,
     scoremax INTEGER NOT NULL DEFAULT 100,
     nbPages INTEGER NOT NULL DEFAULT 1,
+    isactive BOOLEAN NOT NULL DEFAULT TRUE,
 
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE
 );
