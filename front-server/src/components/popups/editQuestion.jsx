@@ -27,6 +27,8 @@ function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
         { value: 'entier', label: 'Entier' },
         { value: 'choix_simple', label: 'Choix simple' },
         { value: 'choix_multiple', label: 'Choix multiple' },
+        { value: 'libre', label: 'Libre' },
+
     ];
 
     const themes = [

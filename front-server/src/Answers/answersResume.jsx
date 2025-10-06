@@ -1,24 +1,45 @@
-function AnswersResume({answer,answerType}) {
-    console.log(answerType)
-return(
-    <div className="answers-resume">   
-<p>
- {answer.label}
-</p>
-   
-   <p>
- {answer.plafond}
-</p>
-   
-   <p>
- {answer.position}
-</p>
-   
-   <p>
- {answer.valeurscore}
-</p>
-   
+import { useState } from 'react';
+import PopUpEditAnswers from './editAnswers'
 
+
+function AnswersResume({answer,answerType}) {
+  
+  const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
+  const handleEditClick = () => {
+    setIsEditPopupOpen(true);
+  };
+
+  const handleClosePopup = () => {
+    setIsEditPopupOpen(false);
+  };
+
+
+  const onSaveAnswer = (updatedAnswer) => {
+    console.log(updatedAnswer)
+    debugger
+    setIsEditPopupOpen(false);
+  }
+
+
+  return(
+    <div className="answers-resume">   
+
+      <div className="answer-row">
+        <p>{answer.label}</p>
+    <button onClick={handleEditClick}>
+Editer la réponse 
+    </button>
+
+
+        {isEditPopupOpen && (
+        <PopUpEditAnswers
+        answer = {answer}
+        answerType = {answerType}
+        onSave={onSaveAnswer}
+        onClose={handleClosePopup}/>
+        )}
+
+      </div>
 
     </div>
 )
