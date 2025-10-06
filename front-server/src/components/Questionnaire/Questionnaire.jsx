@@ -30,7 +30,7 @@ async function updateQuestionnaire(idQuestionnaire, label, description, insight)
     body: JSON.stringify({label, description, insight}) // Pass the updated questionnaire data
   });
     if (!response.ok) {
-        throw new Error('Erreur lors du chargement des sections');
+        throw new Error('Erreur lors de la mise à jour en db des infos du questionnaire');
     }
     const data = await response.json();
     console.log('Mise à jour du questionnaire :', data);
@@ -188,8 +188,7 @@ function Questionnaire() {
                   onUpdateQuestion={updateQuestion}
                   setQuestionnaire={setQuestionnaire}
                   questionnaireId={id}
-              />
-              {console.log(section.id)}
+                  />
               {/* <PopUpEditSection idSection={section_id} /> */}
             </div>
           ))}

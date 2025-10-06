@@ -79,7 +79,7 @@ function CreateSection({ onSave, onClose }) {
                           />
                       </div>
 
-                      <div className="form-group">
+                      {/* <div className="form-group">
                           <label htmlFor="position">Position :</label>
                           <input
                               type="text"
@@ -88,7 +88,7 @@ function CreateSection({ onSave, onClose }) {
                               value={formData.position}
                               onChange={handleInputChange}
                           />
-                      </div>
+                      </div> */}
 
                       <div className="form-group">
                           <label htmlFor="tooltip">Tooltip :</label>

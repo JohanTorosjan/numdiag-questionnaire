@@ -3,9 +3,9 @@ import cors from 'cors'
 
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase } from './database/client.js'
 import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion } from './questionnaire/questionnaire.js'
-import { getAllQuestionBySection, updateSection } from './questionnaire/section.js'
+import { getAllQuestionBySection} from './questionnaire/section.js'
 import {updateQuestion,updatePositions} from './questionnaire/question.js'
-import {createSection} from './questionnaire/section.js'
+import {createSection, updateSection} from './questionnaire/section.js'
 
 const app = express()
 const port = 3008
@@ -192,12 +192,40 @@ app.post('/createQuestionnaire', async (req,res) => {
 
 
 app.put('/updateSection/:sectionId', async (req, res) => {
-  const { sectionId } = req.params;
-  const { label, description } = req.body; // Get data from request body
+  const { sectionId } = req.params;  // Fixed: was idSection, but route param is sectionId
+  const { label, description, tooltip, nbPages, questionnaireId } = req.body;
+
   try {
-    const sectionUpdate = await updateSection(sectionId, label, description)
-    res.status(200).json({ message: 'Section Updated successfully' })
-  } catch (error) {
+    console.log('questionnaire_id:', questionnaireId);
+    // Get max position
+    const lastSectionResult = await executeQuery(
+      numdiagPool,
+      `SELECT MAX(position) FROM Sections WHERE questionnaire_id = $1`,
+      [questionnaireId]  // ✅ Now passing the integer value
+    )
+
+    let sectionPosition = 1;
+    console.log('last section result:', lastSectionResult);
+
+    if (lastSectionResult[0].max !== null) {
+      sectionPosition = lastSectionResult[0].max + 1;
+    }
+
+    const sectionUpdate = await updateSection(
+      sectionId,
+      label,
+      description,
+      tooltip,
+      nbPages,
+      sectionPosition
+    )
+
+    res.status(200).json({
+      message: 'Section updated successfully',
+      section: sectionUpdate[0]  // Return first result
+    })
+  }
+  catch (error) {
     console.error('Error updating section infos:', error)
     res.status(500).json({ error: 'Failed to update section' })
   }
