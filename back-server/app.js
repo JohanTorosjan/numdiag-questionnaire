@@ -13,6 +13,8 @@ import {
     deleteReponsesTranches 
 } from './questionnaire/reponsesTranches.js'
 
+import { updateReponse } from './questionnaire/reponse.js'
+
 const app = express()
 const port = 3008
 
@@ -331,5 +333,30 @@ app.delete('/questions/:questionId/tranches', async (req, res) => {
     } catch (error) {
         console.error('Error deleting tranches:', error)
         res.status(500).json({ error: 'Failed to delete tranches' })
+    }
+})
+
+app.put('/reponses/:reponseId', async (req, res) => {
+    const { reponseId } = req.params;
+    const { label, position, tooltip, plafond, recommandation, valeurScore } = req.body;
+    
+    try {
+        const result = await updateReponse(
+            reponseId, 
+            label, 
+            position, 
+            tooltip, 
+            plafond, 
+            recommandation, 
+            valeurScore
+        )
+        res.status(200).json({ 
+            success: true, 
+            message: 'Reponse updated successfully',
+            data: result[0]
+        })
+    } catch (error) {
+        console.error('Error updating reponse:', error)
+        res.status(500).json({ error: 'Failed to update reponse' })
     }
 })

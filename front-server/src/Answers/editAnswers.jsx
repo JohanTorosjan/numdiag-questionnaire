@@ -31,13 +31,14 @@ function PopUpEditAnswers({ answer, answerType, onClose, onSave }) {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            onSave(formData);
+            await onSave(formData);
             toast.showSuccess('Réponse mise à jour avec succès !');
             onClose();
-        } catch (err) {
+        } catch (e) {
+            console.log(e)
             toast.showError('Erreur lors de la sauvegarde de la réponse.');
         }
     };

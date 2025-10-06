@@ -229,6 +229,8 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
         key={answer.id}
         answer={answer}
         answerType={question.questiontype}
+        setQuestionnaire={setQuestionnaire}
+        questionnaireId={questionnaireId}
         />        
       ))
 
