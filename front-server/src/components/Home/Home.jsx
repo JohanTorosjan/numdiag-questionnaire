@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import QuestionnaireResume from "../Questionnaire/questionnaireResume";
+import CreateQuestionnaire from "../Questionnaire/createQuestionnaire";
 import './home.css';
 
 async function getAllQuestionnairesResume() {
@@ -43,7 +44,9 @@ async function updateQuestionnaire(idQuestionnaire, isactive) {
 export default function Home() {
     const [questionnaires, setQuestionnaires] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [buttonAffichage, setButtonAffichage] = useState(false)
+    const [buttonAffichage, setButtonAffichage] = useState(false);
+    const [isCreateQuestPopupOpen, setIsCreateQuestPopupOpen] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
 
 
     useEffect(() => {
@@ -77,6 +80,55 @@ export default function Home() {
     }
   };
 
+  const handleCreateQuestClick = () => {
+        setIsCreateQuestPopupOpen(true);
+    };
+
+  const handleClosePopupQuestionnaire = () => {
+      setIsCreateQuestPopupOpen(false);
+  };
+
+  const handleSaveQuestionnaire = async (newQuestionnaire) => {
+      try {
+          // Ici tu feras ton appel API plus tard
+          console.log('Appel API pour sauvegarder:', {
+              updatedData: newQuestionnaire
+          });
+          setIsCreating(true)
+          const response = await fetch(`http://localhost:3008/createQuestionnaire`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  // Ajoute l'auth si nécessaire
+                  // 'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                  ...newQuestionnaire
+              })
+              });
+
+
+          if (!response.ok) {
+              throw new Error(`Erreur HTTP: ${response.status}`);
+          }
+
+          const result = await response.json();
+
+          if (!result.success) {
+          throw new Error(result.error || 'Erreur lors de la sauvegarde');
+          }
+          const data = await getAllQuestionnairesResume();
+          setQuestionnaires(data);
+          // Ferme la popup
+          setIsCreateQuestPopupOpen(false);
+      } catch (error) {
+          console.error('Erreur lors de la sauvegarde:', error);
+      }
+      finally{
+          setIsCreating(false)
+      }
+  };
+
     if (loading) {
         return (
             <div className="home">
@@ -99,7 +151,18 @@ export default function Home() {
                 <button type="button" onClick={() => toggleButton(q.id, q.isactive)}>{q.isactive ? "Désactiver" : "Activer"}</button>
                 </div>
               ) : (<div key={q.id+'error'} className="hidden"></div>)
-              ))}
+            ))}
+            <button onClick={handleCreateQuestClick} className="edit-button">
+                Créer un questionnaire
+            </button>
+
+            {/* Popup de création de questionnaire */}
+            {isCreateQuestPopupOpen && (
+                <CreateQuestionnaire
+                    onSave={handleSaveQuestionnaire}
+                    onClose={handleClosePopupQuestionnaire}
+                />
+            )}
 
         </div>
     );

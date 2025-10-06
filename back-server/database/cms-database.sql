@@ -6,12 +6,12 @@ CREATE TABLE Questionnaires (
   id SERIAL PRIMARY KEY,
   label VARCHAR NOT NULL,
   description TEXT,
-  code INTEGER NOT NULL,
-  version VARCHAR NOT NULL,
+  code INTEGER DEFAULT NULL,
+  version VARCHAR NOT NULL DEFAULT '1',
   insight VARCHAR,
   tooltip VARCHAR,
   isactive BOOLEAN NOT NULL DEFAULT TRUE,
-  scoremax INTEGER NOT NULL,
+  scoremax INTEGER NOT NULL DEFAULT 100,
   isPublished BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -23,8 +23,9 @@ CREATE TABLE Sections (
     description TEXT,
     position INTEGER NOT NULL,
     tooltip VARCHAR,
-    scoremax INTEGER NOT NULL,
+    scoremax INTEGER NOT NULL DEFAULT 100,
     nbPages INTEGER NOT NULL DEFAULT 1,
+    isactive BOOLEAN NOT NULL DEFAULT TRUE,
 
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE
 );

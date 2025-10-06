@@ -1,22 +1,5 @@
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery } from '../database/client.js'
 
-function createQuestionnaire(req, res) {
-  const { questionnaire } = req.body;
-  if (!questionnaire || !questionnaire.name) {
-    questionnaire.name = 'Nouveau questionnaire';
-  }
-
-  const query = 'INSERT INTO questionnaires (label, description) VALUES ($1, $2) RETURNING *';
-  const values = [questionnaire.label || 'Nouveau questionnaire', questionnaire.description || ''];
-
-  executeQuery(numdiagPool, query, values)
-    .then(result => res.status(201).json(result[0]))
-    .catch(error => {
-      console.error('Error creating questionnaire:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    });
-}
-
 function getQuestionnaireById(req, res) {
     const { id } = req.params;
     const query = 'SELECT * FROM questionnaires WHERE id = $1';
@@ -138,13 +121,55 @@ function updateQuestionnaireInfo(idQuestionnaire, label = null, description = nu
     values.push(idQuestionnaire);
 
     executeQuery(numdiagPool, `UPDATE Questionnaires SET ${fields.join(', ')} WHERE id = $${index} RETURNING *`, values)
+  }
+
+  function createQuestionnaire(label = null, description = null, insight = null, tooltip = null, code = null) {
+    const fields = [];
+    const placeholders=[];
+    const values = [];
+    let index = 1;
+
+    if (label !== null && label!=='') {
+      fields.push(`label`);
+      placeholders.push(`$${index++}`);
+      values.push(label);
+    }
+    if (description !== null && description!=='') {
+      fields.push(`description`);
+      placeholders.push(`$${index++}`);
+      values.push(description);
+    }
+    if (insight !== null && insight!=='') {
+      fields.push(`insight`);
+      placeholders.push(`$${index++}`);
+      values.push(insight);
+    }
+    if (tooltip !== null && tooltip!=='') {
+      fields.push(`tooltip`);
+      placeholders.push(`$${index++}`);
+      values.push(tooltip);
+    }
+    if (code !== null && code!=='') {
+      fields.push(`code`);
+      placeholders.push(`$${index++}`);
+      values.push(code);
+    }
+
+
+     return executeQuery(
+        numdiagPool,
+        `INSERT INTO Questionnaires (${fields.join(', ')}) VALUES (${placeholders.join(', ')}) RETURNING *`,
+        values
+    )
 }
+
+
 
 async function getAllQuestionsByQuestionnaire(questionnaireId) {
   try {
     // Requête pour récupérer toutes les questions d'un questionnaire avec leurs réponses
     const query = `
-      SELECT 
+      SELECT
         q.id as question_id,
         q.label as question_label,
         q.questionType as question_type,
@@ -170,13 +195,13 @@ async function getAllQuestionsByQuestionnaire(questionnaireId) {
     `;
 
     const result = await executeQuery(numdiagPool,query, [questionnaireId]);
-    
+
     // Transformation des données pour le format attendu
     const questionsMap = new Map();
-    
+
     result.forEach(row => {
       const questionId = row.question_id;
-      
+
       // Si la question n'existe pas encore dans le Map, on l'ajoute
       if (!questionsMap.has(questionId)) {
         questionsMap.set(questionId, {
@@ -193,7 +218,7 @@ async function getAllQuestionsByQuestionnaire(questionnaireId) {
           answers: []
         });
       }
-      
+
       // Si il y a une réponse associée, on l'ajoute
       if (row.answer_id) {
         const question = questionsMap.get(questionId);
@@ -218,10 +243,10 @@ async function getAllQuestionsByQuestionnaire(questionnaireId) {
         });
       }
     });
-    
+
     // Conversion du Map en array
     return Array.from(questionsMap.values());
-    
+
   } catch (error) {
     console.error('Error in getAllQuestionsByQuestionnaire:', error);
     throw error;
@@ -230,7 +255,7 @@ async function getAllQuestionsByQuestionnaire(questionnaireId) {
 const getDependenciesForQuestion = async (questionId) => {
   try {
     const query = `
-      SELECT 
+      SELECT
         r.question_id,
         qd.reponse_id as answer_id
       FROM QuestionDependencies qd
@@ -238,7 +263,7 @@ const getDependenciesForQuestion = async (questionId) => {
       WHERE qd.question_id = $1
       ORDER BY r.question_id, qd.reponse_id
     `;
-    
+
     const result = await executeQuery(numdiagPool, query, [questionId]);
 
     // Transformation des résultats en tableau de clés de dépendance
@@ -248,7 +273,7 @@ const getDependenciesForQuestion = async (questionId) => {
     });
 
     return dependencies;
-    
+
   } catch (error) {
     console.error('Error in getDependenciesForQuestion:', error);
     throw error;
