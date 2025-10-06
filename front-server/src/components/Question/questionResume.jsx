@@ -65,7 +65,21 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
             }
 
         ////// ICI ON AJOUTERA PAREIL SI IL MODIFIE LE TYPE DE QUESTION ON SUPPRIME TOUTES LES RÉPONSES 
-
+            if(question.questiontype!==updatedQuestion.questiontype){
+              
+              
+              const deletingResponse = await fetch(`http://localhost:3008/questions/${question.id}/deleteReponses`,
+                {
+                  method: 'DELETE',
+                  headers: { 
+                    'Content-Type': 'application/json',
+                    // Ajoute l'auth si nécessaire
+                    // 'Authorization': `Bearer ${token}`
+                 },
+                }
+              )
+              console.log(deletingResponse)
+            }
 
             const response = await fetch(`http://localhost:3008/questions/${question.id}`, {
                 method: 'PUT',
@@ -119,6 +133,28 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
         }
     };
 
+    const saveAnswersSlots = async( updatedSlots) => {
+      try {
+                console.log('aaa')
+
+        console.log(updatedSlots)
+          const response = await fetch(`http://127.0.0.1:3008/questions/${question.id}/tranches`, {
+              method: 'PUT',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ tranches: updatedSlots.tranches })
+          })
+          
+          const result = await response.json()
+          console.log('Tranches saved:', result)
+          return result
+      } catch (error) {
+          console.error('Error saving tranches:', error)
+          throw new Error(error)
+      }
+  }
+
     return (
         
         <div className="question-resume">
@@ -163,7 +199,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
         <div className="answers-toggle">
           <button onClick={handleEditSlotsClick} className="chevron-button">
             <svg
-              className={`chevron-icon }`}
+              className={`chevron-icon ${isEditAnswerSlotsOpen ? 'rotated' : ''}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -209,7 +245,9 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
             )}
             {isEditAnswerSlotsOpen && (
                 <PopUpEditAnswerSlots
-                onClose={handleEditSlotsClick}
+                onClose={handleCloseSlotsPopup}
+                onSave={saveAnswersSlots}
+                questionId={question.id}
                 />
             )}
 

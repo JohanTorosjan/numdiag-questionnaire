@@ -4,8 +4,14 @@ import cors from 'cors'
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase } from './database/client.js'
 import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection, updateSection } from './questionnaire/section.js'
-import {updateQuestion,updatePositions} from './questionnaire/question.js'
+import {updateQuestion,updatePositions,deleteReponses} from './questionnaire/question.js'
 import {createSection} from './questionnaire/section.js'
+import { 
+    addReponsesTranches, 
+    getReponsesTranchesByQuestion, 
+    updateReponsesTranches, 
+    deleteReponsesTranches 
+} from './questionnaire/reponsesTranches.js'
 
 const app = express()
 const port = 3008
@@ -242,4 +248,88 @@ app.post('/createSection', async (req,res) => {
     console.error('Error creating section:', error)
     res.status(500).json({ error: 'Failed to create section' })
   }
+})
+
+
+app.delete('/questions/:questionId/deleteReponses', async (req, res) => {
+    const { questionId } = req.params
+    
+    try {
+        const result = await deleteReponses(questionId)
+        res.status(200).json({ 
+            success: true, 
+            message: 'Reponses deleted successfully',
+            data: result 
+        })
+    } catch (error) {
+        console.error('Error deleting reponses:', error)
+        res.status(500).json({ error: 'Failed to delete reponses' })
+    }
+})
+
+
+// Sauvegarder les tranches pour une question
+app.post('/questions/:questionId/tranches', async (req, res) => {
+    const { questionId } = req.params
+    const { tranches } = req.body
+    
+    try {
+        const result = await addReponsesTranches(questionId, tranches)
+        res.status(200).json({ 
+            success: true, 
+            message: 'Tranches saved successfully',
+            data: result 
+        })
+    } catch (error) {
+        console.error('Error saving tranches:', error)
+        res.status(500).json({ error: 'Failed to save tranches' })
+    }
+})
+
+// Récupérer les tranches d'une question
+app.get('/questions/:questionId/tranches', async (req, res) => {
+    const { questionId } = req.params
+    
+    try {
+        const tranches = await getReponsesTranchesByQuestion(questionId)
+        res.json(tranches)
+    } catch (error) {
+        console.error('Error fetching tranches:', error)
+        res.status(500).json({ error: 'Failed to fetch tranches' })
+    }
+})
+
+// Mettre à jour les tranches d'une question
+app.put('/questions/:questionId/tranches', async (req, res) => {
+    const { questionId } = req.params
+    const { tranches } = req.body
+    
+    try {
+        const result = await updateReponsesTranches(questionId, tranches)
+        res.status(200).json({ 
+            success: true, 
+            message: 'Tranches updated successfully',
+            data: result 
+        })
+    } catch (error) {
+        console.error('Error updating tranches:', error)
+        res.status(500).json({ error: 'Failed to update tranches' })
+    }
+})
+
+// Supprimer les tranches d'une question
+app.delete('/questions/:questionId/tranches', async (req, res) => {
+    const { questionId } = req.params
+    
+    try {
+        const result = await deleteReponsesTranches(questionId)
+        res.status(200).json({ 
+            success: true, 
+            message: 'Tranches deleted successfully',
+            data: result 
+        })
+    } catch (error) {
+        console.error('Error deleting tranches:', error)
+        res.status(500).json({ error: 'Failed to delete tranches' })
+    }
 })
