@@ -5,7 +5,6 @@ import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDa
 import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection, updateSection } from './questionnaire/section.js'
 import {updateQuestion,updatePositions} from './questionnaire/question.js'
-import {createSection} from './questionnaire/section.js'
 
 const app = express()
 const port = 3008
@@ -154,7 +153,7 @@ app.put('/questions/:id', async (req, res) => {
     } = req.body;
 
 
-
+    
     const updatedQuestion =  await updateQuestion(questionId,section_id,label,questiontype,tooltip,coeff,theme,mandatory,public_cible,dependencies)
     res.status(200).json(updatedQuestion)
   } catch (error) {
@@ -217,29 +216,3 @@ app.put('/questions/:questionId/position', async (req, res) => {
   }
 
 });
-
-app.post('/createSection', async (req,res) => {
-  let { questionnaire_id, label, description, position, tooltip, nbPages } = req.body; // Get data from request body
-  try {
-    if (position === null || position==='') {
-      const last_section_id = await executeQuery(
-        numdiagPool,
-        `SELECT MAX(position) FROM Sections WHERE questionnaire_id = $1`,
-        [questionnaire_id]
-    )
-    console.log('last section id:', last_section_id[0].max);
-      if (last_section_id[0].max !== null) {
-        const sectionPosition = last_section_id[0].max+1;
-        position = sectionPosition;
-      } else {
-        position = 1;
-      }
-    }
-    const SectionCreate = await createSection( questionnaire_id, label, description, position, tooltip, nbPages )
-    console.log('Section has been created: ',SectionCreate);
-    res.status(200).json({success: true})
-  } catch (error) {
-    console.error('Error creating section:', error)
-    res.status(500).json({ error: 'Failed to create section' })
-  }
-})

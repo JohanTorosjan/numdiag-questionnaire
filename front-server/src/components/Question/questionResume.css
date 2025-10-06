@@ -1,0 +1,14 @@
+.answers-container {
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.answers-container.closed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.answers-container.open {
+  opacity: 1;
+  margin-bottom: 1rem;
+}
