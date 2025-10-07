@@ -193,7 +193,7 @@ app.post('/createQuestionnaire', async (req,res) => {
 
 app.put('/updateSection/:sectionId', async (req, res) => {
   const { sectionId } = req.params;  // Fixed: was idSection, but route param is sectionId
-  const { label, description, tooltip, nbPages, isActive } = req.body;
+  const { label, description, tooltip, nbpages, isActive } = req.body;
 
   try {
     console.log('section_id:', sectionId);
@@ -209,7 +209,7 @@ app.put('/updateSection/:sectionId', async (req, res) => {
       {label,
       description,
       tooltip,
-      nbPages,
+      nbpages,
       isActive}
     )
 

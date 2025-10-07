@@ -8,7 +8,7 @@ function CreateSection({ onSave, onClose }) {
         label:'',
         description:'',
         tooltip:'',
-        nbPages:'',
+        nbpages:'',
     });
 
     const handleInputChange = (e) => {
@@ -101,11 +101,11 @@ function CreateSection({ onSave, onClose }) {
                       </div>
 
                       <div className="form-group">
-                          <label htmlFor="nbPages">Nombre de pages :</label>
+                          <label htmlFor="nbpages">Nombre de pages :</label>
                           <input
-                              id="nbPages"
-                              name="nbPages"
-                              value={formData.nbPages}
+                              id="nbpages"
+                              name="nbpages"
+                              value={formData.nbpages}
                               onChange={handleInputChange}
                               placeholder='Pas de code ou code pin (e.g. 0000)'
 

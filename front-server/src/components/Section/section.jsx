@@ -61,7 +61,7 @@ function Section({
           {label:isSection.label,
           description:isSection.description,
           tooltip:isSection.tooltip,
-          nbPages:isSection.nbPages}
+          nbpages:isSection.nbpages}
         );
         setButtonUpdateSection("Modifier");
         console.log('Section updated:', updateSect);
@@ -116,7 +116,7 @@ function Section({
           {/* span nécessaire du coup ? */}
           {buttonUpdateSection === "Modifier" ?
           <span>
-            {section.label} (Questions: {section.questions.length}) Description:"{section.description}" Tooltip: "{section.tooltip}" Nombre de pages: "{section.nbPages}"
+            {section.label} (Questions: {section.questions.length}) Description:"{section.description}" Tooltip: "{section.tooltip}" Nombre de pages: "{section.nbpages}"
           </span> :
           <SectionUpdateForm section={isSection} onChange={handleSectionChange} />}
           <button type="button" onClick={() => toggleButtonActiveSection(section.id, section.isactive)}>{section.isactive ? "Désactiver" : "Activer"}</button>

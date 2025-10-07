@@ -10,7 +10,7 @@ function SectionUpdateForm ({section, onChange}) {
       <label htmlFor="sectionTooltip">Tooltip :</label>
       <input type="text" name="tooltip" id="sectionTooltip" required value={section.tooltip ? section.tooltip : ''} onChange={onChange}/>
       <label htmlFor="sectionNbPages">Nombre de pages :</label>
-      <input type="text" name="nbPages" id="sectionNbPages" required value={section.nbPages ? section.nbPages : ''} onChange={onChange}/>
+      <input type="number" name="nbpages" id="sectionNbPages" required value={section.nbpages ? section.nbpages : ''} onChange={onChange} min="0" onKeyDown={(e) => ['e', 'E', '+', '-', '.', ','].includes(e.key) && e.preventDefault()}/>
     </form>
   )
 }
