@@ -4,6 +4,7 @@ import Section from '../Section/section.jsx';
 import QuestionnaireTitle from './questionnaireTitle.jsx';
 import QuestionnaireTitleForm from './questionnaireTitleForm';
 import CreateSection from '../Section/createSection.jsx';
+import { useToast } from '../../ToastSystem';
 
 async function getQuestionnaire(idQuestionnaire) {
     try {
@@ -21,6 +22,7 @@ async function getQuestionnaire(idQuestionnaire) {
 }
 
 async function updateQuestionnaire(idQuestionnaire, label, description, insight) {
+
   try {
     const response = await fetch(`http://localhost:3008/updateQuestionnaire/${idQuestionnaire}`, {
     method: 'PUT',
@@ -48,6 +50,7 @@ function Questionnaire() {
     const [buttonModifierQuest, setButtonModifierQuest] = useState("Modifier");
     const [isCreateSectionPopupOpen, setIsCreateSectionPopupOpen] = useState(false);
     const [buttonAffichageSection, setButtonAffichageSection] = useState(false);
+    const toast = useToast();
 
     useEffect(() => {
         async function fetchQuestionnaire() {
@@ -106,8 +109,11 @@ function Questionnaire() {
           );
           setButtonModifierQuest("Modifier");
           console.log('Questionnaire updated:', updateQuest);
+          toast.showSuccess('Questionnaire mis à jour avec succès !');
+
         } catch (error) {
           console.error('Error updating questionnaire:', error);
+          toast.showError('Erreur lors de la mise à jour du questionnaire');
           // Optionally show user feedback about the error
         }
       }
@@ -161,8 +167,9 @@ function Questionnaire() {
 
           if (updatedQuestionnaire) {
               setQuestionnaire(updatedQuestionnaire);
-
+              toast.showSuccess('Section créée avec succès!');
           } else {
+              toast.showError('Erreur lors de la création de section');
               throw new Error('Failed to fetch updated questionnaire');
           }
           setIsCreateSectionPopupOpen(false);

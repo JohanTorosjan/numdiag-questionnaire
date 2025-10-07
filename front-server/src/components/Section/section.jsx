@@ -3,6 +3,7 @@ import SectionUpdateForm from "./sectionUpdateForm";
 // import PopUpEditQuestion from "../popups/editQuestion";
 import "./Section.css"; // Import du CSS
 import React from "react";
+import { useToast } from '../../ToastSystem';
 
 function Section({
   section,
@@ -14,6 +15,7 @@ function Section({
   const [isQuestionsOpen, setIsQuestionsOpen] = React.useState(false);
   const [isSection, setSection] = React.useState(section);
   const [buttonUpdateSection, setButtonUpdateSection] = React.useState("Modifier");
+  const toast = useToast();
 
 
   const toggleQuestions = () => {
@@ -39,7 +41,10 @@ function Section({
       body: JSON.stringify(updates) // Pass the updated section data
     });
       if (!response.ok) {
+          toast.showError('Erreur lors de la mise à jour de la section');
           throw new Error('Erreur lors de la mise à jour en db des infos de section');
+        } else {
+        toast.showSuccess('Section mise à jour avec succès !');
       }
       const data = await response.json();
       console.log('Mise à jour de la section :', idSection);
