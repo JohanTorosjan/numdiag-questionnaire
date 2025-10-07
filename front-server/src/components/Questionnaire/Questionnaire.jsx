@@ -47,6 +47,7 @@ function Questionnaire() {
     const [questionnaire, setQuestionnaire] = useState(null);
     const [buttonModifierQuest, setButtonModifierQuest] = useState("Modifier");
     const [isCreateSectionPopupOpen, setIsCreateSectionPopupOpen] = useState(false);
+    const [buttonAffichageSection, setButtonAffichageSection] = useState(false);
 
     useEffect(() => {
         async function fetchQuestionnaire() {
@@ -170,6 +171,31 @@ function Questionnaire() {
         }
     }
 
+    const toggleButtonActiveSection = async (section, currentStatus) => {
+    try {
+      const newStatus = !currentStatus;
+      const response = await fetch(`http://localhost:3008/updateSection/${section.id}`, {
+      method: 'PUT',
+      headers: {
+      'Content-Type': 'application/json',
+    },
+      body: JSON.stringify({label: section.label, description: section.description, tooltip:section.tooltip, nbPages:section.nbPages, isActive: newStatus}) // Pass the updated section data
+    });
+    console.log(newStatus, JSON.stringify({label: section.label, description: section.description, tooltip:section.tooltip, nbPages:section.nbPages, isActive: newStatus}) );
+      if (!response.ok) {
+          throw new Error('Erreur lors de la mise à jour en db des infos de section');
+      }
+      const data = await response.json();
+      console.log('Mise à jour de la section :', data);
+      updateSection(section.id, {isActive:newStatus});
+
+      return data;
+    } catch (error) {
+      console.error('Error updating section:', error);
+      return null;
+    }
+  };
+
 
     if (!questionnaire) {
         return <div>Ca charge (vous pouvez aller faire un cafe en attendant ^^)...</div>;
@@ -179,8 +205,11 @@ function Questionnaire() {
         <div className="questionnaire">
           <button type="button" id="editQuestButton" onClick={toggleButtonModifierQuest}>{buttonModifierQuest}</button>
           {buttonModifierQuest === "Modifier" ? <QuestionnaireTitle questionnaire={questionnaire}  /> : <QuestionnaireTitleForm questionnaire={questionnaire} onChange={handleInputChange} />}
-          {questionnaire.sections?.map(section => (
-            <div key={section.id+'section'}>
+
+        <button type="button" onClick={() => setButtonAffichageSection(!buttonAffichageSection)}>{buttonAffichageSection ? "Afficher les actifs" : "Tout afficher"}</button>
+      {questionnaire.sections?.map(section => (
+        (section.isactive || buttonAffichageSection) ? (
+          <div key={section.id+'section'} className={section.isactive ? "bg-green-300" : "bg-red-300"}>
               <Section
                   key={section.id}
                   section={section}
@@ -189,12 +218,13 @@ function Questionnaire() {
                   setQuestionnaire={setQuestionnaire}
                   questionnaireId={id}
                   />
+              <button type="button" onClick={() => toggleButtonActiveSection(section, section.isactive)}>{section.isactive ? "Désactiver" : "Activer"}</button>
               {/* <PopUpEditSection idSection={section_id} /> */}
-            </div>
+            </div>) : (<div key={section.id+'error'} className="hidden"></div>)
           ))}
           <button onClick={handleCreateSectionClick} className="edit-button">
                 Créer une section
-            </button>
+          </button>
 
             {/* Popup de création de section */}
             {isCreateSectionPopupOpen && (

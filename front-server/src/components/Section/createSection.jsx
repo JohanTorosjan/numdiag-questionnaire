@@ -7,7 +7,6 @@ function CreateSection({ onSave, onClose }) {
     const [formData, setFormData] = useState({
         label:'',
         description:'',
-        position:'',
         tooltip:'',
         nbPages:'',
     });

@@ -46,7 +46,7 @@ CREATE TABLE Section(
     idAudit INT NOT NULL,
     section_nom VARCHAR NOT NULL,
     section_description TEXT NOT NULL,
-    section_position TEXT NOT NULL,
+    -- section_position TEXT NOT NULL,
     section_aide TEXT NOT NULL,
     section_reponse_aide TEXT NOT NULL,
     section_score_max INT NOT NULL,

@@ -15,6 +15,7 @@ function Section({
   const [isSection, setSection] = React.useState(section);
   const [buttonUpdateSection, setButtonUpdateSection] = React.useState("Modifier");
 
+
   const toggleQuestions = () => {
     setIsQuestionsOpen(!isQuestionsOpen);
   };
@@ -28,14 +29,14 @@ function Section({
       }));
     };
 
-  async function updateSection(idSection, label, description, tooltip, nbPages) {
+  async function updateSection(idSection, label, description, tooltip, nbPages, isActive) {
     try {
       const response = await fetch(`http://localhost:3008/updateSection/${idSection}`, {
       method: 'PUT',
       headers: {
       'Content-Type': 'application/json',
     },
-      body: JSON.stringify({label, description, tooltip, nbPages, questionnaireId}) // Pass the updated section data
+      body: JSON.stringify({label, description, tooltip, nbPages, questionnaireId, isActive}) // Pass the updated section data
     });
       if (!response.ok) {
           throw new Error('Erreur lors de la mise à jour en db des infos de section');
@@ -55,11 +56,11 @@ function Section({
     } else {
       try {
         const updateSect = await updateSection(
-          section.id,
-          section.label,
-          section.description,
-          section.tooltip,
-          section.nbPages
+          isSection.id,
+          isSection.label,
+          isSection.description,
+          isSection.tooltip,
+          isSection.nbPages
         );
         setButtonUpdateSection("Modifier");
         console.log('Section updated:', updateSect);
@@ -68,6 +69,8 @@ function Section({
       }
     }
   }
+
+
 
   return (
     <div className="section">
@@ -93,9 +96,11 @@ function Section({
         </button>
           <button type="button" id="updateSectionButton" onClick={toggleButtonUpdateSection}>{buttonUpdateSection}</button>
           {/* span nécessaire du coup ? */}
-          {buttonUpdateSection === "Modifier" ? <span>
+          {buttonUpdateSection === "Modifier" ?
+          <span>
             {section.label} ({section.questions.length})
-          </span> : <SectionUpdateForm section={isSection} onChange={handleSectionChange} />}
+          </span> :
+          <SectionUpdateForm section={isSection} onChange={handleSectionChange} />}
       </div>
             <div>{section.id}</div>
       {/* Container des questions avec animation */}

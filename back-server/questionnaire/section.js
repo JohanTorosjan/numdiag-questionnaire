@@ -8,7 +8,7 @@ function getAllQuestionBySection(idSection) {
     return executeQuery(numdiagPool, 'SELECT * FROM questions WHERE section_id = $1', [idSection])
 }
 
-function updateSection(idSection, label = null, description = null, tooltip = null, nbPages=null, sectionPosition) {
+function updateSection(idSection, label = null, description = null, tooltip = null, nbPages=null, isActive = null) {
     const fields = []
     const values = []
     let index = 1
@@ -29,9 +29,10 @@ function updateSection(idSection, label = null, description = null, tooltip = nu
         fields.push(`nbPages = $${index++}`)
         values.push(nbPages)
       }
-
-    fields.push(`position = $${index++}`)
-    values.push(sectionPosition)
+    if (isActive !== null) {
+        fields.push(`isactive = $${index++}`)
+        values.push(isActive)
+    }
 
     fields.push(`id = $${index}`)
     values.push(idSection)
@@ -44,7 +45,7 @@ function deleteSection(idSection) {
     return executeQuery(numdiagPool, 'DELETE FROM sections WHERE id_section = $1 RETURNING *', [idSection])
 }
 
-function createSection(questionnaire_id, label = null, description = null, position = null, tooltip = null, nbPages = null) {
+function createSection(questionnaire_id, label = null, description = null, tooltip = null, nbPages = null) {
     const fields = [];
     const placeholders=[];
     const values = [];
@@ -60,9 +61,6 @@ function createSection(questionnaire_id, label = null, description = null, posit
       placeholders.push(`$${index++}`);
       values.push(description);
     }
-    fields.push(`position`);
-    placeholders.push(`$${index++}`);
-    values.push(position);
 
     if (tooltip !== null && tooltip!=='') {
       fields.push(`tooltip`);

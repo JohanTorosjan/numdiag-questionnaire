@@ -19,7 +19,7 @@ CREATE TABLE Sections (
     questionnaire_id INTEGER NOT NULL,
     label VARCHAR NOT NULL,
     description TEXT,
-    position INTEGER NOT NULL,
+    -- position INTEGER NOT NULL,
     tooltip VARCHAR,
     scoremax INTEGER NOT NULL,
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE

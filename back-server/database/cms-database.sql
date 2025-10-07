@@ -21,7 +21,7 @@ CREATE TABLE Sections (
     questionnaire_id INTEGER NOT NULL,
     label VARCHAR NOT NULL,
     description TEXT,
-    position INTEGER NOT NULL,
+    -- position INTEGER NOT NULL,
     tooltip VARCHAR,
     scoremax INTEGER NOT NULL DEFAULT 100,
     nbPages INTEGER NOT NULL DEFAULT 1,
