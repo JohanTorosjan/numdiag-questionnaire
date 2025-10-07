@@ -171,31 +171,6 @@ function Questionnaire() {
         }
     }
 
-    const toggleButtonActiveSection = async (section, currentStatus) => {
-    try {
-      const newStatus = !currentStatus;
-      const response = await fetch(`http://localhost:3008/updateSection/${section.id}`, {
-      method: 'PUT',
-      headers: {
-      'Content-Type': 'application/json',
-    },
-      body: JSON.stringify({label: section.label, description: section.description, tooltip:section.tooltip, nbPages:section.nbPages, isActive: newStatus}) // Pass the updated section data
-    });
-    console.log(newStatus, JSON.stringify({label: section.label, description: section.description, tooltip:section.tooltip, nbPages:section.nbPages, isActive: newStatus}) );
-      if (!response.ok) {
-          throw new Error('Erreur lors de la mise à jour en db des infos de section');
-      }
-      const data = await response.json();
-      console.log('Mise à jour de la section :', data);
-      updateSection(section.id, {isActive:newStatus});
-
-      return data;
-    } catch (error) {
-      console.error('Error updating section:', error);
-      return null;
-    }
-  };
-
 
     if (!questionnaire) {
         return <div>Ca charge (vous pouvez aller faire un cafe en attendant ^^)...</div>;
@@ -218,7 +193,6 @@ function Questionnaire() {
                   setQuestionnaire={setQuestionnaire}
                   questionnaireId={id}
                   />
-              <button type="button" onClick={() => toggleButtonActiveSection(section, section.isactive)}>{section.isactive ? "Désactiver" : "Activer"}</button>
               {/* <PopUpEditSection idSection={section_id} /> */}
             </div>) : (<div key={section.id+'error'} className="hidden"></div>)
           ))}

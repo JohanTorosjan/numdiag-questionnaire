@@ -29,20 +29,21 @@ function Section({
       }));
     };
 
-  async function updateSection(idSection, label, description, tooltip, nbPages, isActive) {
+  async function updateSection(idSection, updates) {
     try {
       const response = await fetch(`http://localhost:3008/updateSection/${idSection}`, {
       method: 'PUT',
       headers: {
       'Content-Type': 'application/json',
     },
-      body: JSON.stringify({label, description, tooltip, nbPages, questionnaireId, isActive}) // Pass the updated section data
+      body: JSON.stringify(updates) // Pass the updated section data
     });
       if (!response.ok) {
           throw new Error('Erreur lors de la mise à jour en db des infos de section');
       }
       const data = await response.json();
-      console.log('Mise à jour de la section :', data);
+      console.log('Mise à jour de la section :', idSection);
+      onUpdateSection(idSection, updates);
       return data;
     } catch (error) {
       console.error('Error updating section:', error);
@@ -56,11 +57,11 @@ function Section({
     } else {
       try {
         const updateSect = await updateSection(
-          isSection.id,
-          isSection.label,
-          isSection.description,
-          isSection.tooltip,
-          isSection.nbPages
+          section.id,
+          {label:isSection.label,
+          description:isSection.description,
+          tooltip:isSection.tooltip,
+          nbPages:isSection.nbPages}
         );
         setButtonUpdateSection("Modifier");
         console.log('Section updated:', updateSect);
@@ -69,6 +70,23 @@ function Section({
       }
     }
   }
+
+  const toggleButtonActiveSection = async (section_id, currentStatus) => {
+    try {
+      const newStatus = !currentStatus;
+
+      const data = await updateSection(section_id, { isActive: newStatus });
+
+      console.log('Mise à jour de la section isActive :', data);
+      setSection(prev => ({ ...prev, isactive: newStatus }));
+      onUpdateSection(section_id, { isactive: newStatus });
+      return data;
+    } catch (error) {
+      console.error('Error updating section isActive:', error);
+      return null;
+    }
+  };
+
 
 
 
@@ -98,9 +116,10 @@ function Section({
           {/* span nécessaire du coup ? */}
           {buttonUpdateSection === "Modifier" ?
           <span>
-            {section.label} ({section.questions.length})
+            {section.label} (Questions: {section.questions.length}) Description:"{section.description}" Tooltip: "{section.tooltip}" Nombre de pages: "{section.nbPages}"
           </span> :
           <SectionUpdateForm section={isSection} onChange={handleSectionChange} />}
+          <button type="button" onClick={() => toggleButtonActiveSection(section.id, section.isactive)}>{section.isactive ? "Désactiver" : "Activer"}</button>
       </div>
             <div>{section.id}</div>
       {/* Container des questions avec animation */}

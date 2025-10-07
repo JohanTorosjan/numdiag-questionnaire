@@ -206,21 +206,19 @@ app.put('/updateSection/:sectionId', async (req, res) => {
 
     const sectionUpdate = await updateSection(
       sectionId,
-      label,
+      {label,
       description,
       tooltip,
       nbPages,
-      isActive
+      isActive}
     )
 
-    res.status(200).json({
-      message: 'Section updated successfully',
-      section: sectionUpdate[0]  // Return first result
-    })
+    console.log('Section has been updated: ',sectionUpdate);
+    res.status(200).json({success: true})
   }
   catch (error) {
     console.error('Error updating section infos:', error)
-    res.status(500).json({ error: 'Failed to update section' })
+    sectionUpdate.status(500).json({ error: 'Failed to update section' })
   }
 })
 
@@ -242,20 +240,6 @@ app.put('/questions/:questionId/position', async (req, res) => {
 app.post('/createSection', async (req,res) => {
   let { questionnaire_id, label, description, tooltip, nbPages } = req.body; // Get data from request body
   try {
-    // if (position === null || position==='') {
-    //   const last_section_id = await executeQuery(
-    //     numdiagPool,
-    //     `SELECT MAX(position) FROM Sections WHERE questionnaire_id = $1`,
-    //     [questionnaire_id]
-    // )
-    // console.log('last section id:', last_section_id[0].max);
-    //   if (last_section_id[0].max !== null) {
-    //     const sectionPosition = last_section_id[0].max+1;
-    //     position = sectionPosition;
-    //   } else {
-    //     position = 1;
-    //   }
-    // }
     const SectionCreate = await createSection( questionnaire_id, label, description, tooltip, nbPages )
     console.log('Section has been created: ',SectionCreate);
     res.status(200).json({success: true})

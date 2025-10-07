@@ -8,7 +8,7 @@ function getAllQuestionBySection(idSection) {
     return executeQuery(numdiagPool, 'SELECT * FROM questions WHERE section_id = $1', [idSection])
 }
 
-function updateSection(idSection, label = null, description = null, tooltip = null, nbPages=null, isActive = null) {
+function updateSection(idSection, {label = null, description = null, tooltip = null, nbPages=null, isActive = null}) {
     const fields = []
     const values = []
     let index = 1
@@ -34,7 +34,7 @@ function updateSection(idSection, label = null, description = null, tooltip = nu
         values.push(isActive)
     }
 
-    fields.push(`id = $${index}`)
+    // fields.push(`id = $${index}`)
     values.push(idSection)
 
 
