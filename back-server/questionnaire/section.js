@@ -8,7 +8,7 @@ function getAllQuestionBySection(idSection) {
     return executeQuery(numdiagPool, 'SELECT * FROM questions WHERE section_id = $1', [idSection])
 }
 
-function updateSection(idSection, label = null, description = null, position = null, tooltip = null, scoremax=null, idQuestionnaire = null) {
+function updateSection(idSection, {label = null, description = null, tooltip = null, nbpages=null, isActive = null}) {
     const fields = []
     const values = []
     let index = 1
@@ -21,34 +21,31 @@ function updateSection(idSection, label = null, description = null, position = n
         fields.push(`description = $${index++}`)
         values.push(description)
     }
-    if (position !== null) {
-        fields.push(`position = $${index++}`)
-        values.push(position)
-    }
     if (tooltip !== null) {
         fields.push(`tooltip = $${index++}`)
         values.push(tooltip)
     }
-    if (scoremax !== null) {
-        fields.push(`scoremax = $${index++}`)
-        values.push(scoremax)
-    }
-    if (idQuestionnaire !== null) {
-        fields.push(`id_questionnaire = $${index++}`)
-        values.push(idQuestionnaire)
+    if (nbpages !== null) {
+        fields.push(`nbpages = $${index++}`)
+        values.push(nbpages)
+      }
+    if (isActive !== null) {
+        fields.push(`isactive = $${index++}`)
+        values.push(isActive)
     }
 
+    // fields.push(`id = $${index}`)
     values.push(idSection)
 
 
-    return executeQuery(numdiagPool, `UPDATE sections SET ${fields.join(', ')} WHERE id_section = $${index} RETURNING *`, values)
+    return executeQuery(numdiagPool, `UPDATE sections SET ${fields.join(', ')} WHERE id = $${index} RETURNING *`, values)
 }
 
 function deleteSection(idSection) {
     return executeQuery(numdiagPool, 'DELETE FROM sections WHERE id_section = $1 RETURNING *', [idSection])
 }
 
-function createSection(questionnaire_id, label = null, description = null, position = null, tooltip = null, nbPages = null) {
+function createSection(questionnaire_id, label = null, description = null, tooltip = null, nbPages = null) {
     const fields = [];
     const placeholders=[];
     const values = [];
@@ -64,9 +61,6 @@ function createSection(questionnaire_id, label = null, description = null, posit
       placeholders.push(`$${index++}`);
       values.push(description);
     }
-    fields.push(`position`);
-    placeholders.push(`$${index++}`);
-    values.push(position);
 
     if (tooltip !== null && tooltip!=='') {
       fields.push(`tooltip`);

@@ -30,7 +30,7 @@ async function updateQuestionnaire(idQuestionnaire, label, description, insight)
     body: JSON.stringify({label, description, insight}) // Pass the updated questionnaire data
   });
     if (!response.ok) {
-        throw new Error('Erreur lors du chargement des sections');
+        throw new Error('Erreur lors de la mise à jour en db des infos du questionnaire');
     }
     const data = await response.json();
     console.log('Mise à jour du questionnaire :', data);
@@ -47,6 +47,7 @@ function Questionnaire() {
     const [questionnaire, setQuestionnaire] = useState(null);
     const [buttonModifierQuest, setButtonModifierQuest] = useState("Modifier");
     const [isCreateSectionPopupOpen, setIsCreateSectionPopupOpen] = useState(false);
+    const [buttonAffichageSection, setButtonAffichageSection] = useState(false);
 
     useEffect(() => {
         async function fetchQuestionnaire() {
@@ -179,8 +180,11 @@ function Questionnaire() {
         <div className="questionnaire">
           <button type="button" id="editQuestButton" onClick={toggleButtonModifierQuest}>{buttonModifierQuest}</button>
           {buttonModifierQuest === "Modifier" ? <QuestionnaireTitle questionnaire={questionnaire}  /> : <QuestionnaireTitleForm questionnaire={questionnaire} onChange={handleInputChange} />}
-          {questionnaire.sections?.map(section => (
-            <div key={section.id+'section'}>
+
+        <button type="button" onClick={() => setButtonAffichageSection(!buttonAffichageSection)}>{buttonAffichageSection ? "Afficher les actifs" : "Tout afficher"}</button>
+      {questionnaire.sections?.map(section => (
+        (section.isactive || buttonAffichageSection) ? (
+          <div key={section.id+'section'} className={section.isactive ? "bg-green-300" : "bg-red-300"}>
               <Section
                   key={section.id}
                   section={section}
@@ -188,14 +192,13 @@ function Questionnaire() {
                   onUpdateQuestion={updateQuestion}
                   setQuestionnaire={setQuestionnaire}
                   questionnaireId={id}
-              />
-              {console.log(section.id)}
+                  />
               {/* <PopUpEditSection idSection={section_id} /> */}
-            </div>
+            </div>) : (<div key={section.id+'error'} className="hidden"></div>)
           ))}
           <button onClick={handleCreateSectionClick} className="edit-button">
                 Créer une section
-            </button>
+          </button>
 
             {/* Popup de création de section */}
             {isCreateSectionPopupOpen && (

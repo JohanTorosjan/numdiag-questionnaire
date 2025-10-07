@@ -7,10 +7,14 @@ INSERT INTO Questionnaires (id, label, description, code, version, insight, tool
 (2, 'Audit AI Act', 'Évaluation complète de la conformité AI Act', 2, '1.0', 'Analyse détaillée de la conformité aux exigences du AI Act', NULL, 100, true);
 
 -- Insert Sections (mapped from Section table)
-INSERT INTO Sections (id, questionnaire_id, label, description, position, tooltip, scoremax) VALUES
-(1, 1, 'Collecte des Donnees', 'oiia', 1, 'Oui', 40),
-(2, 2, 'Traitement des donnees', 'oiia', 1, 'Oui', 40),
-(3, 2, 'Transparence et responsabilite', 'oi', 3, 'Non', 25);
+INSERT INTO Sections (id, questionnaire_id, label, description, tooltip, scoremax) VALUES
+(1, 1, 'Collecte des Donnees', 'oiia', 'Oui', 40),
+(2, 2, 'Traitement des donnees', 'oiia','Oui', 40),
+(3, 2, 'Transparence et responsabilite', 'oi', 'Non', 25);
+-- INSERT INTO Sections (id, questionnaire_id, label, description, position, tooltip, scoremax) VALUES
+-- (1, 1, 'Collecte des Donnees', 'oiia', 1, 'Oui', 40),
+-- (2, 2, 'Traitement des donnees', 'oiia', 1, 'Oui', 40),
+-- (3, 2, 'Transparence et responsabilite', 'oi', 3, 'Non', 25);
 
 -- Insert Questions (mapped from Question table)
 INSERT INTO Questions (id, section_id, label, questionType, position, page, tooltip, coeff, theme) VALUES

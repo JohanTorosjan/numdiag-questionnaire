@@ -3,9 +3,9 @@ import cors from 'cors'
 
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase } from './database/client.js'
 import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion } from './questionnaire/questionnaire.js'
-import { getAllQuestionBySection, updateSection } from './questionnaire/section.js'
+import { getAllQuestionBySection} from './questionnaire/section.js'
 import {updateQuestion,updatePositions} from './questionnaire/question.js'
-import {createSection} from './questionnaire/section.js'
+import {createSection, updateSection} from './questionnaire/section.js'
 
 const app = express()
 const port = 3008
@@ -192,14 +192,33 @@ app.post('/createQuestionnaire', async (req,res) => {
 
 
 app.put('/updateSection/:sectionId', async (req, res) => {
-  const { sectionId } = req.params;
-  const { label, description } = req.body; // Get data from request body
+  const { sectionId } = req.params;  // Fixed: was idSection, but route param is sectionId
+  const { label, description, tooltip, nbpages, isActive } = req.body;
+
   try {
-    const sectionUpdate = await updateSection(sectionId, label, description)
-    res.status(200).json({ message: 'Section Updated successfully' })
-  } catch (error) {
+    console.log('section_id:', sectionId);
+    // Get max position
+    // const lastSectionResult = await executeQuery(
+    //   numdiagPool,
+    //   `SELECT MAX(position) FROM Sections WHERE questionnaire_id = $1`,
+    //   [questionnaireId]
+    // )
+
+    const sectionUpdate = await updateSection(
+      sectionId,
+      {label,
+      description,
+      tooltip,
+      nbpages,
+      isActive}
+    )
+
+    console.log('Section has been updated: ',sectionUpdate);
+    res.status(200).json({success: true})
+  }
+  catch (error) {
     console.error('Error updating section infos:', error)
-    res.status(500).json({ error: 'Failed to update section' })
+    sectionUpdate.status(500).json({ error: 'Failed to update section' })
   }
 })
 
@@ -219,23 +238,9 @@ app.put('/questions/:questionId/position', async (req, res) => {
 });
 
 app.post('/createSection', async (req,res) => {
-  let { questionnaire_id, label, description, position, tooltip, nbPages } = req.body; // Get data from request body
+  let { questionnaire_id, label, description, tooltip, nbPages } = req.body; // Get data from request body
   try {
-    if (position === null || position==='') {
-      const last_section_id = await executeQuery(
-        numdiagPool,
-        `SELECT MAX(position) FROM Sections WHERE questionnaire_id = $1`,
-        [questionnaire_id]
-    )
-    console.log('last section id:', last_section_id[0].max);
-      if (last_section_id[0].max !== null) {
-        const sectionPosition = last_section_id[0].max+1;
-        position = sectionPosition;
-      } else {
-        position = 1;
-      }
-    }
-    const SectionCreate = await createSection( questionnaire_id, label, description, position, tooltip, nbPages )
+    const SectionCreate = await createSection( questionnaire_id, label, description, tooltip, nbPages )
     console.log('Section has been created: ',SectionCreate);
     res.status(200).json({success: true})
   } catch (error) {

@@ -7,9 +7,8 @@ function CreateSection({ onSave, onClose }) {
     const [formData, setFormData] = useState({
         label:'',
         description:'',
-        position:'',
         tooltip:'',
-        nbPages:'',
+        nbpages:'',
     });
 
     const handleInputChange = (e) => {
@@ -79,7 +78,7 @@ function CreateSection({ onSave, onClose }) {
                           />
                       </div>
 
-                      <div className="form-group">
+                      {/* <div className="form-group">
                           <label htmlFor="position">Position :</label>
                           <input
                               type="text"
@@ -88,7 +87,7 @@ function CreateSection({ onSave, onClose }) {
                               value={formData.position}
                               onChange={handleInputChange}
                           />
-                      </div>
+                      </div> */}
 
                       <div className="form-group">
                           <label htmlFor="tooltip">Tooltip :</label>
@@ -102,11 +101,11 @@ function CreateSection({ onSave, onClose }) {
                       </div>
 
                       <div className="form-group">
-                          <label htmlFor="nbPages">Nombre de pages :</label>
+                          <label htmlFor="nbpages">Nombre de pages :</label>
                           <input
-                              id="nbPages"
-                              name="nbPages"
-                              value={formData.nbPages}
+                              id="nbpages"
+                              name="nbpages"
+                              value={formData.nbpages}
                               onChange={handleInputChange}
                               placeholder='Pas de code ou code pin (e.g. 0000)'
 

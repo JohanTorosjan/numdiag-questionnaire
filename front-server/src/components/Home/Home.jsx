@@ -61,7 +61,7 @@ export default function Home() {
 
     console.log('Questionnaires:', questionnaires);
 
-    const toggleButton = async (id, currentStatus) => {
+    const toggleButtonActive = async (id, currentStatus) => {
     try {
       const newStatus = !currentStatus;
       console.log(newStatus);
@@ -148,7 +148,7 @@ export default function Home() {
               (q.isactive || buttonAffichage) ? (
                 <div key={q.id+'questionnaire'} className={q.isactive ? "bg-green-300" : "bg-red-300"} >
                 <QuestionnaireResume key={q.id} idQuestionnaire={q.id} label={q.label}  />
-                <button type="button" onClick={() => toggleButton(q.id, q.isactive)}>{q.isactive ? "Désactiver" : "Activer"}</button>
+                <button type="button" onClick={() => toggleButtonActive(q.id, q.isactive)}>{q.isactive ? "Désactiver" : "Activer"}</button>
                 </div>
               ) : (<div key={q.id+'error'} className="hidden"></div>)
             ))}

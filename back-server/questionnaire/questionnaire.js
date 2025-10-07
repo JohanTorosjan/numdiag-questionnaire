@@ -29,7 +29,7 @@ async function getAllInfosQuestionnaire(idQuestionnaire) {
     // Récupération des sections
     const sections = await executeQuery(
         numdiagPool,
-        'SELECT * FROM sections WHERE questionnaire_id = $1 ORDER BY position',
+        'SELECT * FROM sections WHERE questionnaire_id = $1 ORDER BY id',
         [idQuestionnaire]
     );
 
