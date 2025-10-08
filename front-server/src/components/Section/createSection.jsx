@@ -48,20 +48,20 @@ function CreateSection({ onSave, onClose }) {
       <div className="popup-overlay" onClick={handleBackdropClick}>
           <div className="popup-content">
               <div className="popup-header">
-                  <h3>Nouveau Questionnaire</h3>
+                  <h3>Nouvelle section</h3>
                   <button onClick={onClose} className="close-button">×</button>
               </div>
 
               <form onSubmit={handleSubmit} className="popup-form">
                   <div className="form-group">
-                      <label htmlFor="label">Titre du questionnaire</label>
+                      <label htmlFor="label">Titre de la section</label>
                       <input
                           type="text"
                           id="label"
                           name="label"
                           value={formData.label}
                           onChange={handleInputChange}
-                          placeholder="My new RGPD"
+                          placeholder="Nouvelle section"
                           required
                       />
                   </div>
@@ -75,6 +75,8 @@ function CreateSection({ onSave, onClose }) {
                               name="description"
                               value={formData.description}
                               onChange={handleInputChange}
+                                placeholder='Une simple description'
+
                           />
                       </div>
 
@@ -97,6 +99,8 @@ function CreateSection({ onSave, onClose }) {
                               name="tooltip"
                               value={formData.tooltip}
                               onChange={handleInputChange}
+                                placeholder='Une aide'
+
                           />
                       </div>
 
@@ -107,7 +111,7 @@ function CreateSection({ onSave, onClose }) {
                               name="nbpages"
                               value={formData.nbpages}
                               onChange={handleInputChange}
-                              placeholder='Pas de code ou code pin (e.g. 0000)'
+                              placeholder='1 par défaut'
 
                           >
                           </input>
