@@ -49,7 +49,7 @@ CREATE TABLE Reponses (
     id SERIAL PRIMARY KEY,
     question_id INTEGER NOT NULL,
     label VARCHAR NOT NULL,
-    position INTEGER NOT NULL,
+    position INTEGER,
     tooltip VARCHAR,
     plafond INTEGER,
     recommandation TEXT,
@@ -57,6 +57,17 @@ CREATE TABLE Reponses (
     FOREIGN KEY (question_id) REFERENCES Questions(id) ON DELETE CASCADE
 );
 
+CREATE TABLE ReponsesTranches (
+    id SERIAL PRIMARY KEY,
+    question_id INTEGER NOT NULL,
+    min INTEGER NOT NULL,
+    max INTEGER NOT NULL,
+    value INTEGER NOT NULL,
+    tooltip VARCHAR,
+    plafond INTEGER,
+    recommandation TEXT,
+    FOREIGN KEY (question_id) REFERENCES Questions(id) ON DELETE CASCADE
+);
 -- Recommandation en fonction du questionnaire
 CREATE TABLE RecommandationsQuestionnaires (
     id SERIAL PRIMARY KEY,

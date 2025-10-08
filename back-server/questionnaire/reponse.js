@@ -8,44 +8,22 @@ function getReponseById(idReponse) {
     return executeQuery(numdiagPool, 'SELECT * FROM reponses WHERE id_reponse = $1', [idReponse])
 }
 
-function updateReponse(idReponse, idQuestion = null, idSection = null, label = null, position = null, tooltip = null) {
-    const fields = []
-    const values = []
-    let index = 1
-
-    if (idQuestion !== null) {
-        fields.push(`id_question = $${index++}`)
-        values.push(idQuestion)
-    }
-    if (idSection !== null) {
-        fields.push(`id_section = $${index++}`)
-        values.push(idSection)
-    }
-    if (label !== null) {
-        fields.push(`label = $${index++}`)
-        values.push(label)
-    }
-    if (position !== null) {
-        fields.push(`position = $${index++}`)
-        values.push(position)
-    }
-    if (tooltip !== null) {
-        fields.push(`tooltip = $${index++}`)
-        values.push(tooltip)
-    }
-
-    values.push(idReponse)
-
-    return executeQuery(numdiagPool, `UPDATE reponses SET ${fields.join(', ')} WHERE id_reponse = $${index} RETURNING *`, values)
-}
-
 function deleteReponse(idReponse) {
     return executeQuery(numdiagPool, 'DELETE FROM reponses WHERE id_reponse = $1 RETURNING *', [idReponse])
+}
+
+function updateReponse(idReponse, label, position, tooltip, plafond, recommandation, valeurScore) {
+    return executeQuery(
+        numdiagPool, 
+        'UPDATE reponses SET label = $1, position = $2, tooltip = $3, plafond = $4, recommandation = $5, valeurScore = $6 WHERE id = $7 RETURNING *', 
+        [label, position, tooltip, plafond, recommandation, valeurScore, idReponse]
+    )
 }
 
 export {
     addReponse,
     getReponseById,
-    updateReponse,
-    deleteReponse
+    deleteReponse,
+    updateReponse
 }
+

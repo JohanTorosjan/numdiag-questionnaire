@@ -280,6 +280,19 @@ async function updatePositions(questionId,newPosition,newPage) {
     
 }
 
+async function deleteReponses(questionId) {
+    const deleteReponses = executeQuery(
+        numdiagPool,
+        'DELETE FROM Reponses WHERE question_id = $1 RETURNING *',
+        [questionId]
+    )
+    const deleteReponsesTranches = executeQuery(
+        numdiagPool,
+        'DELETE FROM ReponsesTranches WHERE question_id = $1 RETURNING *',
+        [questionId]
+    )
+    return (deleteReponses,deleteReponsesTranches)    
+}
 
 export {
     addQuestion,
@@ -287,5 +300,6 @@ export {
     deleteQuestion,
     getAllReponsesByQuestion,
     updateQuestion,
-    updatePositions
+    updatePositions,
+    deleteReponses
 }
