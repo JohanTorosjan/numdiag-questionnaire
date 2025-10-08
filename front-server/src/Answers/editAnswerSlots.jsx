@@ -1,5 +1,6 @@
 import { useState,useEffect } from 'react';
 import { useToast } from '../ToastSystem';
+import ReactDOM from "react-dom";
 
 
 async function getTranches(questionId){
@@ -108,7 +109,7 @@ function PopUpEditAnswerSlots({ answer, answerType, onClose, onSave,questionId})
         }
     };
 
-    return (
+    return ReactDOM.createPortal(
         <div style={styles.overlay}>
             <div style={styles.popup}>
                 <div style={styles.header}>
@@ -227,7 +228,8 @@ function PopUpEditAnswerSlots({ answer, answerType, onClose, onSave,questionId})
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 

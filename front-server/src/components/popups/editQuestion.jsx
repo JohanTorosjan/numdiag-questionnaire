@@ -3,6 +3,7 @@ import './editQuestion.css';
 import { useParams } from 'react-router-dom';
 import QuestionDependencies from '../Question/questionDependencies';
 import { useToast } from '../../ToastSystem';
+import ReactDOM from "react-dom";
 
 function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
   const toast = useToast();
@@ -94,9 +95,9 @@ function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
 
     
 
-    return (
+    return ReactDOM.createPortal(
         <div className="popup-overlay" onClick={handleBackdropClick}>
-            <div className="popup-content">
+            <div className="popup-content"onClick={e => e.stopPropagation()}>
                 <div className="popup-header">
                     <h3>Éditer la question</h3>
                     <button onClick={onClose} className="close-button">×</button>
@@ -264,7 +265,7 @@ function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
                 </form>
             </div>
         </div>
-    );
+    ,document.body);
 }
 
 export default PopUpEditQuestion;
