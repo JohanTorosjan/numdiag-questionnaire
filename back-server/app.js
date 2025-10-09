@@ -4,7 +4,7 @@ import cors from 'cors'
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase } from './database/client.js'
 import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection} from './questionnaire/section.js'
-import {updateQuestion,updatePositions,deleteReponses} from './questionnaire/question.js'
+import {updateQuestion,updatePositions,deleteReponses,createQuestion} from './questionnaire/question.js'
 import {createSection, updateSection} from './questionnaire/section.js'
 import { 
     addReponsesTranches, 
@@ -13,7 +13,7 @@ import {
     deleteReponsesTranches 
 } from './questionnaire/reponsesTranches.js'
 
-import { updateReponse } from './questionnaire/reponse.js'
+import { updateReponse,createReponse } from './questionnaire/reponse.js'
 
 const app = express()
 const port = 3008
@@ -343,13 +343,13 @@ app.delete('/questions/:questionId/tranches', async (req, res) => {
 
 app.put('/reponses/:reponseId', async (req, res) => {
     const { reponseId } = req.params;
-    const { label, position, tooltip, plafond, recommandation, valeurScore } = req.body;
-    
+    const { label, tooltip, plafond, recommandation, valeurScore } = req.body;
+    console.log(label, tooltip, plafond, recommandation, valeurScore )
     try {
+
         const result = await updateReponse(
             reponseId, 
             label, 
-            position, 
             tooltip, 
             plafond, 
             recommandation, 
@@ -365,3 +365,79 @@ app.put('/reponses/:reponseId', async (req, res) => {
         res.status(500).json({ error: 'Failed to update reponse' })
     }
 })
+
+
+
+// Route POST pour créer une question
+app.post('/questions', async (req, res) => {
+    const { 
+        section_id,
+        label, 
+        questiontype, 
+        position, 
+        page, 
+        tooltip, 
+        coeff, 
+        theme, 
+        mandatory, 
+        public_cible 
+    } = req.body;
+    
+    try {
+        const result = await createQuestion(
+            section_id,
+            label,
+            questiontype,
+            position,
+            page,
+            tooltip,
+            coeff,
+            theme,
+            mandatory,
+            public_cible
+        );
+        
+        res.status(201).json({ 
+            success: true, 
+            message: 'Question created successfully',
+            data: result 
+        });
+    } catch (error) {
+        console.error('Error creating question:', error);
+        res.status(500).json({ error: 'Failed to create question' });
+    }
+});
+
+
+
+// Route POST pour créer une réponse
+app.post('/reponses', async (req, res) => {
+    const { 
+        question_id,
+        label, 
+        tooltip, 
+        plafond, 
+        recommandation, 
+        valeurScore 
+    } = req.body;
+    
+    try {
+        const result = await createReponse(
+            question_id,
+            label,
+            tooltip,
+            plafond,
+            recommandation,
+            valeurScore
+        );
+        
+        res.status(201).json({ 
+            success: true, 
+            message: 'Reponse created successfully',
+            data: result 
+        });
+    } catch (error) {
+        console.error('Error creating reponse:', error);
+        res.status(500).json({ error: 'Failed to create reponse' });
+    }
+});

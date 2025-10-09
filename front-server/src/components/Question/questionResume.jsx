@@ -4,7 +4,7 @@ import AnswersResume from '../../Answers/answersResume';
 import PopUpEditAnswerSlots from '../../Answers/editAnswerSlots';
 import { useToast } from '../../ToastSystem';
 import './questionResume.css';
-
+import PopUpCreateAnswer from '../../Answers/createAnswers';
 const answerTypeMatch = {
   "choix_simple": "Choix simple",
   "entier": "Entier",
@@ -17,7 +17,57 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
     const [isEditAnswerSlotsOpen, setIsEditAnswerSlotsOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [isAnswersOpen, setIsAnswersOpen] = useState(false);
+    const [isCreateAnswersOpen, setIsCreateAnswersOpen] = useState(false);
     
+    const openCreateAnswers = () => {
+        setIsCreateAnswersOpen(true);
+    };
+
+    const closeCreateAnswers = () => {
+        setIsCreateAnswersOpen(false);
+    };
+
+    const handleSaveAnswers = async (newAnswers) =>{
+      console.log(newAnswers)
+       const response = await fetch('http://localhost:3008/reponses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            question_id: question.id,
+            label: newAnswers.label,
+            tooltip: newAnswers.tooltip,
+            plafond: newAnswers.plafond,
+            recommandation: newAnswers.recommandation,
+            valeurScore: newAnswers.valeurScore
+        })
+    });
+    
+    const data = await response.json();
+
+
+  if(response.status==201){
+     try {
+        const responseQ = await fetch(`http://localhost:3008/questionnaire/${questionnaireId}`);
+        if (!responseQ.ok) {
+            throw new Error('Erreur lors du chargement des sections');
+        }
+        const dataQ = await responseQ.json();
+        console.log('Questionnaire : ', dataQ);
+        setQuestionnaire(dataQ)
+        setIsCreateAnswersOpen(false)
+        return
+    } catch (error) {
+        console.error('Error fetching questionnaire:', error);
+        toast.showError("Erreur en voulant recharger la page")
+        setIsCreateAnswersOpen(false)
+    }
+  }
+  else{
+    toast.showError("Erreur lors de la création")
+  }
+    return data;
+    }
+
     const answerTypeDisplayed = answerTypeMatch[question.questiontype];
     const toast = useToast();
 
@@ -144,10 +194,25 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
             <div className="question-header">
                 <div className="question-main-info">
                     <h4 className="question-title">
-                        {question.label}
+                       <p>{question.page}.{question.position} </p>
+                        {question.label} 
                         {question.mandatory && <span className="mandatory-badge">*</span>}
+                        <p className='question-tooltip-text'>{question.tooltip}  </p>
                     </h4>
-                    <span className="question-type-badge">{answerTypeDisplayed}</span>
+                    <div className="question-badge-info">
+
+                      <span className="question-type-badge">{answerTypeDisplayed}</span>
+                       <span className="question-type-badge">Page : {question.page}</span>
+                       <span className="question-type-badge">Coeff : {question.coeff}</span>
+                        <span className="question-type-badge">
+                          {question.theme ? `Theme : ${question.theme}` : "Pas de thème"}
+                        </span>
+                                    <span className="question-type-badge">
+                          {question.public_cible ? `Public cible : ${question.public_cible}` : "Pas de public"}
+                        </span>
+
+
+                    </div>
                 </div>
                 
                 <button onClick={handleEditClick} className="btn-edit-question">
@@ -187,7 +252,9 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                             </svg>
                             <span>Réponses ({question.reponses.length})</span>
                         </button>
+  
                     </div>
+                    
                 )}
 
                 {/* Tranches pour type entier */}
@@ -232,7 +299,26 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                     questionId={question.id}
                 />
             )}
+
+
+            { (question.questiontype === 'choix_multiple' || question.questiontype === 'choix_simple') && (
+          <div className="create-answer-container">
+          <button  className="btn-answer-question" onClick = {openCreateAnswers}>
+            <span className="btn-icon">+</span>
+                    Ajouter une réponse
+            </button>
+      </div>
+            )}
+
+            {isCreateAnswersOpen && (
+              <PopUpCreateAnswer
+                    answerType={question.questiontype}
+                    onClose={closeCreateAnswers}
+                    onSave={handleSaveAnswers}
+                />
+            )}
         </div>
+
     );
 }
 

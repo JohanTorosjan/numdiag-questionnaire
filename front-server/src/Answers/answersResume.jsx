@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import PopUpEditAnswers from './editAnswers';
 import './answersResume.css';
+import { useToast } from '../ToastSystem';
 
 function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) {
-  
+   const toast = useToast();
+
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   
   const handleEditClick = () => {
@@ -15,6 +17,8 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
   };
 
   const onSaveAnswer = async (updatedAnswer) => {
+    console.log("updated")
+
     console.log(updatedAnswer)
     
     try {
@@ -37,6 +41,8 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
         
         if (data.success) {
             console.log('Réponse mise à jour avec succès:', data.data)
+            toast.showSuccess('Réponse sauvegardée')
+
             const responseQ = await fetch(`http://localhost:3008/questionnaire/${questionnaireId}`);
             if (!responseQ.ok) {
                 throw new Error('Erreur lors du chargement du questionnaire');
@@ -44,6 +50,9 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
             const dataQ = await responseQ.json();
             setQuestionnaire(dataQ)
             setIsEditPopupOpen(false);
+        }
+        else{
+          throw new Error('Failed')
         }
     } catch (error) {
         console.error('Erreur lors de la mise à jour:', error)

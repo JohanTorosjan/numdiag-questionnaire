@@ -294,6 +294,107 @@ async function deleteReponses(questionId) {
     return (deleteReponses,deleteReponsesTranches)    
 }
 
+
+async function createQuestion(
+    section_id,
+    label, 
+    questiontype, 
+    position, 
+    page, 
+    tooltip, 
+    coeff, 
+    theme, 
+    mandatory, 
+    public_cible
+) {
+    try {
+        await numdiagPool.query('BEGIN');
+
+        // 1. Récupérer toutes les questions de la même section et page
+        const existingQuestionsQuery = `
+            SELECT id, position, page 
+            FROM Questions 
+            WHERE section_id = $1 AND page = $2 
+            ORDER BY position
+        `;
+        const existingQuestions = await executeQuery(
+            numdiagPool, 
+            existingQuestionsQuery, 
+            [section_id, page]
+        );
+
+        // 2. Vérifier et ajuster la position si nécessaire
+        let effectivePosition = Math.max(1, parseInt(position) || 1);
+        if (effectivePosition > existingQuestions.length + 1) {
+            effectivePosition = existingQuestions.length + 1;
+        }
+
+        // 3. Décaler les questions existantes si nécessaire
+        if (existingQuestions.length > 0) {
+            // Décaler toutes les questions à partir de la position d'insertion
+            const updatePositionsQuery = `
+                UPDATE Questions 
+                SET position = position + 1 
+                WHERE section_id = $1 AND page = $2 AND position >= $3
+            `;
+            await executeQuery(
+                numdiagPool, 
+                updatePositionsQuery, 
+                [section_id, page, effectivePosition]
+            );
+        }
+
+        // 4. Insérer la nouvelle question
+        const insertQuestionQuery = `
+            INSERT INTO Questions (
+                section_id, 
+                label, 
+                questionType, 
+                position, 
+                page, 
+                tooltip, 
+                coeff, 
+                theme, 
+                mandatory, 
+                public_cible
+            ) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+            RETURNING *
+        `;
+        
+        const result = await executeQuery(
+            numdiagPool,
+            insertQuestionQuery,
+            [
+                section_id,
+                label,
+                questiontype,
+                effectivePosition,
+                page,
+                tooltip || null,
+                coeff,
+                theme || null,
+                mandatory,
+                public_cible
+            ]
+        );
+
+        await numdiagPool.query('COMMIT');
+
+        return {
+            success: true,
+            question: result[0]
+        };
+
+    } catch (error) {
+        await numdiagPool.query('ROLLBACK');
+        console.error('Erreur lors de la création de la question:', error);
+        throw error;
+    }
+}
+
+
+
 export {
     addQuestion,
     getQuestionById,
@@ -301,5 +402,6 @@ export {
     getAllReponsesByQuestion,
     updateQuestion,
     updatePositions,
-    deleteReponses
+    deleteReponses,
+    createQuestion
 }
