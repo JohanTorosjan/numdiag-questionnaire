@@ -8,8 +8,82 @@ function getQuestionById(idQuestion) {
     return executeQuery(numdiagPool, 'SELECT * FROM questions WHERE id = $1', [idQuestion])
 }
 
-function deleteQuestion(idQuestion) {
-    return executeQuery(numdiagPool, 'DELETE FROM questions WHERE id = $1 RETURNING *', [idQuestion])
+async function deleteQuestion(idQuestion) {
+    try {
+        await numdiagPool.query('BEGIN');
+
+        // 1. Récupérer les informations de la question à supprimer
+        const questionToDelete = await executeQuery(
+            numdiagPool,
+            'SELECT id, section_id, position, page FROM Questions WHERE id = $1',
+            [idQuestion]
+        );
+
+        if (questionToDelete.length === 0) {
+            await numdiagPool.query('ROLLBACK');
+            throw new Error('Question non trouvée');
+        }
+
+        const { section_id, position: deletedPosition, page: deletedPage } = questionToDelete[0];
+
+        // 2. Supprimer les dépendances de la question
+        await executeQuery(
+            numdiagPool,
+            'DELETE FROM QuestionDependencies WHERE question_id = $1',
+            [idQuestion]
+        );
+
+        // 3. Supprimer les réponses associées
+        await executeQuery(
+            numdiagPool,
+            'DELETE FROM Reponses WHERE question_id = $1',
+            [idQuestion]
+        );
+
+        await executeQuery(
+            numdiagPool,
+            'DELETE FROM ReponsesTranches WHERE question_id = $1',
+            [idQuestion]
+        );
+
+        // 4. Supprimer la question
+        const deletedQuestion = await executeQuery(
+            numdiagPool,
+            'DELETE FROM Questions WHERE id = $1 RETURNING *',
+            [idQuestion]
+        );
+
+        // 5. Réorganiser les positions des questions restantes sur la même page
+        // Décaler toutes les questions qui suivaient la question supprimée
+        await executeQuery(
+            numdiagPool,
+            `UPDATE Questions 
+             SET position = position - 1 
+             WHERE section_id = $1 AND page = $2 AND position > $3`,
+            [section_id, deletedPage, deletedPosition]
+        );
+
+        await numdiagPool.query('COMMIT');
+
+        // 6. Récupérer toutes les questions mises à jour de la section
+        const updatedQuestions = await executeQuery(
+            numdiagPool,
+            'SELECT id, position, page, label FROM Questions WHERE section_id = $1 ORDER BY page, position',
+            [section_id]
+        );
+
+        return {
+            success: true,
+            deletedQuestion: deletedQuestion[0],
+            message: 'Question supprimée avec succès',
+            questions: updatedQuestions
+        };
+
+    } catch (error) {
+        await numdiagPool.query('ROLLBACK');
+        console.error('Erreur lors de la suppression de la question:', error);
+        throw error;
+    }
 }
 
 // function updateQuestion(idQuestion, label = null, questionType = null, position = null, page = null, tooltip = null, coeff = null, theme = null) {

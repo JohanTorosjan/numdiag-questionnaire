@@ -8,8 +8,8 @@ function getReponseById(idReponse) {
     return executeQuery(numdiagPool, 'SELECT * FROM reponses WHERE id_reponse = $1', [idReponse])
 }
 
-function deleteReponse(idReponse) {
-    return executeQuery(numdiagPool, 'DELETE FROM reponses WHERE id_reponse = $1 RETURNING *', [idReponse])
+function deleteSingleReponse(idReponse) {
+    return executeQuery(numdiagPool, 'DELETE FROM reponses WHERE id = $1 RETURNING *', [idReponse])
 }
 
 function updateReponse(idReponse, label, tooltip, plafond, recommandation, valeurScore) {
@@ -73,10 +73,13 @@ async function createReponse(  question_id,
 
 }
 
+
+
+
 export {
     addReponse,
     getReponseById,
-    deleteReponse,
+    deleteSingleReponse,
     updateReponse,
     createReponse
 }

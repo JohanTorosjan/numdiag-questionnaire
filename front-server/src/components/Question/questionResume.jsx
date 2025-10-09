@@ -5,6 +5,7 @@ import PopUpEditAnswerSlots from '../../Answers/editAnswerSlots';
 import { useToast } from '../../ToastSystem';
 import './questionResume.css';
 import PopUpCreateAnswer from '../../Answers/createAnswers';
+import PopUpDelete from '../popups/deleteQuestion'
 const answerTypeMatch = {
   "choix_simple": "Choix simple",
   "entier": "Entier",
@@ -18,7 +19,8 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
     const [isUpdating, setIsUpdating] = useState(false);
     const [isAnswersOpen, setIsAnswersOpen] = useState(false);
     const [isCreateAnswersOpen, setIsCreateAnswersOpen] = useState(false);
-    
+    const [isDeleteQuestionOpen, setIsDeleteQuestionOpen] = useState(false);
+
     const openCreateAnswers = () => {
         setIsCreateAnswersOpen(true);
     };
@@ -26,6 +28,50 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
     const closeCreateAnswers = () => {
         setIsCreateAnswersOpen(false);
     };
+
+    const handleDeleteClick = async()=>{
+      setIsDeleteQuestionOpen(true)
+    }
+
+    const  handleCloseDeleteQuestionOpen =() =>{
+        setIsDeleteQuestionOpen(false)
+    }
+
+    const handleDeleteQuestion = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:3008/questions/${question.id}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (response.status === 200) {
+          setIsDeleteQuestionOpen(false);
+
+          try {
+            const responseQ = await fetch(`http://localhost:3008/questionnaire/${questionnaireId}`);
+            if (!responseQ.ok) {
+              throw new Error('Erreur lors du chargement des sections');
+            }
+
+            const data = await responseQ.json();
+            console.log('Questionnaire :', data);
+            toast.showSuccess("Question supprimée");
+
+           setQuestionnaire(data)
+          } catch (error) {
+            console.error('Error fetching questionnaire:', error);
+            toast.showError('Erreur lors du rechargement');
+            return null;
+          }
+        }
+      } catch (e) {
+        console.log(e);
+        toast.showError('Erreur de suppression');
+      }
+    };
+
+
+
 
     const handleSaveAnswers = async (newAnswers) =>{
       console.log(newAnswers)
@@ -221,6 +267,10 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                     </svg>
                     Éditer
                 </button>
+                                <button onClick={handleDeleteClick} className="btn-edit-question">
+         🗑️
+                    
+                </button>
             </div>
 
             {/* Description */}
@@ -315,6 +365,15 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                     answerType={question.questiontype}
                     onClose={closeCreateAnswers}
                     onSave={handleSaveAnswers}
+                />
+            )}
+
+
+            {isDeleteQuestionOpen && (
+              <PopUpDelete
+              question={true}
+                onCancel={handleCloseDeleteQuestionOpen}
+              onConfirm={handleDeleteQuestion}
                 />
             )}
         </div>

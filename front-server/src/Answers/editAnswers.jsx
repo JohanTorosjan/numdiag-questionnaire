@@ -6,7 +6,7 @@ function PopUpEditAnswers({ answer, answerType, onClose, onSave }) {
     const toast = useToast();
     const [formData, setFormData] = useState({
         label: answer?.label || '',
-        valeurScore: answer?.valeurscore || '',
+        valeurScore: answer?.valeurscore || 0,
         tooltip: answer?.tooltip || '',
         plafond: answer?.plafond || 0,
         recommandation: answer?.recommandation || '',

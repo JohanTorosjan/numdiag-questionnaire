@@ -125,6 +125,7 @@ function Section({
         );
         setButtonUpdateSection("Modifier");
         console.log('Section updated:', updateSect);
+        toast.showSuccess('Section mise à jour')
       } catch (error) {
         console.error('Error updating section:', error);
       }

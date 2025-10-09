@@ -4,7 +4,7 @@ import cors from 'cors'
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase } from './database/client.js'
 import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection} from './questionnaire/section.js'
-import {updateQuestion,updatePositions,deleteReponses,createQuestion} from './questionnaire/question.js'
+import {updateQuestion,updatePositions,deleteReponses,createQuestion, deleteQuestion} from './questionnaire/question.js'
 import {createSection, updateSection} from './questionnaire/section.js'
 import { 
     addReponsesTranches, 
@@ -13,7 +13,7 @@ import {
     deleteReponsesTranches 
 } from './questionnaire/reponsesTranches.js'
 
-import { updateReponse,createReponse } from './questionnaire/reponse.js'
+import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
 
 const app = express()
 const port = 3008
@@ -441,3 +441,39 @@ app.post('/reponses', async (req, res) => {
         res.status(500).json({ error: 'Failed to create reponse' });
     }
 });
+
+
+app.delete('/questions/:questionId/', async (req, res) => {
+    const { questionId } = req.params
+    try{
+   const response = await deleteQuestion(questionId)
+    res.status(200).json({ 
+            success: true, 
+            message: 'question deleted successfully',
+            data: response 
+        });
+  }
+    catch(e){
+      console.log(e)
+       res.status(500).json({ error: 'Failed to delete question'});
+
+    }
+})
+
+
+app.delete('/reponse/:reponseId/', async (req, res) => {
+    const { reponseId } = req.params
+    try{
+   const response = await deleteSingleReponse(reponseId)
+    res.status(200).json({ 
+            success: true, 
+            message: 'reponse deleted successfully',
+            data: response 
+        });
+  }
+    catch(e){
+      console.log(e)
+       res.status(500).json({ error: 'Failed to delete reponse'});
+
+    }
+})
