@@ -1,7 +1,6 @@
 import QuestionResume from "../Question/questionResume";
 import SectionUpdateForm from "./sectionUpdateForm";
-// import PopUpEditQuestion from "../popups/editQuestion";
-import "./Section.css"; // Import du CSS
+import "./Section.css";
 import React from "react";
 import { useToast } from '../../ToastSystem';
 
@@ -15,7 +14,9 @@ function Section({
   const [isQuestionsOpen, setIsQuestionsOpen] = React.useState(false);
   const [isSection, setSection] = React.useState(section);
   const [buttonUpdateSection, setButtonUpdateSection] = React.useState("Modifier");
-  const toast = useToast();
+    const toast = useToast();
+
+
 
 
   const toggleQuestions = () => {
@@ -23,28 +24,24 @@ function Section({
   };
 
   const handleSectionChange = (e) => {
-     const { name, value } = e.target;
-
-      setSection(prev => ({
-          ...prev,
-          [name]: value
-      }));
-    };
+    const { name, value } = e.target;
+    setSection(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   async function updateSection(idSection, updates) {
     try {
       const response = await fetch(`http://localhost:3008/updateSection/${idSection}`, {
-      method: 'PUT',
-      headers: {
-      'Content-Type': 'application/json',
-    },
-      body: JSON.stringify(updates) // Pass the updated section data
-    });
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates)
+      });
       if (!response.ok) {
-          toast.showError('Erreur lors de la mise à jour de la section');
-          throw new Error('Erreur lors de la mise à jour en db des infos de section');
-        } else {
-        toast.showSuccess('Section mise à jour avec succès !');
+        throw new Error('Erreur lors de la mise à jour en db des infos de section');
       }
       const data = await response.json();
       console.log('Mise à jour de la section :', idSection);
@@ -63,10 +60,12 @@ function Section({
       try {
         const updateSect = await updateSection(
           section.id,
-          {label:isSection.label,
-          description:isSection.description,
-          tooltip:isSection.tooltip,
-          nbpages:isSection.nbpages}
+          {
+            label: isSection.label,
+            description: isSection.description,
+            tooltip: isSection.tooltip,
+            nbpages: isSection.nbpages
+          }
         );
         setButtonUpdateSection("Modifier");
         console.log('Section updated:', updateSect);
@@ -79,9 +78,7 @@ function Section({
   const toggleButtonActiveSection = async (section_id, currentStatus) => {
     try {
       const newStatus = !currentStatus;
-
       const data = await updateSection(section_id, { isActive: newStatus });
-
       console.log('Mise à jour de la section isActive :', data);
       setSection(prev => ({ ...prev, isactive: newStatus }));
       onUpdateSection(section_id, { isactive: newStatus });
@@ -92,55 +89,85 @@ function Section({
     }
   };
 
-
-
-
   return (
     <div className="section">
-      {/* Bouton chevron pour déplier/replier les questions */}
-      <div className="questions-toggle">
-        <button onClick={toggleQuestions} className="chevron-button">
-          <svg
-            className={`chevron-icon ${isQuestionsOpen ? "rotated" : ""}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            width="16"
-            height="16"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
+      {/* Header de la section */}
+      <div className="section-header">
+        <div className="section-header-left">
+          {/* Bouton chevron */}
+          <button onClick={toggleQuestions} className="chevron-button">
+            <svg
+              className={`chevron-icon ${isQuestionsOpen ? "rotated" : ""}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
 
-        </button>
-          <button type="button" id="updateSectionButton" onClick={toggleButtonUpdateSection}>{buttonUpdateSection}</button>
-          {/* span nécessaire du coup ? */}
-          {buttonUpdateSection === "Modifier" ?
-          <span>
-            {section.label} (Questions: {section.questions.length}) Description:"{section.description}" Tooltip: "{section.tooltip}" Nombre de pages: "{section.nbpages}"
-          </span> :
-          <SectionUpdateForm section={isSection} onChange={handleSectionChange} />}
-          <button type="button" onClick={() => toggleButtonActiveSection(section.id, section.isactive)}>{section.isactive ? "Désactiver" : "Activer"}</button>
+          {/* Contenu de la section */}
+          <div className="section-content">
+            {buttonUpdateSection === "Modifier" ? (
+              <div className="section-info">
+                <h3 className="section-title">{section.label}</h3>
+                <div className="section-metadata">
+                  <span className="metadata-item">
+                    <span className="metadata-label">Questions:</span> {section.questions.length}
+                  </span>
+                  <span className="metadata-item">
+                    <span className="metadata-label">Pages:</span> {section.nbpages}
+                  </span>
+                </div>
+                {section.description && (
+                  <p className="section-description">{section.description}</p>
+                )}
+                {section.tooltip && (
+                  <p className="section-tooltip"> {section.tooltip}</p>
+                )}
+              </div>
+            ) : (
+              <SectionUpdateForm section={isSection} onChange={handleSectionChange} />
+            )}
+          </div>
+        </div>
+
+        {/* Boutons d'action */}
+        <div className="section-actions">
+          <button
+            type="button"
+            className="btn-action btn-edit"
+            onClick={toggleButtonUpdateSection}
+          >
+            {buttonUpdateSection}
+          </button>
+          <button
+            type="button"
+            className={`btn-action btn-toggle ${section.isactive ? 'active' : 'inactive'}`}
+            onClick={() => toggleButtonActiveSection(section.id, section.isactive)}
+          >
+            {section.isactive ? "🗑️" : "Activer"}
+          </button>
+        </div>
       </div>
-            <div>{section.id}</div>
+
       {/* Container des questions avec animation */}
-      <div
-        className={`questions-container ${isQuestionsOpen ? "open" : "closed"}`}
-      >
-        <p>{section.description}</p>
-        <p>Nombre de pages : {section.nbpages}</p>
+      <div className={`questions-container ${isQuestionsOpen ? "open" : "closed"}`}>
         <div className="questions-list">
           {Array.isArray(section.questions) &&
             [...section.questions]
               .sort((a, b) => {
                 if (a.page !== b.page) {
-                  return a.page - b.page; // d'abord tri par page
+                  return a.page - b.page;
                 }
-                return a.position - b.position; // puis tri par position
+                return a.position - b.position;
               })
               .map((question) => (
                 <QuestionResume

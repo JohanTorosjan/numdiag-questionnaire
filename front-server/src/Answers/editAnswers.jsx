@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useToast } from '../ToastSystem';
+import ReactDOM from "react-dom";
 
 function PopUpEditAnswers({ answer, answerType, onClose, onSave }) {
     const toast = useToast();
@@ -31,13 +32,14 @@ function PopUpEditAnswers({ answer, answerType, onClose, onSave }) {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            onSave(formData);
+            await onSave(formData);
             toast.showSuccess('Réponse mise à jour avec succès !');
             onClose();
-        } catch (err) {
+        } catch (e) {
+            console.log(e)
             toast.showError('Erreur lors de la sauvegarde de la réponse.');
         }
     };
@@ -48,7 +50,7 @@ function PopUpEditAnswers({ answer, answerType, onClose, onSave }) {
         }
     };
 
-    return (
+    return ReactDOM.createPortal(
         <div className="popup-overlay" onClick={handleBackdropClick}>
             <div className="popup-content">
                 <div className="popup-header">
@@ -134,7 +136,8 @@ function PopUpEditAnswers({ answer, answerType, onClose, onSave }) {
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 

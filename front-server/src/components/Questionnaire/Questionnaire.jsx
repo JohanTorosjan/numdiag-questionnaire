@@ -4,6 +4,7 @@ import Section from '../Section/section.jsx';
 import QuestionnaireTitle from './questionnaireTitle.jsx';
 import QuestionnaireTitleForm from './questionnaireTitleForm';
 import CreateSection from '../Section/createSection.jsx';
+import "./Questionnaire.css"; // Import du CSS
 import { useToast } from '../../ToastSystem';
 
 async function getQuestionnaire(idQuestionnaire) {
@@ -183,29 +184,64 @@ function Questionnaire() {
         return <div>Ca charge (vous pouvez aller faire un cafe en attendant ^^)...</div>;
     }
 
-    return (
-        <div className="questionnaire">
-          <button type="button" id="editQuestButton" onClick={toggleButtonModifierQuest}>{buttonModifierQuest}</button>
-          {buttonModifierQuest === "Modifier" ? <QuestionnaireTitle questionnaire={questionnaire}  /> : <QuestionnaireTitleForm questionnaire={questionnaire} onChange={handleInputChange} />}
+       return (
+        <div className="questionnaire-container">
+            {/* Header du questionnaire */}
+            <div className="questionnaire-header">
+                <div className="questionnaire-header-content">
+                    {buttonModifierQuest === "Modifier" ?
+                        <QuestionnaireTitle questionnaire={questionnaire} /> :
+                        <QuestionnaireTitleForm questionnaire={questionnaire} onChange={handleInputChange} />
+                    }
+                </div>
+                <div className="questionnaire-actions">
+                    <button
+                        type="button"
+                        className="btn-edit-quest"
+                        onClick={toggleButtonModifierQuest}
+                    >
+                        {buttonModifierQuest}
+                    </button>
+                    <button
+                        type="button"
+                        className="btn-toggle-sections"
+                        onClick={() => setButtonAffichageSection(!buttonAffichageSection)}
+                    >
+                        {buttonAffichageSection ? "Afficher les actifs" : "Tout afficher"}
+                    </button>
+                </div>
+            </div>
 
-        <button type="button" onClick={() => setButtonAffichageSection(!buttonAffichageSection)}>{buttonAffichageSection ? "Afficher les actifs" : "Tout afficher"}</button>
-      {questionnaire.sections?.map(section => (
-        (section.isactive || buttonAffichageSection) ? (
-          <div key={section.id+'section'} className={section.isactive ? "bg-green-300" : "bg-red-300"}>
-              <Section
-                  key={section.id}
-                  section={section}
-                  onUpdateSection={updateSection}
-                  onUpdateQuestion={updateQuestion}
-                  setQuestionnaire={setQuestionnaire}
-                  questionnaireId={id}
-                  />
-              {/* <PopUpEditSection idSection={section_id} /> */}
-            </div>) : (<div key={section.id+'error'} className="hidden"></div>)
-          ))}
-          <button onClick={handleCreateSectionClick} className="edit-button">
-                Créer une section
-          </button>
+            {/* Liste des sections */}
+            <div className="sections-list">
+                {questionnaire.sections?.map(section => (
+                    (section.isactive || buttonAffichageSection) ? (
+                        <div
+                            key={section.id + 'section'}
+                            className={`section-card ${section.isactive ? 'active' : 'inactive'}`}
+                        >
+                            <Section
+                                key={section.id}
+                                section={section}
+                                onUpdateSection={updateSection}
+                                onUpdateQuestion={updateQuestion}
+                                setQuestionnaire={setQuestionnaire}
+                                questionnaireId={id}
+                            />
+                        </div>
+                    ) : (
+                        <div key={section.id + 'error'} className="hidden"></div>
+                    )
+                ))}
+            </div>
+
+            {/* Bouton de création */}
+            <div className="create-section-container">
+                <button onClick={handleCreateSectionClick} className="btn-create-section">
+                    <span className="btn-icon">+</span>
+                    Créer une section
+                </button>
+            </div>
 
             {/* Popup de création de section */}
             {isCreateSectionPopupOpen && (

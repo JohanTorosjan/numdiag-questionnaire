@@ -1,0 +1,162 @@
+/* Container principal */
+.questionnaire-container {
+    max-width: none;
+    min-width: 80vw;
+    max-width: 80vw;
+
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+/* Header du questionnaire */
+.questionnaire-header {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    align-items: center;
+}
+
+.questionnaire-header-content {
+    margin-bottom: 1.5rem;
+}
+
+.questionnaire-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Boutons d'action */
+.btn-edit-quest,
+.btn-toggle-sections {
+    padding: 0.625rem 1.25rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-edit-quest {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-edit-quest:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-toggle-sections {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.btn-toggle-sections:hover {
+    background: #e5e7eb;
+}
+
+/* Liste des sections */
+.sections-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Cartes de section */
+.section-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.section-card.active {
+    border-left-color: #10b981;
+    background: #f0fdf4;
+}
+
+.section-card.inactive {
+    border-left-color: #ef4444;
+    background: #fef2f2;
+    opacity: 0.85;
+}
+
+.section-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+/* Bouton de création de section */
+.create-section-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.btn-create-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: #8b5cf6;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-create-section:hover {
+    background: #7c3aed;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.btn-icon {
+    font-size: 1.5rem;
+    font-weight: 300;
+}
+
+/* Utilitaires */
+.hidden {
+    display: none;
+}
+
+/* Anciens sélecteurs pour compatibilité */
+.bg-green-300 {
+    /* Remplacé par .section-card.active */
+}
+
+.bg-red-300 {
+    /* Remplacé par .section-card.inactive */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .questionnaire-container {
+        padding: 1rem;
+    }
+
+    .questionnaire-header {
+        padding: 1.5rem;
+    }
+
+    .questionnaire-actions {
+        flex-direction: column;
+    }
+
+    .btn-edit-quest,
+    .btn-toggle-sections {
+        width: 100%;
+    }
+}
