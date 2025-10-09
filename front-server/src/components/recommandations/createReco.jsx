@@ -71,24 +71,32 @@ function CreateReco({ onSave, onClose }) {
               <div className="form-group">
                 <label htmlFor="min">Valeur minimum</label>
                 <input
-                  type="text"
+                  type="number"
                   id="min"
                   name="min"
                   value={formData.min}
                   onChange={handleInputChange}
                   placeholder="Un entier"
+                  onKeyDown={(e) =>["e", "E", "+", "-", ".", ","].includes(e.key) && e.preventDefault()
+        }
+
+                  required
                 />
               </div>
 
               <div className="form-group">
                 <label htmlFor="max">Valeur maximum</label>
                 <input
-                  type="text"
+                  type="number"
                   id="max"
                   name="max"
                   value={formData.max}
                   onChange={handleInputChange}
                   placeholder="Un entier"
+                  onKeyDown={(e) =>["e", "E", "+", "-", ".", ","].includes(e.key) && e.preventDefault()
+        }
+
+                  required
                 />
               </div>
             </div>

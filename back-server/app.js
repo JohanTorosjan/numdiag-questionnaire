@@ -14,7 +14,7 @@ import {
 } from './questionnaire/reponsesTranches.js'
 
 import { updateReponse } from './questionnaire/reponse.js'
-import { createReco } from './questionnaire/recommandation.js'
+import { createReco, getAllReco } from './questionnaire/recommandation.js'
 
 const app = express()
 const port = 3008
@@ -367,6 +367,9 @@ app.put('/reponses/:reponseId', async (req, res) => {
     }
 })
 
+/////////////////////////////
+// Recommandations
+
 app.post('/createreco', async (req,res) => {
   let { recommandation, min, max, questionnaire_id } = req.body; // Get data from request body
   try {
@@ -376,5 +379,16 @@ app.post('/createreco', async (req,res) => {
   } catch (error) {
     console.error('Error creating recommandation:', error)
     res.status(500).json({ error: 'Failed to create recommandation' })
+  }
+})
+
+app.get('/recommandations/:questionnaireId', async (req, res) => {
+  const { questionnaireId } = req.params
+  try {
+    const recommandations = await getAllReco(questionnaireId)
+    res.json({ recommandations })
+  } catch (error) {
+    console.error('Error fetching recommandations:', error)
+    res.status(500).json({ error: 'Internal server error' })
   }
 })

@@ -34,4 +34,9 @@ function createReco(questionnaire_id, recommandation= null, min= null, max = nul
     );
 }
 
-export {createReco}
+
+function getAllReco(idQuestionnaire) {
+    return executeQuery(numdiagPool, 'SELECT * FROM RecommandationsQuestionnaires WHERE questionnaire_id = $1', [idQuestionnaire])
+}
+
+export {createReco, getAllReco}
