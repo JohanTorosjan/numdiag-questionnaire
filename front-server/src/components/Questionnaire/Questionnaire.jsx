@@ -1,11 +1,14 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useToast } from '../../ToastSystem';
+
 import Section from '../Section/section.jsx';
 import QuestionnaireTitle from './questionnaireTitle.jsx';
 import QuestionnaireTitleForm from './questionnaireTitleForm';
 import CreateSection from '../Section/createSection.jsx';
+import CreateReco from '../recommandations/createReco.jsx';
+
 import "./Questionnaire.css"; // Import du CSS
-import { useToast } from '../../ToastSystem';
 
 async function getQuestionnaire(idQuestionnaire) {
     try {
@@ -50,6 +53,7 @@ function Questionnaire() {
     const [questionnaire, setQuestionnaire] = useState(null);
     const [buttonModifierQuest, setButtonModifierQuest] = useState("Modifier");
     const [isCreateSectionPopupOpen, setIsCreateSectionPopupOpen] = useState(false);
+    const [isCreateRecoPopupOpen, setCreateRecoPopupOpen] = useState(false);
     const [buttonAffichageSection, setButtonAffichageSection] = useState(false);
     const toast = useToast();
 
@@ -120,6 +124,10 @@ function Questionnaire() {
       }
     }
 
+
+    //////////////////////////////////////////
+    // Section part
+
     const handleCreateSectionClick = () => {
         setIsCreateSectionPopupOpen(true);
     };
@@ -179,6 +187,72 @@ function Questionnaire() {
         }
     }
 
+
+    //////////////////////////////////////////
+    // Recommandation part
+
+    const handleCreateRecoClick = () => {
+        setCreateRecoPopupOpen(true);
+    };
+
+  const handleClosePopUpReco = () => {
+      setCreateRecoPopupOpen(false);
+  };
+
+  const handleSaveReco = async (newReco, questionnaire_id=id) => {
+      try {
+          // Ici tu feras ton appel API plus tard
+          console.log('Appel API sauvegarde recommandation:', {
+              updatedData: newReco,
+              questionnaire_id: questionnaire_id,
+          });
+
+          const response = await fetch(`http://localhost:3008/createreco`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  // Ajoute l'auth si nécessaire
+                  // 'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                  ...newReco,
+                  questionnaire_id: questionnaire_id,
+              })
+              });
+
+
+          if (!response.ok) {
+              throw new Error(`Erreur HTTP: ${response.status}`);
+          }
+
+          const result = await response.json();
+          console.log('Creation recommandation, result:', result);
+          if (!result.success) {
+          throw new Error(result.error || 'Erreur lors de la sauvegarde de la recommandation');
+          }
+
+          await new Promise(resolve => setTimeout(resolve, 100));
+
+          // Refresh the questionnaire data
+          const updatedQuestionnaire = await getQuestionnaire(id);
+          console.log('Updated questionnaire:', updatedQuestionnaire); // Add this for debugging
+
+          if (updatedQuestionnaire) {
+              setQuestionnaire(updatedQuestionnaire);
+              toast.showSuccess('Recommandation créée avec succès!');
+          } else {
+              toast.showError('Erreur lors de la création de la recommandation');
+              throw new Error('Failed to fetch updated questionnaire');
+          }
+          setCreateRecoPopupOpen(false);
+        } catch (error) {
+            console.error('Erreur lors de la sauvegarde:', error);
+        }
+    }
+
+
+    ////////////////////////////////
+    // html component part
 
     if (!questionnaire) {
         return <div>Ca charge (vous pouvez aller faire un cafe en attendant ^^)...</div>;
@@ -248,6 +322,31 @@ function Questionnaire() {
                 <CreateSection
                     onSave={handleSaveSection}
                     onClose={handleClosePopupSection}
+                />
+            )}
+
+            {/* Div pour les recommandations */}
+            <div className='sections-list'>
+              <div className="section">
+                {/* Header de la section */}
+                  <div className="section-header">
+                    <div className="section-content">
+                      <h3>Recommandations</h3>
+                    </div>
+                  </div>
+               <div className="create-section-container">
+                <button onClick={handleCreateRecoClick} className="btn-create-section">
+                    <span className="btn-icon">+</span>
+                    Créer une recommandation
+                </button>
+              </div>
+            </div>
+          </div>
+          {/* pop up creation recommandations */}
+          {isCreateRecoPopupOpen && (
+                <CreateReco
+                    onSave={handleSaveReco}
+                    onClose={handleClosePopUpReco}
                 />
             )}
         </div>

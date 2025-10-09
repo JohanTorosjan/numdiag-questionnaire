@@ -6,14 +6,15 @@ import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAll
 import { getAllQuestionBySection} from './questionnaire/section.js'
 import {updateQuestion,updatePositions,deleteReponses} from './questionnaire/question.js'
 import {createSection, updateSection} from './questionnaire/section.js'
-import { 
-    addReponsesTranches, 
-    getReponsesTranchesByQuestion, 
-    updateReponsesTranches, 
-    deleteReponsesTranches 
+import {
+    addReponsesTranches,
+    getReponsesTranchesByQuestion,
+    updateReponsesTranches,
+    deleteReponsesTranches
 } from './questionnaire/reponsesTranches.js'
 
 import { updateReponse } from './questionnaire/reponse.js'
+import { createReco } from './questionnaire/recommandation.js'
 
 const app = express()
 const port = 3008
@@ -260,13 +261,13 @@ app.post('/createSection', async (req,res) => {
 
 app.delete('/questions/:questionId/deleteReponses', async (req, res) => {
     const { questionId } = req.params
-    
+
     try {
         const result = await deleteReponses(questionId)
-        res.status(200).json({ 
-            success: true, 
+        res.status(200).json({
+            success: true,
             message: 'Reponses deleted successfully',
-            data: result 
+            data: result
         })
     } catch (error) {
         console.error('Error deleting reponses:', error)
@@ -279,13 +280,13 @@ app.delete('/questions/:questionId/deleteReponses', async (req, res) => {
 app.post('/questions/:questionId/tranches', async (req, res) => {
     const { questionId } = req.params
     const { tranches } = req.body
-    
+
     try {
         const result = await addReponsesTranches(questionId, tranches)
-        res.status(200).json({ 
-            success: true, 
+        res.status(200).json({
+            success: true,
             message: 'Tranches saved successfully',
-            data: result 
+            data: result
         })
     } catch (error) {
         console.error('Error saving tranches:', error)
@@ -296,7 +297,7 @@ app.post('/questions/:questionId/tranches', async (req, res) => {
 // Récupérer les tranches d'une question
 app.get('/questions/:questionId/tranches', async (req, res) => {
     const { questionId } = req.params
-    
+
     try {
         const tranches = await getReponsesTranchesByQuestion(questionId)
         res.json(tranches)
@@ -310,13 +311,13 @@ app.get('/questions/:questionId/tranches', async (req, res) => {
 app.put('/questions/:questionId/tranches', async (req, res) => {
     const { questionId } = req.params
     const { tranches } = req.body
-    
+
     try {
         const result = await updateReponsesTranches(questionId, tranches)
-        res.status(200).json({ 
-            success: true, 
+        res.status(200).json({
+            success: true,
             message: 'Tranches updated successfully',
-            data: result 
+            data: result
         })
     } catch (error) {
         console.error('Error updating tranches:', error)
@@ -327,13 +328,13 @@ app.put('/questions/:questionId/tranches', async (req, res) => {
 // Supprimer les tranches d'une question
 app.delete('/questions/:questionId/tranches', async (req, res) => {
     const { questionId } = req.params
-    
+
     try {
         const result = await deleteReponsesTranches(questionId)
-        res.status(200).json({ 
-            success: true, 
+        res.status(200).json({
+            success: true,
             message: 'Tranches deleted successfully',
-            data: result 
+            data: result
         })
     } catch (error) {
         console.error('Error deleting tranches:', error)
@@ -344,19 +345,19 @@ app.delete('/questions/:questionId/tranches', async (req, res) => {
 app.put('/reponses/:reponseId', async (req, res) => {
     const { reponseId } = req.params;
     const { label, position, tooltip, plafond, recommandation, valeurScore } = req.body;
-    
+
     try {
         const result = await updateReponse(
-            reponseId, 
-            label, 
-            position, 
-            tooltip, 
-            plafond, 
-            recommandation, 
+            reponseId,
+            label,
+            position,
+            tooltip,
+            plafond,
+            recommandation,
             valeurScore
         )
-        res.status(200).json({ 
-            success: true, 
+        res.status(200).json({
+            success: true,
             message: 'Reponse updated successfully',
             data: result[0]
         })
@@ -364,4 +365,16 @@ app.put('/reponses/:reponseId', async (req, res) => {
         console.error('Error updating reponse:', error)
         res.status(500).json({ error: 'Failed to update reponse' })
     }
+})
+
+app.post('/createreco', async (req,res) => {
+  let { recommandation, min, max, questionnaire_id } = req.body; // Get data from request body
+  try {
+    const RecoCreate = await createReco( questionnaire_id, recommandation, min, max )
+    console.log('Recommandation has been created: ',RecoCreate);
+    res.status(200).json({success: true})
+  } catch (error) {
+    console.error('Error creating recommandation:', error)
+    res.status(500).json({ error: 'Failed to create recommandation' })
+  }
 })
