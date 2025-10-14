@@ -268,6 +268,7 @@ function Questionnaire() {
       console.log("Updated recommandations:", updatedReco); // Add this for debugging
 
       if (updatedReco) {
+
         setRecommandations(updatedReco.recommandations);
         toast.showSuccess("Recommandation créée avec succès!");
       } else {
@@ -278,6 +279,14 @@ function Questionnaire() {
     } catch (error) {
       console.error("Erreur lors de la sauvegarde:", error);
     }
+  };
+
+  const updateReco = (recoId, updatedReco) => {
+    setRecommandations((prevRecommandations) =>
+    prevRecommandations.map((reco) =>
+      reco.id === recoId ? { ...reco, ...updatedReco } : reco
+    )
+  );
   };
 
 
@@ -375,11 +384,12 @@ function Questionnaire() {
             <div className="section-content">
               <h3>Recommandations</h3>
               <div className="sections-list">
-                {recommandations?.map((recommandation) => (
+                {recommandations.map((recommandation) => (
                   <RecoQuestionnaire
                     key={`recommandation-${recommandation.id}`}
                     recommandation={recommandation}
                     setRecommandations={setRecommandations}
+                    onUpdateReco = {updateReco}
                     // questionnaireId={id}
                   />
                 ))}

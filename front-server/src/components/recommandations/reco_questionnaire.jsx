@@ -32,7 +32,7 @@ function RecoQuestionnaire({recommandation,onUpdateReco,setRecommandations}) {
       setButtonUpdateReco("Valider");
     } else {
       try {
-        const updateReco = await updateReco(
+        const updatereco = await updateReco(
           {
             recommandation: isRecommandation.recommandation,
             min: isRecommandation.min,
@@ -40,7 +40,7 @@ function RecoQuestionnaire({recommandation,onUpdateReco,setRecommandations}) {
           }
         );
         setButtonUpdateReco("Modifier");
-        console.log('Reco updated:', updateReco);
+        console.log('Reco updated:', updatereco);
       } catch (error) {
         console.error('Error updating Reco:', error);
       }
@@ -50,7 +50,7 @@ function RecoQuestionnaire({recommandation,onUpdateReco,setRecommandations}) {
    const handleInputRecoChange = (e) => {
     const { name, value } = e.target;
 
-    setRecommandations((prev) => ({
+    setRecommandation((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -75,7 +75,7 @@ function RecoQuestionnaire({recommandation,onUpdateReco,setRecommandations}) {
           <h3 className="section-title">{recommandation.recommandation}</h3>
         </div>
          ) : (
-              <RecoUpdateForm recommandation={recommandation} onChange={handleInputRecoChange} />
+              <RecoUpdateForm recommandation={isRecommandation} onChange={handleInputRecoChange} />
             )}
       </div>
       <div className="section-actions">

@@ -14,7 +14,7 @@ import {
 } from './questionnaire/reponsesTranches.js'
 
 import { updateReponse } from './questionnaire/reponse.js'
-import { createReco, getAllReco } from './questionnaire/recommandation.js'
+import { createReco, getAllReco, updateReco } from './questionnaire/recommandation.js'
 
 const app = express()
 const port = 3008
@@ -390,5 +390,29 @@ app.get('/recommandations/:questionnaireId', async (req, res) => {
   } catch (error) {
     console.error('Error fetching recommandations:', error)
     res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+app.put('/updatereco/:recoId', async (req, res) => {
+  const { recoId } = req.params;  // Fixed: was idSection, but route param is recoId
+  const { recommandation, min, max } = req.body;
+
+  try {
+    console.log('section_id:', recoId);
+    // Get max position
+    // const lastSectionResult = await executeQuery(
+    //   numdiagPool,
+    //   `SELECT MAX(position) FROM Sections WHERE questionnaire_id = $1`,
+    //   [questionnaireId]
+    // )
+
+    const recoUpdate = await updateReco(recoId, { recommandation, min, max })
+
+    console.log('recommandation has been updated: ',recoUpdate);
+    res.status(200).json({success: true})
+  }
+  catch (error) {
+    console.error('Error updating recommandation infos:', error)
+    recoUpdate.status(500).json({ error: 'Failed to update recommandation' })
   }
 })
