@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { useToast } from '../ToastSystem';
 import ReactDOM from "react-dom";
 
-function PopUpEditAnswers({ answer, answerType, onClose, onSave }) {
+function PopUpCreateAnswer({ answerType, onClose, onSave }) {
     const toast = useToast();
     const [formData, setFormData] = useState({
-        label: answer?.label || '',
-        valeurScore: answer?.valeurscore || 0,
-        tooltip: answer?.tooltip || '',
-        plafond: answer?.plafond || 0,
-        recommandation: answer?.recommandation || '',
+        label: '',
+        valeurScore: 0,
+        tooltip: '',
+        plafond: 0,
+        recommandation: '',
     });
 
     const handleInputChange = (e) => {
@@ -36,10 +36,11 @@ function PopUpEditAnswers({ answer, answerType, onClose, onSave }) {
         e.preventDefault();
         try {
             await onSave(formData);
+            toast.showSuccess('Réponse créée avec succès !');
             onClose();
         } catch (e) {
-            console.log(e)
-            toast.showError('Erreur lors de la sauvegarde de la réponse.');
+            console.log(e);
+            toast.showError('Erreur lors de la création de la réponse.');
         }
     };
 
@@ -53,7 +54,7 @@ function PopUpEditAnswers({ answer, answerType, onClose, onSave }) {
         <div className="popup-overlay" onClick={handleBackdropClick}>
             <div className="popup-content">
                 <div className="popup-header">
-                    <h3>Éditer la Réponse</h3>
+                    <h3>Créer une nouvelle réponse</h3>
                     <button onClick={onClose} className="close-button">×</button>
                 </div>
 
@@ -130,7 +131,7 @@ function PopUpEditAnswers({ answer, answerType, onClose, onSave }) {
                             Annuler
                         </button>
                         <button type="submit" className="btn-primary">
-                            Sauvegarder
+                            Créer
                         </button>
                     </div>
                 </form>
@@ -140,4 +141,4 @@ function PopUpEditAnswers({ answer, answerType, onClose, onSave }) {
     );
 }
 
-export default PopUpEditAnswers;
+export default PopUpCreateAnswer;

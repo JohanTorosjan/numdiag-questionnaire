@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import PopUpEditAnswers from './editAnswers';
 import './answersResume.css';
+import { useToast } from '../ToastSystem';
+import PopUpDelete from '../components/popups/deleteQuestion'
 
 function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) {
-  
+   const toast = useToast();
+
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
-  
+  const [isDeleteAnswerOpen, setIsDeleteAnswerOpen] = useState(false);
+
   const handleEditClick = () => {
     setIsEditPopupOpen(true);
   };
@@ -14,7 +18,59 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
     setIsEditPopupOpen(false);
   };
 
+  const handleDeleteClick = async()=>{
+      setIsDeleteAnswerOpen(true)
+  }
+
+  const handleCloseDeleteQuestionOpen =() =>{
+        setIsDeleteAnswerOpen(false)
+    }
+
+  const handleDeleteAnswer = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:3008/reponse/${answer.id}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (response.status === 200) {
+          setIsDeleteAnswerOpen(false);
+
+          try {
+            const responseQ = await fetch(`http://localhost:3008/questionnaire/${questionnaireId}`);
+            if (!responseQ.ok) {
+              throw new Error('Erreur lors du chargement des sections');
+            }
+
+            const data = await responseQ.json();
+            console.log('Questionnaire :', data);
+            toast.showSuccess("Reponse supprimée");
+
+           setQuestionnaire(data)
+          } catch (error) {
+            console.error('Error fetching questionnaire:', error);
+            toast.showError('Erreur lors du rechargement');
+            return null;
+          }
+        }
+      } catch (e) {
+        console.log(e);
+        toast.showError('Erreur de suppression');
+      }
+    };
+
+
+
+
+
+
+
+
+
+
   const onSaveAnswer = async (updatedAnswer) => {
+    console.log("updated")
+
     console.log(updatedAnswer)
     
     try {
@@ -37,6 +93,8 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
         
         if (data.success) {
             console.log('Réponse mise à jour avec succès:', data.data)
+            toast.showSuccess('Réponse sauvegardée')
+
             const responseQ = await fetch(`http://localhost:3008/questionnaire/${questionnaireId}`);
             if (!responseQ.ok) {
                 throw new Error('Erreur lors du chargement du questionnaire');
@@ -44,6 +102,9 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
             const dataQ = await responseQ.json();
             setQuestionnaire(dataQ)
             setIsEditPopupOpen(false);
+        }
+        else{
+          throw new Error('Failed')
         }
     } catch (error) {
         console.error('Erreur lors de la mise à jour:', error)
@@ -54,7 +115,9 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
     <div className="answer-resume">   
       <div className="answer-content">
         <div className="answer-main">
-          <p className="answer-label">{answer.label}</p>
+          <p className="answer-label">{answer.label}</p> 
+                                  <p className='question-tooltip-text'>{answer.tooltip}  </p>
+
         </div>
         
         <div className="answer-metadata">
@@ -73,6 +136,19 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
         </svg>
         Éditer
       </button>
+        <button onClick={handleDeleteClick} className="btn-edit-answer">
+         🗑️
+      </button>
+
+
+
+            {isDeleteAnswerOpen && (
+              <PopUpDelete
+              question={false}
+                onCancel={handleCloseDeleteQuestionOpen}
+              onConfirm={handleDeleteAnswer}
+                />
+            )}
 
       {isEditPopupOpen && (
         <PopUpEditAnswers

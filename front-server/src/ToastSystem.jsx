@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 
-// Types pour le toaster
+// Types pour   le toaster
 export const TOAST_TYPES = {
   SUCCESS: 'success',
   ERROR: 'error',
