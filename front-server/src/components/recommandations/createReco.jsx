@@ -77,8 +77,7 @@ function CreateReco({ onSave, onClose }) {
                   value={formData.min}
                   onChange={handleInputChange}
                   placeholder="Un entier"
-                  onKeyDown={(e) =>["e", "E", "+", "-", ".", ","].includes(e.key) && e.preventDefault()
-        }
+                  onKeyDown={(e) =>["e", "E", "+", "-", ".", ","].includes(e.key) && e.preventDefault() }
 
                   required
                 />
@@ -93,8 +92,8 @@ function CreateReco({ onSave, onClose }) {
                   value={formData.max}
                   onChange={handleInputChange}
                   placeholder="Un entier"
-                  onKeyDown={(e) =>["e", "E", "+", "-", ".", ","].includes(e.key) && e.preventDefault()
-        }
+                  onKeyDown={(e) =>["e", "E", "+", "-", ".", ","].includes(e.key) && e.preventDefault() }
+                  min={formData.min}
 
                   required
                 />
