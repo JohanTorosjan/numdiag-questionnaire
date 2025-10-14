@@ -8,6 +8,8 @@ import QuestionnaireTitleForm from "./questionnaireTitleForm";
 import CreateSection from "../Section/createSection.jsx";
 import CreateReco from "../recommandations/createReco.jsx";
 import RecoQuestionnaire from "../recommandations/reco_questionnaire.jsx";
+import SideModal from "../recommandations/side_modal.jsx";
+
 
 import "./Questionnaire.css"; // Import du CSS
 
@@ -86,6 +88,7 @@ function Questionnaire() {
   const [isCreateRecoPopupOpen, setCreateRecoPopupOpen] = useState(false);
   const [buttonAffichageSection, setButtonAffichageSection] = useState(false);
   const toast = useToast();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchQuestionnaire() {
@@ -296,6 +299,8 @@ function Questionnaire() {
 };
 
 
+
+
   ////////////////////////////////
   // html component part
   // let i = 1
@@ -307,7 +312,7 @@ function Questionnaire() {
   }
 
   return (
-    <div className="questionnaire-container">
+    <div className="questionnaire-container main-content">
       {/* Header du questionnaire */}
       <div className="questionnaire-header">
         <div className="questionnaire-header-content">
@@ -327,6 +332,13 @@ function Questionnaire() {
             onClick={toggleButtonModifierQuest}
           >
             {buttonModifierQuest}
+          </button>
+          <button
+            type="button"
+            className="btn-edit-quest"
+            onClick={() => setIsModalOpen(true)}
+          >
+            Éditer les recommandations
           </button>
           <button
             type="button"
@@ -383,6 +395,8 @@ function Questionnaire() {
       )}
 
       {/* Div pour les recommandations */}
+      {isModalOpen && (
+      <SideModal onClose={() => setIsModalOpen(false)}>
       <div className="sections-list">
         <div className="section">
           {/* Header de la section */}
@@ -413,10 +427,12 @@ function Questionnaire() {
           </div>
         </div>
       </div>
-      {/* pop up creation recommandations */}
-      {isCreateRecoPopupOpen && (
+      </SideModal>
+    )
+    }
+    {isCreateRecoPopupOpen && isModalOpen && (
         <CreateReco onSave={handleSaveReco} onClose={handleClosePopUpReco} />
-      )}
+    )}
     </div>
   );
 }

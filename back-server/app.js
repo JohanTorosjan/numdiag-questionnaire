@@ -12,8 +12,6 @@ import {
     updateReponsesTranches,
     deleteReponsesTranches
 } from './questionnaire/reponsesTranches.js'
-
-import { updateReponse } from './questionnaire/reponse.js'
 import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
 
@@ -350,11 +348,11 @@ app.put('/reponses/:reponseId', async (req, res) => {
     try {
 
         const result = await updateReponse(
-            reponseId, 
-            label, 
-            tooltip, 
-            plafond, 
-            recommandation, 
+            reponseId,
+            label,
+            tooltip,
+            plafond,
+            recommandation,
             valeurScore
         )
         res.status(200).json({
@@ -439,19 +437,19 @@ app.delete('/deletereco/:recoId', async (req, res) => {
 
 // Route POST pour créer une question
 app.post('/questions', async (req, res) => {
-    const { 
+    const {
         section_id,
-        label, 
-        questiontype, 
-        position, 
-        page, 
-        tooltip, 
-        coeff, 
-        theme, 
-        mandatory, 
-        public_cible 
+        label,
+        questiontype,
+        position,
+        page,
+        tooltip,
+        coeff,
+        theme,
+        mandatory,
+        public_cible
     } = req.body;
-    
+
     try {
         const result = await createQuestion(
             section_id,
@@ -465,11 +463,11 @@ app.post('/questions', async (req, res) => {
             mandatory,
             public_cible
         );
-        
-        res.status(201).json({ 
-            success: true, 
+
+        res.status(201).json({
+            success: true,
             message: 'Question created successfully',
-            data: result 
+            data: result
         });
     } catch (error) {
         console.error('Error creating question:', error);
@@ -481,15 +479,15 @@ app.post('/questions', async (req, res) => {
 
 // Route POST pour créer une réponse
 app.post('/reponses', async (req, res) => {
-    const { 
+    const {
         question_id,
-        label, 
-        tooltip, 
-        plafond, 
-        recommandation, 
-        valeurScore 
+        label,
+        tooltip,
+        plafond,
+        recommandation,
+        valeurScore
     } = req.body;
-    
+
     try {
         const result = await createReponse(
             question_id,
@@ -499,11 +497,11 @@ app.post('/reponses', async (req, res) => {
             recommandation,
             valeurScore
         );
-        
-        res.status(201).json({ 
-            success: true, 
+
+        res.status(201).json({
+            success: true,
             message: 'Reponse created successfully',
-            data: result 
+            data: result
         });
     } catch (error) {
         console.error('Error creating reponse:', error);
@@ -516,10 +514,10 @@ app.delete('/questions/:questionId/', async (req, res) => {
     const { questionId } = req.params
     try{
    const response = await deleteQuestion(questionId)
-    res.status(200).json({ 
-            success: true, 
+    res.status(200).json({
+            success: true,
             message: 'question deleted successfully',
-            data: response 
+            data: response
         });
   }
     catch(e){
@@ -534,10 +532,10 @@ app.delete('/reponse/:reponseId/', async (req, res) => {
     const { reponseId } = req.params
     try{
    const response = await deleteSingleReponse(reponseId)
-    res.status(200).json({ 
-            success: true, 
+    res.status(200).json({
+            success: true,
             message: 'reponse deleted successfully',
-            data: response 
+            data: response
         });
   }
     catch(e){

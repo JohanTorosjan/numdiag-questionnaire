@@ -12,11 +12,10 @@ function Section({
   setQuestionnaire,
   questionnaireId,
 }) {
-  const toast = useToast();
-  
+
   const [isQuestionsOpen, setIsQuestionsOpen] = React.useState(false);
   const [isCreateQuestionOpen, setIsCreateQuestionOpen] = React.useState(false);
-  
+
   const [isSection, setSection] = React.useState(section);
   const [buttonUpdateSection, setButtonUpdateSection] = React.useState("Modifier");
     const toast = useToast();
