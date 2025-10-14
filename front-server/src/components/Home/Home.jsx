@@ -7,12 +7,8 @@ import { useToast } from '../../ToastSystem';
 async function getAllQuestionnairesResume() {
     try {
         const response = await fetch('http://localhost:3008/questionnairesResume');
-        // if (!response.ok) {
-        //     throw new Error('Erreur lors du chargement des questionnaires');
-        // }
         if (response.ok) {
             const data = await response.json();
-            // console.log('Response from server:', data);
             return data;
         }
     } catch (error) {
@@ -50,7 +46,6 @@ export default function Home() {
     const [isCreating, setIsCreating] = useState(false);
     const toast = useToast();
 
-
     useEffect(() => {
         const fetchQuestionnaires = async () => {
             const data = await getAllQuestionnairesResume();
@@ -69,7 +64,6 @@ export default function Home() {
       console.log(newStatus);
       const updateQuest = await updateQuestionnaire(id, newStatus);
 
-      // Update the local state to reflect the change
       setQuestionnaires(prev =>
         prev.map(q =>
           q.id === id ? { ...q, isactive: newStatus } : q
@@ -92,7 +86,6 @@ export default function Home() {
 
   const handleSaveQuestionnaire = async (newQuestionnaire) => {
       try {
-          // Ici tu feras ton appel API plus tard
           console.log('Appel API pour sauvegarder:', {
               updatedData: newQuestionnaire
           });
@@ -101,14 +94,11 @@ export default function Home() {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
-                  // Ajoute l'auth si nécessaire
-                  // 'Authorization': `Bearer ${token}`
               },
               body: JSON.stringify({
                   ...newQuestionnaire
               })
               });
-
 
           if (!response.ok) {
               throw new Error(`Erreur HTTP: ${response.status}`);
@@ -124,7 +114,6 @@ export default function Home() {
           }
           const data = await getAllQuestionnairesResume();
           setQuestionnaires(data);
-          // Ferme la popup
           setIsCreateQuestPopupOpen(false);
       } catch (error) {
           console.error('Erreur lors de la sauvegarde:', error);
@@ -137,38 +126,55 @@ export default function Home() {
     if (loading) {
         return (
             <div className="home">
-                <h1>Bienvenue sur le CMS NumDiag</h1>
-                <p>Voici la liste des questionnaires disponibles :</p>
-                <div>Ca charge (vous pouvez aller faire un cafe en attendant ^^)...</div>
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p className="loading-text">Chargement des questionnaires...</p>
+                    <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
+                        (Vous pouvez aller faire un café en attendant ^^)
+                    </p>
+                </div>
             </div>
         );
     }
 
     return (
         <div className="home">
-            <h1>Bienvenue sur le CMS NumDiag</h1>
-            <p>Voici la liste des questionnaires disponibles :</p>
-            <button type="button" onClick={() => setButtonAffichage(!buttonAffichage)}>{buttonAffichage ? "Afficher les actifs" : "Tout afficher"}</button>
-            {questionnaires.map(q => (
-              (q.isactive || buttonAffichage) ? (
-                <div key={q.id+'questionnaire'} className={q.isactive ? "bg-green-300" : "bg-red-300"} >
-                <QuestionnaireResume key={q.id} idQuestionnaire={q.id} label={q.label}  />
-                <button type="button" onClick={() => toggleButtonActive(q.id, q.isactive)}>{q.isactive ? "Désactiver" : "Activer"}</button>
-                </div>
-              ) : (<div key={q.id+'error'} className="hidden"></div>)
-            ))}
-            <button onClick={handleCreateQuestClick} className="edit-button">
-                Créer un questionnaire
-            </button>
+            <header>
+                <h1>Bienvenue sur le CMS NumDiag</h1>
+                <p>Voici la liste des questionnaires disponibles :</p>
+            </header>
 
-            {/* Popup de création de questionnaire */}
+            <div className="home-controls">
+                <button type="button" onClick={() => setButtonAffichage(!buttonAffichage)}>
+                    {buttonAffichage ? "📋 Afficher les actifs" : "📊 Tout afficher"}
+                </button>
+                <button onClick={handleCreateQuestClick} className="edit-button">
+                    ✨ Créer un questionnaire
+                </button>
+            </div>
+
+            <div className="questionnaires-grid">
+                {questionnaires.map(q => (
+                  (q.isactive || buttonAffichage) ? (
+                    <div key={q.id+'questionnaire'} className={`questionnaire-card ${q.isactive ? "bg-green-300" : "bg-red-300"}`}>
+                        <div className={`status-badge ${q.isactive ? "active" : "inactive"}`}>
+                            {q.isactive ? "Actif" : "Inactif"}
+                        </div>
+                        <QuestionnaireResume key={q.id} idQuestionnaire={q.id} label={q.label} />
+                        <button type="button" onClick={() => toggleButtonActive(q.id, q.isactive)}>
+                            {q.isactive ? "Désactiver" : "Activer"}
+                        </button>
+                    </div>
+                  ) : (<div key={q.id+'error'} className="hidden"></div>)
+                ))}
+            </div>
+
             {isCreateQuestPopupOpen && (
                 <CreateQuestionnaire
                     onSave={handleSaveQuestionnaire}
                     onClose={handleClosePopupQuestionnaire}
                 />
             )}
-
         </div>
     );
 }

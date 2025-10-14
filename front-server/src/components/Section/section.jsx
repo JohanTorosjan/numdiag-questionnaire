@@ -2,6 +2,7 @@ import QuestionResume from "../Question/questionResume";
 import SectionUpdateForm from "./sectionUpdateForm";
 import "./Section.css";
 import React from "react";
+import PopUpCreateQuestion from '../popups/createQuestion';
 import { useToast } from '../../ToastSystem';
 
 function Section({
@@ -11,13 +12,26 @@ function Section({
   setQuestionnaire,
   questionnaireId,
 }) {
+  const toast = useToast();
+  
   const [isQuestionsOpen, setIsQuestionsOpen] = React.useState(false);
+  const [isCreateQuestionOpen, setIsCreateQuestionOpen] = React.useState(false);
+  
   const [isSection, setSection] = React.useState(section);
   const [buttonUpdateSection, setButtonUpdateSection] = React.useState("Modifier");
     const toast = useToast();
 
 
 
+
+
+    const openCreateQuestion = () => {
+        setIsCreateQuestionOpen(true);
+    };
+
+    const closeCreateQuestion = () => {
+        setIsCreateQuestionOpen(false);
+    };
 
   const toggleQuestions = () => {
     setIsQuestionsOpen(!isQuestionsOpen);
@@ -30,6 +44,52 @@ function Section({
       [name]: value
     }));
   };
+
+
+  const handleSaveQuestion = async (newQuestion) =>{
+    console.log(newQuestion)
+
+
+    const response = await fetch('http://localhost:3008/questions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        section_id: section.id,
+        label: newQuestion.label,
+        questiontype: newQuestion.questiontype,
+        position: newQuestion.position,
+        page: newQuestion.page,
+        tooltip: newQuestion.tooltip,
+        coeff: newQuestion.coeff,
+        theme: newQuestion.theme,
+        mandatory: newQuestion.mandatory,
+        public_cible: newQuestion.public_cible
+    })
+});
+
+
+  if(response.status==201){
+    toast.showSuccess("Question créee")
+     try {
+        const responseQ = await fetch(`http://localhost:3008/questionnaire/${questionnaireId}`);
+        if (!responseQ.ok) {
+            throw new Error('Erreur lors du chargement des sections');
+        }
+        const dataQ = await responseQ.json();
+        console.log('Questionnaire : ', dataQ);
+        setQuestionnaire(dataQ)
+        setIsCreateQuestionOpen(false)
+        return
+    } catch (error) {
+        console.error('Error fetching questionnaire:', error);
+        toast.showError("Erreur en voulant recharger la page")
+        setIsCreateQuestionOpen(false)
+    }
+  }
+  else{
+    toast.showError("Erreur lors de la création")
+  }
+  }
 
   async function updateSection(idSection, updates) {
     try {
@@ -69,6 +129,7 @@ function Section({
         );
         setButtonUpdateSection("Modifier");
         console.log('Section updated:', updateSect);
+        toast.showSuccess('Section mise à jour')
       } catch (error) {
         console.error('Error updating section:', error);
       }
@@ -153,7 +214,7 @@ function Section({
             className={`btn-action btn-toggle ${section.isactive ? 'active' : 'inactive'}`}
             onClick={() => toggleButtonActiveSection(section.id, section.isactive)}
           >
-            {section.isactive ? "🗑️" : "Activer"}
+            {section.isactive ? "🗑️" : "Réstaurer"}
           </button>
         </div>
       </div>
@@ -181,7 +242,23 @@ function Section({
                 />
               ))}
         </div>
+          <div className="create-section-container">
+
+          <button  className="btn-create-question" onClick={openCreateQuestion}>
+            <span className="btn-icon">+</span>
+                    Créer une question
+            </button>
+          </div>
+
       </div>
+            {isCreateQuestionOpen && (
+                <PopUpCreateQuestion
+                    onClose={closeCreateQuestion}
+                    onSave={handleSaveQuestion}
+                    sectionNbPages={section.nbpages}
+                />
+            )}
+
     </div>
   );
 }

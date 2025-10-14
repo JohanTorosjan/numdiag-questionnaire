@@ -42,7 +42,6 @@ CREATE TABLE Reponses (
     id SERIAL PRIMARY KEY,
     question_id INTEGER NOT NULL,
     label VARCHAR NOT NULL,
-    position INTEGER NOT NULL,
     tooltip VARCHAR,
     plafond INTEGER,
     recommandation TEXT,

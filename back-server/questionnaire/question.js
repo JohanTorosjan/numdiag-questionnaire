@@ -8,8 +8,82 @@ function getQuestionById(idQuestion) {
     return executeQuery(numdiagPool, 'SELECT * FROM questions WHERE id = $1', [idQuestion])
 }
 
-function deleteQuestion(idQuestion) {
-    return executeQuery(numdiagPool, 'DELETE FROM questions WHERE id = $1 RETURNING *', [idQuestion])
+async function deleteQuestion(idQuestion) {
+    try {
+        await numdiagPool.query('BEGIN');
+
+        // 1. Récupérer les informations de la question à supprimer
+        const questionToDelete = await executeQuery(
+            numdiagPool,
+            'SELECT id, section_id, position, page FROM Questions WHERE id = $1',
+            [idQuestion]
+        );
+
+        if (questionToDelete.length === 0) {
+            await numdiagPool.query('ROLLBACK');
+            throw new Error('Question non trouvée');
+        }
+
+        const { section_id, position: deletedPosition, page: deletedPage } = questionToDelete[0];
+
+        // 2. Supprimer les dépendances de la question
+        await executeQuery(
+            numdiagPool,
+            'DELETE FROM QuestionDependencies WHERE question_id = $1',
+            [idQuestion]
+        );
+
+        // 3. Supprimer les réponses associées
+        await executeQuery(
+            numdiagPool,
+            'DELETE FROM Reponses WHERE question_id = $1',
+            [idQuestion]
+        );
+
+        await executeQuery(
+            numdiagPool,
+            'DELETE FROM ReponsesTranches WHERE question_id = $1',
+            [idQuestion]
+        );
+
+        // 4. Supprimer la question
+        const deletedQuestion = await executeQuery(
+            numdiagPool,
+            'DELETE FROM Questions WHERE id = $1 RETURNING *',
+            [idQuestion]
+        );
+
+        // 5. Réorganiser les positions des questions restantes sur la même page
+        // Décaler toutes les questions qui suivaient la question supprimée
+        await executeQuery(
+            numdiagPool,
+            `UPDATE Questions 
+             SET position = position - 1 
+             WHERE section_id = $1 AND page = $2 AND position > $3`,
+            [section_id, deletedPage, deletedPosition]
+        );
+
+        await numdiagPool.query('COMMIT');
+
+        // 6. Récupérer toutes les questions mises à jour de la section
+        const updatedQuestions = await executeQuery(
+            numdiagPool,
+            'SELECT id, position, page, label FROM Questions WHERE section_id = $1 ORDER BY page, position',
+            [section_id]
+        );
+
+        return {
+            success: true,
+            deletedQuestion: deletedQuestion[0],
+            message: 'Question supprimée avec succès',
+            questions: updatedQuestions
+        };
+
+    } catch (error) {
+        await numdiagPool.query('ROLLBACK');
+        console.error('Erreur lors de la suppression de la question:', error);
+        throw error;
+    }
 }
 
 // function updateQuestion(idQuestion, label = null, questionType = null, position = null, page = null, tooltip = null, coeff = null, theme = null) {
@@ -294,6 +368,107 @@ async function deleteReponses(questionId) {
     return (deleteReponses,deleteReponsesTranches)    
 }
 
+
+async function createQuestion(
+    section_id,
+    label, 
+    questiontype, 
+    position, 
+    page, 
+    tooltip, 
+    coeff, 
+    theme, 
+    mandatory, 
+    public_cible
+) {
+    try {
+        await numdiagPool.query('BEGIN');
+
+        // 1. Récupérer toutes les questions de la même section et page
+        const existingQuestionsQuery = `
+            SELECT id, position, page 
+            FROM Questions 
+            WHERE section_id = $1 AND page = $2 
+            ORDER BY position
+        `;
+        const existingQuestions = await executeQuery(
+            numdiagPool, 
+            existingQuestionsQuery, 
+            [section_id, page]
+        );
+
+        // 2. Vérifier et ajuster la position si nécessaire
+        let effectivePosition = Math.max(1, parseInt(position) || 1);
+        if (effectivePosition > existingQuestions.length + 1) {
+            effectivePosition = existingQuestions.length + 1;
+        }
+
+        // 3. Décaler les questions existantes si nécessaire
+        if (existingQuestions.length > 0) {
+            // Décaler toutes les questions à partir de la position d'insertion
+            const updatePositionsQuery = `
+                UPDATE Questions 
+                SET position = position + 1 
+                WHERE section_id = $1 AND page = $2 AND position >= $3
+            `;
+            await executeQuery(
+                numdiagPool, 
+                updatePositionsQuery, 
+                [section_id, page, effectivePosition]
+            );
+        }
+
+        // 4. Insérer la nouvelle question
+        const insertQuestionQuery = `
+            INSERT INTO Questions (
+                section_id, 
+                label, 
+                questionType, 
+                position, 
+                page, 
+                tooltip, 
+                coeff, 
+                theme, 
+                mandatory, 
+                public_cible
+            ) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+            RETURNING *
+        `;
+        
+        const result = await executeQuery(
+            numdiagPool,
+            insertQuestionQuery,
+            [
+                section_id,
+                label,
+                questiontype,
+                effectivePosition,
+                page,
+                tooltip || null,
+                coeff,
+                theme || null,
+                mandatory,
+                public_cible
+            ]
+        );
+
+        await numdiagPool.query('COMMIT');
+
+        return {
+            success: true,
+            question: result[0]
+        };
+
+    } catch (error) {
+        await numdiagPool.query('ROLLBACK');
+        console.error('Erreur lors de la création de la question:', error);
+        throw error;
+    }
+}
+
+
+
 export {
     addQuestion,
     getQuestionById,
@@ -301,5 +476,6 @@ export {
     getAllReponsesByQuestion,
     updateQuestion,
     updatePositions,
-    deleteReponses
+    deleteReponses,
+    createQuestion
 }
