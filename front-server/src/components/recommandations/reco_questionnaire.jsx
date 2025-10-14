@@ -1,7 +1,7 @@
 import React from "react";
 import RecoUpdateForm from './recoUpdateForm.jsx'
 
-function RecoQuestionnaire({recommandation,onUpdateReco,setRecommandations}) {
+function RecoQuestionnaire({recommandation,onUpdateReco, onDeleteReco}) {
   const [buttonUpdateReco, setButtonUpdateReco] = React.useState("Modifier");
   const [isRecommandation, setRecommandation] = React.useState(recommandation);
 
@@ -56,6 +56,27 @@ function RecoQuestionnaire({recommandation,onUpdateReco,setRecommandations}) {
     }));
   };
 
+  async function deleteReco() {
+    try {
+      const response = await fetch(`http://localhost:3008/deletereco/${recommandation.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Erreur lors de la suppression en db de la recommandation');
+      }
+      const data = await response.json();
+      console.log('Suppression de la recommandation :', recommandation.id);
+      onDeleteReco(recommandation.id);
+      return data;
+    } catch (error) {
+      console.error('Error deleting recommandation:', error);
+      return null;
+    }
+  }
+
 
   return (
     <div className="section" style={{padding: 10+'px'}}>
@@ -85,6 +106,13 @@ function RecoQuestionnaire({recommandation,onUpdateReco,setRecommandations}) {
           onClick={toggleButtonUpdateReco}
         >
           {buttonUpdateReco}
+        </button>
+        <button
+          type="button"
+          className={`btn-action btn-edit`}
+          onClick={() => deleteReco()}
+        >
+          🗑️
         </button>
       </div>
     </div>

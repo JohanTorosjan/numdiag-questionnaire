@@ -14,7 +14,7 @@ import {
 } from './questionnaire/reponsesTranches.js'
 
 import { updateReponse } from './questionnaire/reponse.js'
-import { createReco, getAllReco, updateReco } from './questionnaire/recommandation.js'
+import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 
 const app = express()
 const port = 3008
@@ -398,7 +398,7 @@ app.put('/updatereco/:recoId', async (req, res) => {
   const { recommandation, min, max } = req.body;
 
   try {
-    console.log('section_id:', recoId);
+    console.log('recommandation_id:', recoId);
     // Get max position
     // const lastSectionResult = await executeQuery(
     //   numdiagPool,
@@ -414,5 +414,23 @@ app.put('/updatereco/:recoId', async (req, res) => {
   catch (error) {
     console.error('Error updating recommandation infos:', error)
     recoUpdate.status(500).json({ error: 'Failed to update recommandation' })
+  }
+})
+
+
+app.delete('/deletereco/:recoId', async (req, res) => {
+  const { recoId } = req.params;  // Fixed: was idSection, but route param is recoId
+
+  try {
+    console.log('recommandation_id:', recoId);
+
+    const recoDelete = await deleteReco(recoId)
+
+    console.log('recommandation has been deleted: ',recoDelete);
+    res.status(200).json({success: true})
+  }
+  catch (error) {
+    console.error('Error deleting recommandation infos:', error)
+    recoDelete.status(500).json({ error: 'Failed to delete recommandation' })
   }
 })

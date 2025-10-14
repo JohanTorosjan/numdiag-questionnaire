@@ -64,4 +64,8 @@ function updateReco(idReco, {recommandation= null, min= null, max  = null}) {
     return executeQuery(numdiagPool, `UPDATE RecommandationsQuestionnaires SET ${fields.join(', ')} WHERE id = $${index} RETURNING *`, values)
 }
 
-export {createReco, getAllReco, updateReco}
+function deleteReco(idReco) {
+    return executeQuery(numdiagPool, 'DELETE FROM RecommandationsQuestionnaires WHERE id = $1', [idReco])
+}
+
+export {createReco, getAllReco, updateReco, deleteReco}

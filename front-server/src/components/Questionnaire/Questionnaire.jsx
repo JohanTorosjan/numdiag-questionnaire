@@ -289,6 +289,12 @@ function Questionnaire() {
   );
   };
 
+  const deleteReco = (recoId) => {
+  setRecommandations((prevRecommandations) =>
+    prevRecommandations.filter((reco) => reco.id !== recoId)
+  );
+};
+
 
   ////////////////////////////////
   // html component part
@@ -388,8 +394,8 @@ function Questionnaire() {
                   <RecoQuestionnaire
                     key={`recommandation-${recommandation.id}`}
                     recommandation={recommandation}
-                    setRecommandations={setRecommandations}
                     onUpdateReco = {updateReco}
+                    onDeleteReco= {deleteReco}
                     // questionnaireId={id}
                   />
                 ))}
