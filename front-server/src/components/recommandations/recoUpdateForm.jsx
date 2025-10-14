@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 function RecoUpdateForm({ recommandation, onChange }) {
+
   return (
     <form>
       <label htmlFor="min">Score minimum :</label>
@@ -9,9 +10,9 @@ function RecoUpdateForm({ recommandation, onChange }) {
         name="min"
         id="min"
         required
-        value={recommandation.min ? recommandation.min : ""}
+        value={recommandation.min != null ? recommandation.min : ""}
         onChange={onChange}
-        min="0"
+
         onKeyDown={(e) =>
           ["e", "E", "+", "-", ".", ","].includes(e.key) && e.preventDefault()
         }
@@ -22,9 +23,12 @@ function RecoUpdateForm({ recommandation, onChange }) {
         name="max"
         id="max"
         required
-        value={recommandation.max ? recommandation.max : ""}
-        onChange={onChange}
-        min="0"
+        value={recommandation.max != null ? recommandation.max : ""}
+        onChange={(e) => {
+          if (Number(e.target.value) < Number(recommandation.min)) return;
+          onChange(e);
+        }}
+        min={recommandation.min ? recommandation.min : 0}
         onKeyDown={(e) =>
           ["e", "E", "+", "-", ".", ","].includes(e.key) && e.preventDefault()
         }
