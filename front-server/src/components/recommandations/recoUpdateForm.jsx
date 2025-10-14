@@ -1,0 +1,49 @@
+import { useState } from "react";
+
+function RecoUpdateForm({ recommandation, onChange }) {
+  return (
+    <form>
+      <label htmlFor="min">Score minimum :</label>
+      <input
+        type="number"
+        name="min"
+        id="min"
+        required
+        value={recommandation.min ? recommandation.min : ""}
+        onChange={onChange}
+        min="0"
+        onKeyDown={(e) =>
+          ["e", "E", "+", "-", ".", ","].includes(e.key) && e.preventDefault()
+        }
+      />
+      <label htmlFor="max">Score maximum :</label>
+      <input
+        type="number"
+        name="max"
+        id="max"
+        required
+        value={recommandation.max ? recommandation.max : ""}
+        onChange={onChange}
+        min="0"
+        onKeyDown={(e) =>
+          ["e", "E", "+", "-", ".", ","].includes(e.key) && e.preventDefault()
+        }
+      />
+      <label htmlFor="recommandation">Recommandation :</label>
+      <textarea
+        id="recommandation"
+        name="recommandation"
+        value={
+          recommandation.recommandation ? recommandation.recommandation : ""
+        }
+        onChange={onChange}
+        placeholder={
+          recommandation.recommandation ? recommandation.recommandation : ""
+        }
+        required
+      ></textarea>
+    </form>
+  );
+}
+
+export default RecoUpdateForm;

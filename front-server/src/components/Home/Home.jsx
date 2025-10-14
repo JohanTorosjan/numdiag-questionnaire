@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import QuestionnaireResume from "../Questionnaire/questionnaireResume";
 import CreateQuestionnaire from "../Questionnaire/createQuestionnaire";
 import './home.css';
+import { useToast } from '../../ToastSystem';
 
 async function getAllQuestionnairesResume() {
     try {
@@ -43,6 +44,7 @@ export default function Home() {
     const [buttonAffichage, setButtonAffichage] = useState(false);
     const [isCreateQuestPopupOpen, setIsCreateQuestPopupOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
+    const toast = useToast();
 
     useEffect(() => {
         const fetchQuestionnaires = async () => {
@@ -105,7 +107,10 @@ export default function Home() {
           const result = await response.json();
 
           if (!result.success) {
-          throw new Error(result.error || 'Erreur lors de la sauvegarde');
+            toast.showError('Erreur lors de la création du questionnaire');
+            throw new Error(result.error || 'Erreur lors de la sauvegarde');
+          } else {
+            toast.showSuccess('Questionnaire créé avec succès!');
           }
           const data = await getAllQuestionnairesResume();
           setQuestionnaires(data);

@@ -19,6 +19,10 @@ function Section({
   
   const [isSection, setSection] = React.useState(section);
   const [buttonUpdateSection, setButtonUpdateSection] = React.useState("Modifier");
+    const toast = useToast();
+
+
+
 
 
     const openCreateQuestion = () => {
@@ -198,15 +202,15 @@ function Section({
 
         {/* Boutons d'action */}
         <div className="section-actions">
-          <button 
-            type="button" 
-            className="btn-action btn-edit" 
+          <button
+            type="button"
+            className="btn-action btn-edit"
             onClick={toggleButtonUpdateSection}
           >
             {buttonUpdateSection}
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`btn-action btn-toggle ${section.isactive ? 'active' : 'inactive'}`}
             onClick={() => toggleButtonActiveSection(section.id, section.isactive)}
           >
