@@ -544,3 +544,189 @@ app.delete('/reponse/:reponseId/', async (req, res) => {
 
     }
 })
+
+
+
+app.get('/questionnaires/:id/export', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // 1. Récupérer le questionnaire
+    const questionnaires = await executeQuery(
+      numdiagPool,
+      'SELECT id, label, description, code, version, scoremax FROM Questionnaires WHERE id = $1 AND isactive = TRUE',
+      [id]
+    );
+
+    if (questionnaires.length === 0) {
+      return res.status(404).json({ error: 'Questionnaire non trouvé' });
+    }
+
+    const questionnaire = questionnaires[0];
+
+    // 2. Récupérer toutes les sections
+    const sections = await executeQuery(
+      numdiagPool,
+      'SELECT id, label, description, tooltip, scoremax, nbpages FROM Sections WHERE questionnaire_id = $1 AND isactive = TRUE ORDER BY id',
+      [id]
+    );
+
+    // 3. Pour chaque section, récupérer les questions, réponses et dépendances
+    const form = [];
+
+    for (const section of sections) {
+      // Récupérer les questions de la section
+      const questions = await executeQuery(
+        numdiagPool,
+        'SELECT id, label, questiontype, position, page, tooltip, coeff, theme, mandatory FROM Questions WHERE section_id = $1 ORDER BY position, page',
+        [section.id]
+      );
+
+      const questionsList = [];
+
+      for (const question of questions) {
+        // Mapper le type de question
+        const typeMapping = {
+          'choix_simple': 'single_choice',
+          'choix_multiple': 'multiple_choice',
+          'entier': 'range',
+          'libre': 'free_answer'
+        };
+
+        const questionObj = {
+          id: question.id,
+          code: `q_${question.id}`,
+          title: question.label,
+          type: typeMapping[question.questiontype] || 'free_answer',
+          mandatory: question.mandatory,
+          help: question.tooltip || ''
+        };
+
+        // Ajouter description si thème existe
+        if (question.theme) {
+          questionObj.description = question.theme;
+        }
+
+        // Récupérer les réponses selon le type de question
+        if (question.questiontype === 'entier') {
+          // Pour les questions de type range, récupérer les tranches
+          const tranches = await executeQuery(
+            numdiagPool,
+            'SELECT min, max, value, tooltip, plafond, recommandation FROM ReponsesTranches WHERE question_id = $1 ORDER BY min',
+            [question.id]
+          );
+
+          if (tranches.length > 0) {
+            questionObj.options = tranches.map(tranche => ({
+              min: tranche.min,
+              max: tranche.max,
+              score: tranche.value,
+              code: `range_${tranche.min}_${tranche.max}`
+            }));
+          }
+        } else if (['choix_simple', 'choix_multiple'].includes(question.questiontype)) {
+          // Pour les questions à choix, récupérer les réponses
+          const reponses = await executeQuery(
+            numdiagPool,
+            'SELECT id, label, position, tooltip, plafond, recommandation, valeurscore FROM Reponses WHERE question_id = $1 ORDER BY position',
+            [question.id]
+          );
+
+          if (reponses.length > 0) {
+            questionObj.options = reponses.map(reponse => ({
+              label: reponse.label,
+              code: `r_${reponse.id}`,
+              score: reponse.valeurscore || 0
+            }));
+          }
+        }
+
+        // Récupérer les dépendances de la question
+        const dependencies = await executeQuery(
+          numdiagPool,
+          `SELECT qd.reponse_id, r.label as reponse_label, q.id as parent_question_id
+           FROM QuestionDependencies qd
+           JOIN Reponses r ON qd.reponse_id = r.id
+           JOIN Questions q ON r.question_id = q.id
+           WHERE qd.question_id = $1`,
+          [question.id]
+        );
+
+        if (dependencies.length > 0) {
+          const dep = dependencies[0];
+          questionObj.dependsOn = {
+            code: `q_${dep.parent_question_id}`,
+            operator: 'equals',
+            value: `r_${dep.reponse_id}`
+          };
+
+          // Si plusieurs dépendances, utiliser l'opérateur "in"
+          if (dependencies.length > 1) {
+            questionObj.dependsOn.operator = 'in';
+            questionObj.dependsOn.value = dependencies.map(d => `r_${d.reponse_id}`);
+          }
+        }
+
+        questionsList.push(questionObj);
+      }
+
+      // Construire l'objet section
+      const sectionObj = {
+        id: section.id,
+        name: section.label,
+        description: section.description || '',
+        help: section.tooltip || '',
+        questions: questionsList
+      };
+
+      // Récupérer les dépendances de la section
+      const sectionDeps = await executeQuery(
+        numdiagPool,
+        `SELECT sd.reponse_id, r.label as reponse_label, q.id as parent_question_id
+         FROM SectionDependencies sd
+         JOIN Reponses r ON sd.reponse_id = r.id
+         JOIN Questions q ON r.question_id = q.id
+         WHERE sd.section_id = $1`,
+        [section.id]
+      );
+
+      if (sectionDeps.length > 0) {
+        const dep = sectionDeps[0];
+        sectionObj.dependsOn = {
+          code: `q_${dep.parent_question_id}`,
+          operator: 'equals',
+          value: `r_${dep.reponse_id}`
+        };
+
+        if (sectionDeps.length > 1) {
+          sectionObj.dependsOn.operator = 'in';
+          sectionObj.dependsOn.value = sectionDeps.map(d => `r_${d.reponse_id}`);
+        }
+      }
+
+      form.push(sectionObj);
+    }
+
+    // 4. Construire le JSON final
+    const numdiagJson = {
+      audit: {
+        code: questionnaire.code ? questionnaire.code.toString() : `AUDIT_${questionnaire.id}`,
+        name: questionnaire.label,
+        description: questionnaire.description || '',
+        form: form
+      }
+    };
+
+    // 5. Retourner le JSON
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename="audit_${questionnaire.id}.json"`);
+    res.json(numdiagJson);
+
+  } catch (error) {
+    console.error('Erreur lors de l\'export:', error);
+    res.status(500).json({ 
+      error: 'Erreur lors de l\'export du questionnaire',
+      details: error.message 
+    });
+  }
+});
