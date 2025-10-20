@@ -154,7 +154,7 @@ export default function Home() {
             </div>
 
             <div className="questionnaires-grid">
-                {questionnaires.map(q => (
+                {questionnaires?.map(q => (
                   (q.isactive || buttonAffichage) ? (
                     <div key={q.id+'questionnaire'} className={`questionnaire-card ${q.isactive ? "bg-green-300" : "bg-red-300"}`}>
                         <div className={`status-badge ${q.isactive ? "active" : "inactive"}`}>

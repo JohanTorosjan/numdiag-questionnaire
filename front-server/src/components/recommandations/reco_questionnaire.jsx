@@ -79,7 +79,7 @@ function RecoQuestionnaire({recommandation,onUpdateReco, onDeleteReco}) {
 
 
   return (
-    <div className="section" style={{padding: 10+'px'}}>
+    <div className="reco-display">
       <div className="section-content">
     {buttonUpdateReco === "Modifier" ? (
         <div className="section-info">
