@@ -10,13 +10,12 @@ import CreateReco from "../recommandations/createReco.jsx";
 import RecoQuestionnaire from "../recommandations/reco_questionnaire.jsx";
 import SideModal from "../recommandations/side_modal.jsx";
 
-
 import "./Questionnaire.css"; // Import du CSS
 
 async function getQuestionnaire(idQuestionnaire) {
   try {
     const response = await fetch(
-      `http://localhost:3008/questionnaire/${idQuestionnaire}`
+      `http://127.0.0.1:3008/questionnaire/${idQuestionnaire}`
     );
     if (!response.ok) {
       throw new Error("Erreur lors du chargement des sections");
@@ -38,7 +37,7 @@ async function updateQuestionnaire(
 ) {
   try {
     const response = await fetch(
-      `http://localhost:3008/updateQuestionnaire/${idQuestionnaire}`,
+      `http://127.0.0.1:3008/updateQuestionnaire/${idQuestionnaire}`,
       {
         method: "PUT",
         headers: {
@@ -64,7 +63,7 @@ async function updateQuestionnaire(
 async function getReco(idQuestionnaire) {
   try {
     const response = await fetch(
-      `http://localhost:3008/recommandations/${idQuestionnaire}`
+      `http://127.0.0.1:3008/recommandations/${idQuestionnaire}`
     );
     if (!response.ok) {
       throw new Error("Erreur lors du chargement des recommandations");
@@ -178,7 +177,7 @@ function Questionnaire() {
         questionnaire_id: questionnaire_id,
       });
       // setIsCreating(true)
-      const response = await fetch(`http://localhost:3008/createSection`, {
+      const response = await fetch(`http://127.0.0.1:3008/createSection`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -239,7 +238,7 @@ function Questionnaire() {
         questionnaire_id: questionnaire_id,
       });
 
-      const response = await fetch(`http://localhost:3008/createreco`, {
+      const response = await fetch(`http://127.0.0.1:3008/createreco`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -271,7 +270,6 @@ function Questionnaire() {
       console.log("Updated recommandations:", updatedReco); // Add this for debugging
 
       if (updatedReco) {
-
         setRecommandations(updatedReco.recommandations);
         toast.showSuccess("Recommandation créée avec succès!");
       } else {
@@ -286,20 +284,17 @@ function Questionnaire() {
 
   const updateReco = (recoId, updatedReco) => {
     setRecommandations((prevRecommandations) =>
-    prevRecommandations.map((reco) =>
-      reco.id === recoId ? { ...reco, ...updatedReco } : reco
-    )
-  );
+      prevRecommandations.map((reco) =>
+        reco.id === recoId ? { ...reco, ...updatedReco } : reco
+      )
+    );
   };
 
   const deleteReco = (recoId) => {
-  setRecommandations((prevRecommandations) =>
-    prevRecommandations.filter((reco) => reco.id !== recoId)
-  );
-};
-
-
-
+    setRecommandations((prevRecommandations) =>
+      prevRecommandations.filter((reco) => reco.id !== recoId)
+    );
+  };
 
   ////////////////////////////////
   // html component part
@@ -396,43 +391,42 @@ function Questionnaire() {
 
       {/* Div pour les recommandations */}
       {isModalOpen && (
-      <SideModal onClose={() => setIsModalOpen(false)}>
-      <div className="sections-list">
-        <div className="section">
-          {/* Header de la section */}
-          <div className="section-header">
-            <div className="section-content">
-              <h3>Recommandations</h3>
-              <div className="sections-list">
-                {recommandations.map((recommandation) => (
-                  <RecoQuestionnaire
-                    key={`recommandation-${recommandation.id}`}
-                    recommandation={recommandation}
-                    onUpdateReco = {updateReco}
-                    onDeleteReco= {deleteReco}
-                    // questionnaireId={id}
-                  />
-                ))}
+        <SideModal onClose={() => setIsModalOpen(false)}>
+          <div className="sections-list">
+            <div className="section">
+              {/* Header de la section */}
+              <div className="section-header">
+                <div className="section-content">
+                  <h3>Recommandations</h3>
+                  <div className="sections-list">
+                    {recommandations.map((recommandation) => (
+                      <RecoQuestionnaire
+                        key={`recommandation-${recommandation.id}`}
+                        recommandation={recommandation}
+                        onUpdateReco={updateReco}
+                        onDeleteReco={deleteReco}
+                        // questionnaireId={id}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="create-section-container">
+                <button
+                  onClick={handleCreateRecoClick}
+                  className="btn-create-section"
+                >
+                  <span className="btn-icon">+</span>
+                  Créer une recommandation
+                </button>
               </div>
             </div>
           </div>
-          <div className="create-section-container">
-            <button
-              onClick={handleCreateRecoClick}
-              className="btn-create-section"
-            >
-              <span className="btn-icon">+</span>
-              Créer une recommandation
-            </button>
-          </div>
-        </div>
-      </div>
-      </SideModal>
-    )
-    }
-    {isCreateRecoPopupOpen && isModalOpen && (
+        </SideModal>
+      )}
+      {isCreateRecoPopupOpen && isModalOpen && (
         <CreateReco onSave={handleSaveReco} onClose={handleClosePopUpReco} />
-    )}
+      )}
     </div>
   );
 }

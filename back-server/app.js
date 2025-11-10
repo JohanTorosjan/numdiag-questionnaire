@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import path from 'path';
+import path from "path";
 
 import {
   numdiagPool,
@@ -53,12 +53,12 @@ const port = 3008;
 app.use(express.json());
 
 // Servir le build React
-const distPath = path.join(__dirname, 'dist');
+const distPath = path.join(__dirname, "dist");
 app.use(express.static(distPath));
 
 var corsOptions = {
   origin: [
-    "http://localhost:8081",
+    "http://127.0.0.1:8081",
     "https://questionnaires.numdiag.fr",
     "https://www.questionnaires.numdiag.fr",
   ],
@@ -69,11 +69,9 @@ var corsOptions = {
 };
 app.use(cors(corsOptions));
 
-
-app.listen(port, '0.0.0.0', () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Example app listening on port ${port}`);
 });
-
 
 // app.use(express.json());
 
