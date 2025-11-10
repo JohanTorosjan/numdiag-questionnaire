@@ -16,18 +16,18 @@ services:
     networks:
       - cms-network
 
-  frontend:
-    build:
-      context: ./front-server
-    ports:
-      - "8081:8081"
-    volumes:
-      - ./front-server:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-    networks:
-      - cms-network
+  # frontend:
+  #   build:
+  #     context: ./front-server
+  #   ports:
+  #     - "8081:8081"
+  #   volumes:
+  #     - ./front-server:/app
+  #     - /app/node_modules
+  #   environment:
+  #     - NODE_ENV=development
+  #   networks:
+  #     - cms-network
 
   cmsdatabase:
     image: postgres:17
