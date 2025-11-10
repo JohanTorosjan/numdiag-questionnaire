@@ -21,7 +21,7 @@ const port = 3008
 app.use(express.json())
 
 var corsOptions = {
-  origin: 'http://127.0.0.1:8081',
+  origin: 'http://192.168.240.5:8081/',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -724,9 +724,9 @@ app.get('/questionnaires/:id/export', async (req, res) => {
 
   } catch (error) {
     console.error('Erreur lors de l\'export:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Erreur lors de l\'export du questionnaire',
-      details: error.message 
+      details: error.message
     });
   }
 });
@@ -842,11 +842,11 @@ app.get('/questionnaires/:id/export2', async (req, res) => {
         if (dependencies.length > 0) {
           const dep = dependencies[0];
           const parentQuestionType = dep.parent_question_type;
-          
+
           // Déterminer l'opérateur en fonction du type de question parent et du nombre de dépendances
           let operator = 'equals';
           let value;
-          
+
           if (parentQuestionType === 'choix_multiple' || dependencies.length > 1) {
             operator = 'in';
             // Créer un tableau des labels de réponses et le convertir en string JSON
@@ -890,11 +890,11 @@ app.get('/questionnaires/:id/export2', async (req, res) => {
       if (sectionDeps.length > 0) {
         const dep = sectionDeps[0];
         const parentQuestionType = dep.parent_question_type;
-        
+
         // Déterminer l'opérateur en fonction du type de question parent et du nombre de dépendances
         let operator = 'equals';
         let value;
-        
+
         if (parentQuestionType === 'choix_multiple' || sectionDeps.length > 1) {
           operator = 'in';
           // Créer un tableau des labels de réponses et le convertir en string JSON
@@ -932,9 +932,9 @@ app.get('/questionnaires/:id/export2', async (req, res) => {
 
   } catch (error) {
     console.error('Erreur lors de l\'export:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Erreur lors de l\'export du questionnaire',
-      details: error.message 
+      details: error.message
     });
   }
 });
