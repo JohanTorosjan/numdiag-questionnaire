@@ -7,6 +7,7 @@ services:
     volumes:
       - ./back-server:/app
       - /app/node_modules
+      - ./backend/dist:/app/dist  # monte le build React dans le conteneur
     environment:
       - NODE_ENV=production
     depends_on:

@@ -51,6 +51,10 @@ const port = 3008;
 
 app.use(express.json());
 
+// Servir le build React
+const distPath = path.join(__dirname, 'dist');
+app.use(express.static(distPath));
+
 var corsOptions = {
   origin: [
     "http://localhost:8081",
@@ -64,7 +68,7 @@ var corsOptions = {
 };
 app.use(cors(corsOptions));
 
-app.use(express.json());
+// app.use(express.json());
 
 app.get("/", (req, res) => {
   res.json("Hello World !");
