@@ -28,7 +28,7 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
 
   const handleDeleteAnswer = async () => {
       try {
-        const response = await fetch(`http://localhost:3008/reponse/${answer.id}`, {
+        const response = await fetch(`http://127.0.0.1:3008/reponse/${answer.id}`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
         });
