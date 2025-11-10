@@ -69,6 +69,12 @@ var corsOptions = {
 };
 app.use(cors(corsOptions));
 
+
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Example app listening on port ${port}`);
+});
+
+
 // app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -220,10 +226,6 @@ app.put("/questions/:id", async (req, res) => {
     console.error("Error populating database:", error);
     res.status(500).json({ error: "Failed to populate database" });
   }
-});
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
 });
 
 app.put("/updateQuestionnaire/:questionnaireId", async (req, res) => {
