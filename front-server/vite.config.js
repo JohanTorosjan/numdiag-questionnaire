@@ -13,5 +13,6 @@ export default defineConfig({
     strictPort: true,
     host: true,
     origin: "http://172.18.0.5:8081",
+    allowedHosts: ["questionnaires.numdiag.fr", "www.questionnaires.numdiag.fr"],
   },
 });
