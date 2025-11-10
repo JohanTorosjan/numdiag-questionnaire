@@ -52,9 +52,6 @@ const port = 3008;
 
 app.use(express.json());
 
-// Servir le build React
-const distPath = path.join(__dirname, "dist");
-app.use(express.static(distPath));
 
 var corsOptions = {
   origin: [
