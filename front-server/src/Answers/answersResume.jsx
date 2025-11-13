@@ -3,6 +3,7 @@ import PopUpEditAnswers from './editAnswers';
 import './answersResume.css';
 import { useToast } from '../ToastSystem';
 import PopUpDelete from '../components/popups/deleteQuestion'
+import { API_URL } from '../config';
 
 function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) {
    const toast = useToast();
@@ -28,7 +29,7 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
 
   const handleDeleteAnswer = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:3008/reponse/${answer.id}`, {
+        const response = await fetch(`${API_URL}/reponse/${answer.id}`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
         });
@@ -37,7 +38,7 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
           setIsDeleteAnswerOpen(false);
 
           try {
-            const responseQ = await fetch(`http://localhost:3008/questionnaire/${questionnaireId}`);
+            const responseQ = await fetch(`${API_URL}/questionnaire/${questionnaireId}`);
             if (!responseQ.ok) {
               throw new Error('Erreur lors du chargement des sections');
             }
@@ -72,9 +73,9 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
     console.log("updated")
 
     console.log(updatedAnswer)
-    
+
     try {
-        const response = await fetch(`http://127.0.0.1:3008/reponses/${answer.id}`, {
+        const response = await fetch(`${API_URL}/reponses/${answer.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -88,14 +89,14 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
                 valeurScore: updatedAnswer.valeurScore
             })
         })
-        
+
         const data = await response.json()
-        
+
         if (data.success) {
             console.log('Réponse mise à jour avec succès:', data.data)
             toast.showSuccess('Réponse sauvegardée')
 
-            const responseQ = await fetch(`http://localhost:3008/questionnaire/${questionnaireId}`);
+            const responseQ = await fetch(`${API_URL}/questionnaire/${questionnaireId}`);
             if (!responseQ.ok) {
                 throw new Error('Erreur lors du chargement du questionnaire');
             }
@@ -112,14 +113,14 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
   }
 
   return (
-    <div className="answer-resume">   
+    <div className="answer-resume">
       <div className="answer-content">
         <div className="answer-main">
-          <p className="answer-label">{answer.label}</p> 
+          <p className="answer-label">{answer.label}</p>
                                   <p className='question-tooltip-text'>{answer.tooltip}  </p>
 
         </div>
-        
+
         <div className="answer-metadata">
           {answer.valeurscore !== undefined && answer.valeurscore !== null && (
             <span className="answer-score">Score: {answer.valeurscore}</span>

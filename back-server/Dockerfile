@@ -2,11 +2,10 @@ FROM node:alpine
 
 WORKDIR /app
 COPY package*.json ./
-RUN npm install && npm install --save-dev @types/node
+RUN npm install
 COPY . .
-# RUN node app.js
 
 EXPOSE 3008
 
-CMD ["npm", "run", "dev"]
-
+# Utiliser start au lieu de dev pour la production
+CMD ["npm", "start"]
