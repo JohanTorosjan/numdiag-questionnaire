@@ -784,7 +784,8 @@ app.get('/questionnaires/:id/export2', async (req, res) => {
           title: question.label,
           type: typeMapping[question.questiontype] || 'free_answer',
           mandatory: question.mandatory,
-          help: question.tooltip || ''
+          help: question.tooltip || '',
+          coefficient:question.coeff
         };
 
         // Ajouter description si thème existe
@@ -822,7 +823,7 @@ app.get('/questionnaires/:id/export2', async (req, res) => {
             questionObj.options = reponses.map(reponse => ({
               label: reponse.label,
               code: `r_${reponse.id}`,
-              celing:reponse.plafond || 0,
+              ceiling:reponse.plafond || 100,
               score: reponse.valeurscore || 0
             }));
           }
