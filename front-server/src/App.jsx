@@ -4,6 +4,7 @@ import './App.css'
 
 import Home from './components/Home/Home.jsx'
 import Questionnaire from './components/Questionnaire/Questionnaire.jsx'
+import Session from './components/Session/Session.jsx'
 import { ToastProvider } from './ToastSystem';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/questionnaire/:id" element={<Questionnaire />} />
+          <Route path="/session/:questionnaire_id" element={<Session />} />
         </Routes>
       </Router>
     </ToastProvider>

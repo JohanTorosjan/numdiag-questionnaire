@@ -111,3 +111,14 @@ CREATE TABLE Tranches (
     value INTEGER NOT NULL,
     FOREIGN KEY (reponse_id) REFERENCES Reponses(id) ON DELETE CASCADE
 );
+
+CREATE TABLE Session (    
+    id SERIAL PRIMARY KEY,
+    questionnaire_id INTEGER NOT NULL,
+    page INTEGER NOT NULL DEFAULT 0,
+    state VARCHAR NOT NULL DEFAULT 'unactive',
+    score NUMERIC,
+    -- REPONSES PLUS TARD
+    FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE
+
+)
