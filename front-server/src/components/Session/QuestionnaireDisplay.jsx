@@ -5,6 +5,7 @@ import { useToast } from "../../ToastSystem";
 
 import { useNavigate } from 'react-router-dom';
 
+import QuestionnaireDisplayer from "./QuestionnaireDisplayer.jsx";
 
 async function getSessionQuestionnaire(session_id){
     try{
