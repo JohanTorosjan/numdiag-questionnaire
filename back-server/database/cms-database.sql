@@ -138,7 +138,10 @@ CREATE TABLE Session (
     page INTEGER NOT NULL DEFAULT 0,
     state VARCHAR NOT NULL DEFAULT 'unactive',
     score NUMERIC,
+    current_section_id INTEGER NOT NULL,
+
     -- REPONSES PLUS TARD
-    FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE
+    FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE,
+    FOREIGN KEY (current_section_id) REFERENCES Sections(id) ON DELETE CASCADE
 
 )

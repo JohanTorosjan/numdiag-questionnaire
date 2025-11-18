@@ -14,7 +14,7 @@ import {
 } from './questionnaire/reponsesTranches.js'
 import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
-import { createSession } from './session/session.js'
+import { createSession,launchSession } from './session/session.js'
 const app = express()
 const port = 3008
 
@@ -948,6 +948,21 @@ app.post('/session/:id_questionnaire',async (req,res) => {
         res.status(200).json({
             success: true,
             message: 'Session saved successfully',
+            data: result
+        })
+    } catch (error) {
+        console.error('Error saving session:', error)
+        res.status(500).json({ error: 'Failed to save session' })
+    }
+})
+
+app.put('/session/start/:id_session',async (req,res) => {
+    const { id_session } = req.params;
+    try {
+        const result = await launchSession(id_session)
+        res.status(200).json({
+            success: true,
+            message: 'Session updated successfully',
             data: result
         })
     } catch (error) {
