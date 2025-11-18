@@ -241,6 +241,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                 <div className="question-main-info">
                     <h4 className="question-title">
                        <p>{question.page}.{question.position} </p>
+                       {question.id}
                         {question.label} 
                         {question.mandatory && <span className="mandatory-badge">*</span>}
                         <p className='question-tooltip-text'>{question.tooltip}  </p>
