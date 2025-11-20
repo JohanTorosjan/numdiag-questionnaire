@@ -56,6 +56,7 @@ function QuestionnaireDisplay(){
             console.log(data)
             setQuestionnaire(data.data.questionnaire);
             setSession(data.data.session);
+            
             setIsLoading(false)
         }
         fetchSessionQuestionnaire();
@@ -64,6 +65,8 @@ function QuestionnaireDisplay(){
     // Gérer la mise à jour de la session
     const handleSessionUpdate = async (updatedSession) => {
         console.log(updatedSession)
+        
+        //
         setSession(updatedSession);
         
         // Optionnel : Sauvegarder automatiquement sur le serveur

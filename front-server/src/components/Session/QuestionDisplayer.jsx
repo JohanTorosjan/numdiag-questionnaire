@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 
-function QuestionDisplayer({ question, onAnswerChange }) {
-    const [selectedValue, setSelectedValue] = useState(null);
-    const [selectedMultiple, setSelectedMultiple] = useState([]);
-    const [textValue, setTextValue] = useState("");
-
+function QuestionDisplayer({ question, onAnswerChange,initialAnswer }) {
+    const [selectedMultiple, setSelectedMultiple] = useState(initialAnswer?.reponseIds ||[]);
+    const [textValue, setTextValue] = useState(
+        initialAnswer?.flatReponse||"");
+        const [selectedValue, setSelectedValue] = useState(
+        initialAnswer?.reponseIds?.[0] || null
+    );
     // Notifier le parent à chaque changement de réponse
     useEffect(() => {
         const answer = {

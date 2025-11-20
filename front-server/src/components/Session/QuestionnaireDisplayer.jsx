@@ -1,15 +1,50 @@
 import { useState, useEffect } from "react";
 import QuestionDisplayer from "./QuestionDisplayer.jsx";
+import { useToast } from "../../ToastSystem";
 
 function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
     const [currentSection, setCurrentSection] = useState(null);
     const [currentQuestions, setCurrentQuestions] = useState([]);
     const [answers, setAnswers] = useState({});
+    const toast = useToast();
 
     // Calculer le nombre total de pages du questionnaire
     const totalPages = questionnaire?.sections.reduce((total, section) => {
         return total + section.nbpages;
     }, 0) || 0;
+
+     const areAllMandatoryQuestionsAnswered = () => {
+        // Récupérer les questions obligatoires de la page courante
+        const mandatoryQuestions = currentQuestions.filter(q => q.mandatory);
+        
+        // Vérifier chaque question obligatoire
+        for (const question of mandatoryQuestions) {
+            const answer = answers[question.id];
+            
+            // Si pas de réponse du tout
+            if (!answer) return false;
+            
+            // Vérifier selon le type de question
+            switch (question.questiontype) {
+                case "choix_simple":
+                case "choix_multiple":
+                    // reponseIds doit exister et ne pas être vide
+                    if (!answer.reponseIds || answer.reponseIds.length === 0) {
+                        return false;
+                    }
+                    break;
+                case "entier":
+                case "libre":
+                    // flatReponse ne doit pas être null ou vide
+                    if (!answer.flatReponse || answer.flatReponse.trim() === "") {
+                        return false;
+                    }
+                    break;
+            }
+        }
+        
+        return true;
+    };
 
     // Gérer les changements de réponse
     const handleAnswerChange = (answer) => {
@@ -17,23 +52,49 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
             ...prev,
             [answer.questionId]: answer
         }));
+        
+        console.log(answers)
     };
 
-    // Mettre à jour la session avec les réponses
+
+// Mettre à jour la session avec les réponses
     useEffect(() => {
         if (Object.keys(answers).length > 0 && onSessionUpdate) {
+            // Garder les answers existantes du session
+            const existingAnswers = session.answers || [];
+            
+            // Mettre à jour uniquement les réponses modifiées
+            const updatedAnswers = existingAnswers.map(existingAnswer => {
+                // Si cette question a été modifiée, utiliser la nouvelle réponse
+                if (answers[existingAnswer.questionId]) {
+                    return answers[existingAnswer.questionId];
+                }
+                // Sinon garder l'ancienne réponse
+                return existingAnswer;
+            });
+            
+            // Ajouter les nouvelles réponses qui n'existaient pas avant
+            Object.values(answers).forEach(newAnswer => {
+                if (!existingAnswers.find(a => a.questionId === newAnswer.questionId)) {
+                    updatedAnswers.push(newAnswer);
+                }
+            });
+            
             const updatedSession = {
                 ...session,
-                answers: Object.values(answers)
+                answers: updatedAnswers
             };
             onSessionUpdate(updatedSession);
         }
     }, [answers]);
-
     // Fonction pour passer à la page suivante
     const handleNext = () => {
         if (!currentSection) return;
-
+        if (!areAllMandatoryQuestionsAnswered()){
+            toast.showError('Veuillez remplir toutes les questions obligatoires')  
+            return
+    
+        }
         // Si il reste des pages dans la section courante
         if (session.page < currentSection.nbpages) {
             const updatedSession = {
@@ -164,6 +225,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
                         <QuestionDisplayer
                             key={question.id}
                             question={question}
+                            initialAnswer={answers[question.id]} // Passer la réponse existante
                             onAnswerChange={handleAnswerChange}
                         />
                     ))

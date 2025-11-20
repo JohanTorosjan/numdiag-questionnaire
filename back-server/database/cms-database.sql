@@ -139,6 +139,7 @@ CREATE TABLE Session (
     state VARCHAR NOT NULL DEFAULT 'unactive',
     score NUMERIC,
     current_section_id INTEGER NOT NULL,
+    answers JSONB DEFAULT '[]'::jsonb,
 
     -- REPONSES PLUS TARD
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE,

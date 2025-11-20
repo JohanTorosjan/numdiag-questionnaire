@@ -1,52 +1,74 @@
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery } from '../database/client.js'
 
 async function createSession(questionnaireId) {
-    try{    
-
-
-        const sectionQuerry = `
+    try {    
+        const sectionQuery = `
             SELECT id FROM Sections WHERE questionnaire_id = $1 ORDER BY id ASC
         `;
         
         const section = await executeQuery(
             numdiagPool, 
-            sectionQuerry,
+            sectionQuery,
             [questionnaireId]
         );
-        if(section.length==0){
-            return {'nosections':true}
+        
+        if (section.length === 0) {
+            return { nosections: true };
         }
+
+        // Récupérer toutes les questions du questionnaire
+        const questionsQuery = `
+            SELECT q.id as question_id
+            FROM Questions q
+            INNER JOIN Sections s ON q.section_id = s.id
+            WHERE s.questionnaire_id = $1
+            ORDER BY q.id ASC
+        `;
+        
+        const questions = await executeQuery(
+            numdiagPool,
+            questionsQuery,
+            [questionnaireId]
+        );
+
+        // Créer le tableau answers avec toutes les questions
+        const answers = questions.map(q => ({
+            questionId: q.question_id,
+            reponseIds: [],
+            flatReponse: null
+        }));
+
         const insertSessionQuery = `
-            INSERT INTO Session (questionnaire_id, current_section_id)
-            VALUES ($1,$2)
+            INSERT INTO Session (questionnaire_id, current_section_id, answers)
+            VALUES ($1, $2, $3)
             RETURNING *;
         `;
+        
         const createdSession = await executeQuery(
             numdiagPool, 
             insertSessionQuery,
-            [questionnaireId,section[0].id]
+            [questionnaireId, section[0].id, JSON.stringify(answers)]
         );
 
-        const questionnaireQuerry = `
-            SELECT * FROM QUESTIONNAIRES WHERE id = $1
+        const questionnaireQuery = `
+            SELECT * FROM Questionnaires WHERE id = $1
         `;
         
         const questionnaire = await executeQuery(
             numdiagPool, 
-            questionnaireQuerry,
+            questionnaireQuery,
             [questionnaireId]
         );
 
         return {
-            questionnaire:questionnaire,
-            session:createdSession
-        }
+            questionnaire: questionnaire,
+            session: createdSession
+        };
     } 
-    catch{
-        console.log('erreur')
+    catch (error) {
+        console.log('erreur:', error);
+        throw error;
     }
-
-
 }
 
 async function launchSession(session_id) {
@@ -73,7 +95,8 @@ async function getSessionQuestionnaire(session_id) {
             s.page,
             s.state,
             s.score,
-            s.current_section_id
+            s.current_section_id,
+            s.answers
         FROM Session s
         WHERE s.id = $1
     `;
