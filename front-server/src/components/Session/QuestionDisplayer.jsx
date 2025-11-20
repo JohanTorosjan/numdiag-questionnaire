@@ -166,12 +166,12 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer }) {
             {renderQuestionByType()}
 
             {/* Informations supplémentaires */}
-            <div className="mt-3 text-xs text-gray-400">
+            {/* <div className="mt-3 text-xs text-gray-400">
                 <span>Position: {question.position}</span>
                 {question.coeff !== 1 && (
                     <span className="ml-3">Coefficient: {question.coeff}</span>
                 )}
-            </div>
+            </div> */}
         </div>
     );
 }

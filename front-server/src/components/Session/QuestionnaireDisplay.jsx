@@ -98,14 +98,14 @@ function QuestionnaireDisplay(){
             />
             
             {/* Debug : Afficher les réponses (à retirer en production) */}
-            {session.answers && session.answers.length > 0 && (
+            {/* {session.answers && session.answers.length > 0 && (
                 <div className="mt-8 p-4 bg-gray-100 rounded">
                     <h3 className="font-bold mb-2">Réponses actuelles :</h3>
                     <pre className="text-xs overflow-auto">
                         {JSON.stringify(session.answers, null, 2)}
                     </pre>
                 </div>
-            )}
+            )} */}
         </div>
     )
 }

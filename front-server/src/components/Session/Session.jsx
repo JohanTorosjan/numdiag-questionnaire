@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 async function createSession(idQuestionnaire) {
+
   try {
     const response = await fetch(`http://localhost:3008/session/${idQuestionnaire}`, {
             method: 'POST',
@@ -35,9 +36,14 @@ function Session(){
     const [isLoading, setIsLoading] = useState(false);
     const [questionnaire, setQuestionnaire] = useState(null);
     const [session, setSession] = useState(null);
+    const [existingSessionId, setExistingSessionId] = useState(null);
+
     const toast = useToast();
 
   useEffect(() => {
+
+
+
     async function fetchCreateSession() {
         setIsLoading(true)
 
@@ -45,6 +51,13 @@ function Session(){
         console.log(data.questionnaire)
         setQuestionnaire(data.questionnaire[0]);
         setSession(data.session[0]);
+        const storedSession = localStorage.getItem("session_id");
+        const storedQuestionnaire = localStorage.getItem("questionnaire_id");
+
+        console.log(data.questionnaire[0].id)
+        if (storedSession && storedQuestionnaire==data.questionnaire[0].id) {
+          setExistingSessionId(storedSession);
+        }
 
     
         setIsLoading(false)
@@ -54,6 +67,7 @@ function Session(){
     }, [questionnaire_id]);
 
 
+  
     const handleGoToQuestionnaireClick = async() =>{
 
         const response = await fetch(`http://127.0.0.1:3008/session/start/${session.id}`, {         
@@ -64,6 +78,8 @@ function Session(){
         
         const data = await response.json()
         if(data.success){
+            localStorage.setItem('session_id',session.id)
+            localStorage.setItem('questionnaire_id',questionnaire.id)
             navigate(`/session/questionnaire/${session.id}`)
         }
         else{
@@ -86,14 +102,36 @@ function Session(){
             {questionnaire.insight}
         </div>
 
-                <button
-          onClick={handleGoToQuestionnaireClick}
-          className="btn-go-to-questionnaire"
-        >
-            Lancer le questionnaire
-        </button>
-        
-        
+
+    {existingSessionId ? (
+            <div className="questionnaires-start-buttons">
+
+              <button
+        onClick={() => navigate(`/session/questionnaire/${existingSessionId}`)}
+        className="btn-go-to-questionnaire"
+      >
+        Continuer le questionnaire
+      </button>
+            <button
+        onClick={handleGoToQuestionnaireClick}
+        className="btn-go-to-questionnaire"
+      >
+        Commencer un nouveau questionnaire
+      </button>
+        </div>
+
+    ) : (
+            <div className="questionnaires-start-buttons">
+
+      <button
+        onClick={handleGoToQuestionnaireClick}
+        className="btn-go-to-questionnaire"
+      >
+        Lancer le questionnaire
+      </button>
+      </div>
+    )}
+            
     </div>
     );
 
