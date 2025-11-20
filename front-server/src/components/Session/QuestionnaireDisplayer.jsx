@@ -1,26 +1,198 @@
-
-import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useToast } from "../../ToastSystem";
+import QuestionDisplayer from "./QuestionDisplayer.jsx";
 
-import { useNavigate } from 'react-router-dom';
+function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
+    const [currentSection, setCurrentSection] = useState(null);
+    const [currentQuestions, setCurrentQuestions] = useState([]);
+    const [answers, setAnswers] = useState({});
 
+    // Calculer le nombre total de pages du questionnaire
+    const totalPages = questionnaire?.sections.reduce((total, section) => {
+        return total + section.nbpages;
+    }, 0) || 0;
 
+    // Gérer les changements de réponse
+    const handleAnswerChange = (answer) => {
+        setAnswers(prev => ({
+            ...prev,
+            [answer.questionId]: answer
+        }));
+    };
 
-function QuestionnaireDisplayer(){
-    const navigate = useNavigate();
-    const { session_id } = useParams();
-    const [isLoading, setIsLoading] = useState(false);
-    const [questionnaire, setQuestionnaire] = useState(null);
-    const [session, setSession] = useState(null);
-    const toast = useToast();
+    // Mettre à jour la session avec les réponses
+    useEffect(() => {
+        if (Object.keys(answers).length > 0 && onSessionUpdate) {
+            const updatedSession = {
+                ...session,
+                answers: Object.values(answers)
+            };
+            onSessionUpdate(updatedSession);
+        }
+    }, [answers]);
 
-    
+    // Fonction pour passer à la page suivante
+    const handleNext = () => {
+        if (!currentSection) return;
 
+        // Si il reste des pages dans la section courante
+        if (session.page < currentSection.nbpages) {
+            const updatedSession = {
+                ...session,
+                page: session.page + 1
+            };
+            if (onSessionUpdate) {
+                onSessionUpdate(updatedSession);
+            }
+        } else {
+            // Passer à la section suivante
+            const currentSectionIndex = questionnaire.sections.findIndex(
+                s => s.id === session.current_section_id
+            );
+            
+            if (currentSectionIndex < questionnaire.sections.length - 1) {
+                const nextSection = questionnaire.sections[currentSectionIndex + 1];
+                const updatedSession = {
+                    ...session,
+                    current_section_id: nextSection.id,
+                    page: 1
+                };
+                if (onSessionUpdate) {
+                    onSessionUpdate(updatedSession);
+                }
+            }
+        }
+    };
 
-    return(<div className="questionnaire-displayer">
-        ENCORE COUCOU 
-    </div>)
+    // Fonction pour revenir à la page précédente
+    const handlePrevious = () => {
+        if (!currentSection) return;
+
+        // Si on n'est pas à la première page de la section
+        if (session.page > 1) {
+            const updatedSession = {
+                ...session,
+                page: session.page - 1
+            };
+            if (onSessionUpdate) {
+                onSessionUpdate(updatedSession);
+            }
+        } else {
+            // Revenir à la section précédente (dernière page)
+            const currentSectionIndex = questionnaire.sections.findIndex(
+                s => s.id === session.current_section_id
+            );
+            
+            if (currentSectionIndex > 0) {
+                const previousSection = questionnaire.sections[currentSectionIndex - 1];
+                const updatedSession = {
+                    ...session,
+                    current_section_id: previousSection.id,
+                    page: previousSection.nbpages
+                };
+                if (onSessionUpdate) {
+                    onSessionUpdate(updatedSession);
+                }
+            }
+        }
+    };
+
+    // Vérifier si on est à la première page
+    const isFirstPage = () => {
+        const currentSectionIndex = questionnaire.sections.findIndex(
+            s => s.id === session.current_section_id
+        );
+        return currentSectionIndex === 0 && session.page === 1;
+    };
+
+    // Vérifier si on est à la dernière page
+    const isLastPage = () => {
+        const currentSectionIndex = questionnaire.sections.findIndex(
+            s => s.id === session.current_section_id
+        );
+        const isLastSection = currentSectionIndex === questionnaire.sections.length - 1;
+        return isLastSection && currentSection && session.page === currentSection.nbpages;
+    };
+
+    useEffect(() => {
+        if (!questionnaire || !session) return;
+
+        // Trouver la section courante basée sur current_section_id
+        const section = questionnaire.sections.find(
+            s => s.id === session.current_section_id
+        );
+        
+        if (section) {
+            setCurrentSection(section);
+            
+            // Filtrer les questions pour la page courante
+            const questionsForPage = section.questions.filter(
+                q => q.page === session.page
+            );
+            
+            setCurrentQuestions(questionsForPage);
+        }
+    }, [questionnaire, session]);
+
+    if (!currentSection) {
+        return (
+            <div className="text-center p-4">
+                <p>Section non trouvée</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="max-w-4xl mx-auto">
+            {/* En-tête de la section */}
+            <div className="mb-6">
+                <h2 className="text-2xl font-bold mb-2">{currentSection.label}</h2>
+                {currentSection.description && (
+                    <p className="text-gray-600">{currentSection.description}</p>
+                )}
+                {currentSection.tooltip && (
+                    <p className="text-sm text-gray-500 italic mt-1">{currentSection.tooltip}</p>
+                )}
+                <div className="text-sm text-gray-500 mt-2">
+                    Page {session.page} / {currentSection.nbpages}
+                </div>
+            </div>
+
+            {/* Liste des questions */}
+            <div className="space-y-6">
+                {currentQuestions.length > 0 ? (
+                    currentQuestions.map((question) => (
+                        <QuestionDisplayer
+                            key={question.id}
+                            question={question}
+                            onAnswerChange={handleAnswerChange}
+                        />
+                    ))
+                ) : (
+                    <div className="text-center p-8 bg-gray-50 rounded-lg">
+                        <p className="text-gray-500">Aucune question sur cette page</p>
+                    </div>
+                )}
+            </div>
+
+            {/* Navigation */}
+            <div className="flex justify-between mt-8 pt-4 border-t">
+                <button 
+                    className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isFirstPage()}
+                    onClick={handlePrevious}
+                >
+                    Précédent
+                </button>
+                <button 
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isLastPage()}
+                    onClick={handleNext}
+                >
+                    Suivant
+                </button>
+            </div>
+        </div>
+    );
 }
 
-export default QuestionnaireDisplayer
+export default QuestionnaireDisplayer;

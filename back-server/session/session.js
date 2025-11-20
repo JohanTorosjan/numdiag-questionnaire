@@ -5,7 +5,7 @@ async function createSession(questionnaireId) {
 
 
         const sectionQuerry = `
-            SELECT id FROM Sections WHERE questionnaire_id = $1
+            SELECT id FROM Sections WHERE questionnaire_id = $1 ORDER BY id ASC
         `;
         
         const section = await executeQuery(
@@ -16,7 +16,6 @@ async function createSession(questionnaireId) {
         if(section.length==0){
             return {'nosections':true}
         }
-
         const insertSessionQuery = `
             INSERT INTO Session (questionnaire_id, current_section_id)
             VALUES ($1,$2)
