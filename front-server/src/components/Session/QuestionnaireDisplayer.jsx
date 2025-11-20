@@ -52,7 +52,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
             ...prev,
             [answer.questionId]: answer
         }));
-        
+      //  debugger
         console.log(answers)
     };
 
@@ -84,6 +84,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
                 ...session,
                 answers: updatedAnswers
             };
+        //    debugger
             onSessionUpdate(updatedSession);
         }
     }, [answers]);
@@ -225,7 +226,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
                         <QuestionDisplayer
                             key={question.id}
                             question={question}
-                            initialAnswer={answers[question.id]} // Passer la réponse existante
+                            initialAnswer={session} // Passer la réponse existante
                             onAnswerChange={handleAnswerChange}
                         />
                     ))

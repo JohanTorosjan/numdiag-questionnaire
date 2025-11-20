@@ -14,7 +14,7 @@ import {
 } from './questionnaire/reponsesTranches.js'
 import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
-import { createSession,launchSession,getSessionQuestionnaire } from './session/session.js'
+import { createSession,launchSession,getSessionQuestionnaire,updateSession } from './session/session.js'
 const app = express()
 const port = 3008
 
@@ -986,3 +986,28 @@ app.get('/session/questionnaire/:id_session',async (req,res) => {
         res.status(500).json({ error: 'Failed to get session questionnaire' })
     }
 })
+
+app.put('/session/:id_session', async (req, res) => {
+    const { id_session } = req.params;
+    const sessionData = req.body; // Récupérer les données du body
+    
+    try {
+        const result = await updateSession(id_session, sessionData);
+        
+        if (result.success) {
+            res.status(200).json({
+                success: true,
+                message: 'Session updated successfully',
+                data: result.data
+            });
+        } else {
+            res.status(500).json({ 
+                success: false,
+                error: result.error 
+            });
+        }
+    } catch (error) {
+        console.error('Error updating session:', error);
+        res.status(500).json({ error: 'Failed to update session' });
+    }
+});

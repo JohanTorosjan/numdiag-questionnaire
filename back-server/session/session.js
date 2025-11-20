@@ -307,4 +307,59 @@ async function getSessionQuestionnaire(session_id) {
 }
 
 
-export{createSession,launchSession,getSessionQuestionnaire}
+async function updateSession(session_id, sessionData) {
+    try {
+        // Construire la requête UPDATE avec les champs dynamiques
+        const updates = [];
+        const values = [];
+        let paramIndex = 1;
+
+        // Ajouter les champs à mettre à jour
+        if (sessionData.page !== undefined) {
+            updates.push(`page = $${paramIndex++}`);
+            values.push(sessionData.page);
+        }
+        if (sessionData.state !== undefined) {
+            updates.push(`state = $${paramIndex++}`);
+            values.push(sessionData.state);
+        }
+        if (sessionData.score !== undefined) {
+            updates.push(`score = $${paramIndex++}`);
+            values.push(sessionData.score);
+        }
+        if (sessionData.current_section_id !== undefined) {
+            updates.push(`current_section_id = $${paramIndex++}`);
+            values.push(sessionData.current_section_id);
+        }
+        if (sessionData.answers !== undefined) {
+            updates.push(`answers = $${paramIndex++}`);
+            values.push(JSON.stringify(sessionData.answers));
+        }
+
+        // Ajouter l'ID de session comme dernier paramètre
+        values.push(session_id);
+
+        // Construire et exécuter la requête
+        const query = `
+            UPDATE session 
+            SET ${updates.join(', ')}
+            WHERE id = $${paramIndex}
+            RETURNING *
+        `;
+
+        const result = await executeQuery(numdiagPool, query, values);
+        
+        return {
+            success: true,
+            data: result[0]
+        };
+        
+    } catch (error) {
+        console.error("ERREUR lors de la mise à jour de la session:", error);
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+export{createSession,launchSession,getSessionQuestionnaire,updateSession}

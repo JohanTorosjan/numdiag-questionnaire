@@ -18,7 +18,8 @@ async function getSessionQuestionnaire(session_id){
 
 async function updateSession(session_id, sessionData){
     try{
-        debugger
+        
+        console.log(sessionData)
         const response = await fetch(`http://localhost:3008/session/${session_id}`, {
             method: 'PUT',
             headers: {
@@ -27,6 +28,7 @@ async function updateSession(session_id, sessionData){
             body: JSON.stringify(sessionData)
         });
         const data = await response.json()
+        console.log(data)
         return data
     }
     catch(error){
@@ -68,12 +70,11 @@ function QuestionnaireDisplay(){
         
         //
         setSession(updatedSession);
-        
-        // Optionnel : Sauvegarder automatiquement sur le serveur
-        // const result = await updateSession(session_id, updatedSession);
-        // if (!result.success) {
-        //     toast.showError('Erreur lors de la sauvegarde');
-        // }
+       // debugger
+        const result = await updateSession(session_id, updatedSession);
+        if (!result.success) {
+            toast.showError('Erreur lors de la sauvegarde');
+        }
     };
 
     if (isLoading) {

@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 
 function QuestionDisplayer({ question, onAnswerChange,initialAnswer }) {
-    const [selectedMultiple, setSelectedMultiple] = useState(initialAnswer?.reponseIds ||[]);
+    
+    const [selectedMultiple, setSelectedMultiple] = useState(initialAnswer.answers.find(r=>r.questionId==question.id).reponseIds ||[]);
     const [textValue, setTextValue] = useState(
-        initialAnswer?.flatReponse||"");
-        const [selectedValue, setSelectedValue] = useState(
-        initialAnswer?.reponseIds?.[0] || null
+        initialAnswer.answers.find(r=>r.questionId==question.id).flatReponse||"");
+    
+    const [selectedValue, setSelectedValue] = useState(
+        initialAnswer.answers.find(r=>r.questionId==question.id).reponseIds[0] || null
+        
     );
     // Notifier le parent à chaque changement de réponse
     useEffect(() => {
@@ -14,7 +17,7 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer }) {
             reponseIds: [],
             flatReponse: null
         };
-
+       // debugger
         switch (question.questiontype) {
             case "choix_simple":
                 if (selectedValue !== null) {
