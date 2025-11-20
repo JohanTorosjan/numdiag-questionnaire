@@ -46,6 +46,7 @@ function QuestionnaireDisplay(){
     const toast = useToast();
 
     useEffect(() => {
+
         async function fetchSessionQuestionnaire() {
             setIsLoading(true)
 
@@ -55,7 +56,10 @@ function QuestionnaireDisplay(){
                 setIsLoading(false)
                 return;
             }
-            console.log(data)
+            console.log(data.data.questionnaire.id)
+            if(localStorage.getItem('session_id')!= session_id){
+            navigate(`/session/${data.data.questionnaire.id}`)
+            }
             setQuestionnaire(data.data.questionnaire);
             setSession(data.data.session);
             
