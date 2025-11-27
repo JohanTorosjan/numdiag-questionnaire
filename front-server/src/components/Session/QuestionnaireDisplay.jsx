@@ -94,7 +94,7 @@ function QuestionnaireDisplay(){
     }
 
     return (
-        <div className="container mx-auto p-4 text-lg">
+        <div className="w-screen h-screen text-lg">
             <QuestionnaireDisplayer
                 questionnaire={questionnaire}
                 session={session}

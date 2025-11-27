@@ -16,14 +16,14 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
      const areAllMandatoryQuestionsAnswered = () => {
         // Récupérer les questions obligatoires de la page courante
         const mandatoryQuestions = currentQuestions.filter(q => q.mandatory);
-        
+
         // Vérifier chaque question obligatoire
         for (const question of mandatoryQuestions) {
             const answer = answers[question.id];
-            
+
             // Si pas de réponse du tout
             if (!answer) return false;
-            
+
             // Vérifier selon le type de question
             switch (question.questiontype) {
                 case "choix_simple":
@@ -42,7 +42,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
                     break;
             }
         }
-        
+
         return true;
     };
 
@@ -62,7 +62,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
         if (Object.keys(answers).length > 0 && onSessionUpdate) {
             // Garder les answers existantes du session
             const existingAnswers = session.answers || [];
-            
+
             // Mettre à jour uniquement les réponses modifiées
             const updatedAnswers = existingAnswers.map(existingAnswer => {
                 // Si cette question a été modifiée, utiliser la nouvelle réponse
@@ -72,14 +72,14 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
                 // Sinon garder l'ancienne réponse
                 return existingAnswer;
             });
-            
+
             // Ajouter les nouvelles réponses qui n'existaient pas avant
             Object.values(answers).forEach(newAnswer => {
                 if (!existingAnswers.find(a => a.questionId === newAnswer.questionId)) {
                     updatedAnswers.push(newAnswer);
                 }
             });
-            
+
             const updatedSession = {
                 ...session,
                 answers: updatedAnswers
@@ -92,9 +92,9 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
     const handleNext = () => {
         if (!currentSection) return;
         if (!areAllMandatoryQuestionsAnswered()){
-            toast.showError('Veuillez remplir toutes les questions obligatoires')  
+            toast.showError('Veuillez remplir toutes les questions obligatoires')
             return
-    
+
         }
         // Si il reste des pages dans la section courante
         if (session.page < currentSection.nbpages) {
@@ -110,7 +110,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
             const currentSectionIndex = questionnaire.sections.findIndex(
                 s => s.id === session.current_section_id
             );
-            
+
             if (currentSectionIndex < questionnaire.sections.length - 1) {
                 const nextSection = questionnaire.sections[currentSectionIndex + 1];
                 const updatedSession = {
@@ -143,7 +143,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
             const currentSectionIndex = questionnaire.sections.findIndex(
                 s => s.id === session.current_section_id
             );
-            
+
             if (currentSectionIndex > 0) {
                 const previousSection = questionnaire.sections[currentSectionIndex - 1];
                 const updatedSession = {
@@ -182,15 +182,15 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
         const section = questionnaire.sections.find(
             s => s.id === session.current_section_id
         );
-        
+
         if (section) {
             setCurrentSection(section);
-            
+
             // Filtrer les questions pour la page courante
             const questionsForPage = section.questions.filter(
                 q => q.page === session.page
             );
-            
+
             setCurrentQuestions(questionsForPage);
         }
     }, [questionnaire, session]);
@@ -204,17 +204,20 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
     }
 
     return (
+      <div className="w-full h-full pt-8 bg-green-500/50">
         <div className="max-w-4xl mx-auto">
             {/* En-tête de la section */}
-            <div className="mb-6">
-                <h2 className="text-2xl font-bold mb-2">{currentSection.label}</h2>
+            <div className=" mb-6 shadow rounded-xl pl-5 pr-2 pt-3 pb-1 bg-white mx-3">
+                <h2 className="text-2xl font-semibold mb-2">{currentSection.label}</h2>
+                <div className="flex w-full">
                 {currentSection.description && (
-                    <p className="text-gray-600">{currentSection.description}</p>
+                    <p className="text-gray-600 w-2/3">{currentSection.description}</p>
                 )}
                 {currentSection.tooltip && (
-                    <p className="text-sm text-gray-500 italic mt-1">{currentSection.tooltip}</p>
+                    <p className="text-sm text-gray-500 italic mt-1 w-1/3">{currentSection.tooltip}</p>
                 )}
-                <div className="text-sm text-gray-500 mt-2">
+                </div>
+                <div className="text-sm text-gray-500 mt-8 text-end">
                     Page {session.page} / {currentSection.nbpages}
                 </div>
             </div>
@@ -239,14 +242,14 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
 
             {/* Navigation */}
             <div className="flex justify-between mt-8 pt-4 border-t">
-                <button 
+                <button
                     className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isFirstPage()}
                     onClick={handlePrevious}
                 >
                     Précédent
                 </button>
-                <button 
+                <button
                     className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isLastPage()}
                     onClick={handleNext}
@@ -255,6 +258,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
                 </button>
             </div>
         </div>
+      </div>
     );
 }
 
