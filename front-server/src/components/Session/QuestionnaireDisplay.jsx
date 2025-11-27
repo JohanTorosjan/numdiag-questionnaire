@@ -18,7 +18,7 @@ async function getSessionQuestionnaire(session_id){
 
 async function updateSession(session_id, sessionData){
     try{
-        
+
         console.log(sessionData)
         const response = await fetch(`http://localhost:3008/session/${session_id}`, {
             method: 'PUT',
@@ -37,7 +37,7 @@ async function updateSession(session_id, sessionData){
     }
 }
 
-function QuestionnaireDisplay(){    
+function QuestionnaireDisplay(){
     const navigate = useNavigate();
     const { session_id } = useParams();
     const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +62,7 @@ function QuestionnaireDisplay(){
             }
             setQuestionnaire(data.data.questionnaire);
             setSession(data.data.session);
-            
+
             setIsLoading(false)
         }
         fetchSessionQuestionnaire();
@@ -71,7 +71,7 @@ function QuestionnaireDisplay(){
     // Gérer la mise à jour de la session
     const handleSessionUpdate = async (updatedSession) => {
         console.log(updatedSession)
-        
+
         //
         setSession(updatedSession);
        // debugger
@@ -94,13 +94,13 @@ function QuestionnaireDisplay(){
     }
 
     return (
-        <div className="container mx-auto p-4">
-            <QuestionnaireDisplayer 
+        <div className="container mx-auto p-4 text-lg">
+            <QuestionnaireDisplayer
                 questionnaire={questionnaire}
                 session={session}
                 onSessionUpdate={handleSessionUpdate}
             />
-            
+
             {/* Debug : Afficher les réponses (à retirer en production) */}
             {/* {session.answers && session.answers.length > 0 && (
                 <div className="mt-8 p-4 bg-gray-100 rounded">

@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /* Variables CSS pour faciliter la personnalisation */
 :root {
   --primary-color: #2563eb;

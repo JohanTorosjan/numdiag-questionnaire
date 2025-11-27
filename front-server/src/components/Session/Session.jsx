@@ -59,23 +59,23 @@ function Session(){
           setExistingSessionId(storedSession);
         }
 
-    
+
         setIsLoading(false)
     }
-    
+
         fetchCreateSession();
     }, [questionnaire_id]);
 
 
-  
+
     const handleGoToQuestionnaireClick = async() =>{
 
-        const response = await fetch(`http://127.0.0.1:3008/session/start/${session.id}`, {         
+        const response = await fetch(`http://127.0.0.1:3008/session/start/${session.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
         }})
-        
+
         const data = await response.json()
         if(data.success){
             localStorage.setItem('session_id',session.id)
@@ -93,45 +93,50 @@ function Session(){
     if (!questionnaire) return <div>Café</div>;
 
     return (
-    <div className="Session">
-      
-        <div className="questionnaires-infos">
-            {questionnaire.label}
-            {questionnaire.description}
-            {questionnaire.tooltip}
-            {questionnaire.insight}
+    <div className="Session w-4/5 block mx-auto">
+
+        <div className="questionnaires-infos mt-0 w-full flex flex-col gap-y-7 py-10 items-center">
+            <h1 className="text-xl font-semibold tracking-wide">{questionnaire.label}</h1>
+            <h2 className="text-lg text-justify">{questionnaire.description}</h2>
+            <div className="flex flex-wrap gap-x-10 w-full mx-auto justify-center items-stretch">
+              <p className="text-lg font-light text-wrap max-w-1/2.2 text-justify">{questionnaire.tooltip}</p>
+              <div className="w-0.5 bg-gray-300"></div>
+              <p className="text-lg font-light text-wrap max-w-1/2.2 text-justify">{questionnaire.insight}</p>
+            </div>
         </div>
 
 
     {existingSessionId ? (
-            <div className="questionnaires-start-buttons">
+            <div className="questionnaires-start-buttons max-w-2/3 mx-auto w-full grid grid-cols-[3fr_1fr_3fr] md:grid-cols-[minmax(300px,3fr)_minmax(20px,1fr)_minmax(300px,3fr)] justify-items-center items-stretch">
 
-              <button
+      <button
         onClick={() => navigate(`/session/questionnaire/${existingSessionId}`)}
-        className="btn-go-to-questionnaire"
+        className="btn-go-to-questionnaire px-4 py-2 bg-indigo-500 rounded text-white mx-auto w-fit md:w-[210px]"
       >
         Continuer le questionnaire
       </button>
-            <button
+      <img src="/images/way.svg" className="h-9 w-9 mt-4 self-center mr-1.5" alt="" />
+      <button
         onClick={handleGoToQuestionnaireClick}
-        className="btn-go-to-questionnaire"
+        className="btn-go-to-questionnaire px-4 py-2 bg-indigo-500 rounded text-white w-fit md:w-[210px] mx-auto text-wrap"
       >
         Commencer un nouveau questionnaire
       </button>
-        </div>
+      </div>
 
     ) : (
-            <div className="questionnaires-start-buttons">
+            <div className="questionnaires-start-buttons w-full flex flex-col justify-center flex-nowrap">
 
       <button
         onClick={handleGoToQuestionnaireClick}
-        className="btn-go-to-questionnaire"
+        className="btn-go-to-questionnaire px-4 py-2 bg-indigo-500 rounded text-white w-fit mx-auto"
       >
         Lancer le questionnaire
       </button>
+        <img src="/images/rocket.svg" className="h-7 w-7 mt-4 self-center" alt="" />
       </div>
     )}
-            
+
     </div>
     );
 
