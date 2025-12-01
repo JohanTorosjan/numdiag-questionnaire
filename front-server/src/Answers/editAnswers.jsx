@@ -125,7 +125,7 @@ function PopUpEditAnswers({ answer, answerType, onClose, onSave }) {
                         />
                     </div>
 
-                    <div className="form-actions">
+                    <div className="form-actions flex gap-x-4 gap-y-2">
                         <button type="button" onClick={onClose} className="btn-secondary">
                             Annuler
                         </button>

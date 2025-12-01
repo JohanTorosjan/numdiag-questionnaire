@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useToast } from '../ToastSystem';
 import ReactDOM from "react-dom";
+import './createAnswers.css';
 
 function PopUpCreateAnswer({ answerType, onClose, onSave }) {
     const toast = useToast();
@@ -126,7 +127,7 @@ function PopUpCreateAnswer({ answerType, onClose, onSave }) {
                         />
                     </div>
 
-                    <div className="form-actions">
+                    <div className="form-actions flex gap-x-4 gap-y-2">
                         <button type="button" onClick={onClose} className="btn-secondary">
                             Annuler
                         </button>

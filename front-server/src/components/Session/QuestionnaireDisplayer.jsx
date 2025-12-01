@@ -206,7 +206,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
     return (
       <div className="w-full h-full pt-8 relative">
         <div className="w-full h-full absolute top-0 bg-sky-500/40 mask-b-from-5% mask-b-to-80% -z-10"></div>
-          <div className="max-w-4xl mx-auto z-10">
+          <div className="max-w-4xl mx-auto z-10 px-3 pb-10">
               {/* En-tête de la section */}
               <div className="mb-6 shadow rounded-xl pl-5 pr-2 pt-3 pb-1 bg-white">
                   <h2 className="text-2xl font-semibold mb-2">{currentSection.label}</h2>
@@ -242,7 +242,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
               </div>
 
               {/* Navigation */}
-              <div className="flex justify-between mt-8 pt-4 border-t">
+              <div className="flex justify-between mt-8 pt-4 mb-10">
                   <button
                       className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={isFirstPage()}
