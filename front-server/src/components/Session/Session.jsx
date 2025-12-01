@@ -93,12 +93,14 @@ function Session(){
     if (!questionnaire) return <div>Café</div>;
 
     return (
-    <div className="Session w-4/5 block mx-auto">
+    <div className="Session px-5 block w-full relative">
 
-        <div className="questionnaires-infos mt-0 w-full flex flex-col gap-y-7 py-10 items-center">
+        <div className="questionnaires-infos mt-0 w-full flex flex-col gap-y-7 py-10 mx-auto">
+          <div className="md:w-2/3 w-full mx-auto border border-gray-200 px-3 py-2 rounded-xl shadow">
             <h1 className="text-xl font-semibold tracking-wide">{questionnaire.label}</h1>
             <h2 className="text-lg text-justify">{questionnaire.description}</h2>
-            <div className="flex flex-wrap gap-x-10 w-full mx-auto justify-center items-stretch">
+          </div>
+            <div className="md:w-1/2 flex flex-wrap gap-x-10 w-full mx-auto justify-center items-stretch px-3 py-2 rounded-xl shadow">
               <p className="text-lg font-light text-wrap max-w-1/2.2 text-justify">{questionnaire.tooltip}</p>
               <div className="w-0.5 bg-gray-300"></div>
               <p className="text-lg font-light text-wrap max-w-1/2.2 text-justify">{questionnaire.insight}</p>
@@ -107,18 +109,18 @@ function Session(){
 
 
     {existingSessionId ? (
-            <div className="questionnaires-start-buttons max-w-2/3 mx-auto w-full grid grid-cols-[3fr_1fr_3fr] md:grid-cols-[minmax(300px,3fr)_minmax(20px,1fr)_minmax(300px,3fr)] justify-items-center items-stretch">
+            <div className="questionnaires-start-buttons md:w-2/3 w-full mx-auto grid grid-cols-[3fr_1fr_3fr] md:grid-cols-[minmax(300px,3fr)_minmax(20px,1fr)_minmax(300px,3fr)]">
 
       <button
         onClick={() => navigate(`/session/questionnaire/${existingSessionId}`)}
-        className="btn-go-to-questionnaire px-4 py-2 bg-indigo-500 rounded text-white mx-auto w-fit md:w-[210px]"
+        className="btn-go-to-questionnaire self-center justify-self-start px-4 py-2 bg-indigo-500 rounded text-white w-fit md:w-[210px]"
       >
-        Continuer le questionnaire
+        Continuer le questionnaire précédent
       </button>
-      <img src="/images/way.svg" className="h-9 w-9 mt-4 self-center mr-1.5" alt="" />
+      <img src="/images/way.svg" className="h-9 w-9 mt-4 self-center md:self-start justify-self-center" alt="" />
       <button
         onClick={handleGoToQuestionnaireClick}
-        className="btn-go-to-questionnaire px-4 py-2 bg-indigo-500 rounded text-white w-fit md:w-[210px] mx-auto text-wrap"
+        className="btn-go-to-questionnaire self-center justify-self-end px-4 py-2 bg-indigo-500 rounded text-white w-fit md:w-[210px] text-wrap"
       >
         Commencer un nouveau questionnaire
       </button>

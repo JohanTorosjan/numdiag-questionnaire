@@ -41,12 +41,12 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer }) {
             case "choix_simple":
                 return (
                   <div className="w-full relative">
-                    <img src="/images/hello.svg" className="h-10 w-10 absolute -top-10 right-0" alt="" />
-                    <div className="space-y-2 flex flex-wrap gap-x-4">
+                    <img src="/images/number-1.svg" className="h-10 w-10 absolute -top-10 right-0" alt="" />
+                    <div className="flex flex-wrap gap-x-4">
                         {question.reponses.map((reponse) => (
                             <label
                                 key={reponse.id}
-                                className="flex items-center justify-items-center px-2 py-1 rounded hover:bg-gray-100 cursor-pointer"
+                                className="mb-3 flex items-center justify-items-center px-2 py-1 rounded hover:bg-gray-100 cursor-pointer"
                             >
                                 <input
                                     type="radio"
@@ -71,12 +71,12 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer }) {
             case "choix_multiple":
                 return (
                   <div className="w-full relative">
-                    <img src="/images/number-1.svg" className="h-7 w-7 md:h-10 md:w-10 absolute -top-10 right-0" alt="" />
-                    <div className="space-y-2 flex flex-wrap gap-x-4 items-center justify-items-center">
+                    <img src="/images/hello.svg" className="h-7 w-7 md:h-10 md:w-10 absolute -top-10 right-0" alt="" />
+                    <div className="flex flex-wrap gap-x-4 items-center justify-items-center">
                         {question.reponses.map((reponse) => (
                             <label
                                 key={reponse.id}
-                                className="flex items-center justify-items-center px-2 py-1 rounded hover:bg-gray-100 cursor-pointer"
+                                className="mb-3 flex items-center justify-items-center px-2 py-1 rounded hover:bg-gray-100 cursor-pointer"
                             >
                                 <input
                                     type="checkbox"
@@ -105,7 +105,7 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer }) {
 
             case "entier":
                 return (
-                    <div className="space-y-2 flex flex-wrap gap-x-4 pb-3">
+                    <div className="flex flex-wrap gap-x-4 pb-3">
                         <input
                             type="number"
                             className="md:w-1/3 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -149,7 +149,7 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer }) {
     };
 
     return (
-        <div className="bg-white px-4 py-2 rounded-lg shadow-sm mx-4">
+        <div className="bg-white px-4 py-2 rounded-lg shadow-sm">
             {/* Label de la question */}
             <div className="mb-4">
                 <h3 className="text-lg font-semibold flex items-center">

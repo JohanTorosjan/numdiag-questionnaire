@@ -87,7 +87,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
             valeurScore: newAnswers.valeurScore
         })
     });
-    
+
     const data = await response.json();
 
 
@@ -143,7 +143,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
             if((question.position !== updatedQuestion.position) || (question.page !== updatedQuestion.page)){
                 const updatePositionResponse = await fetch(`http://localhost:3008/questions/${question.id}/position`, {
                     method: 'PUT',
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
@@ -161,7 +161,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
             if(question.questiontype !== updatedQuestion.questiontype){
                 const deletingResponse = await fetch(`http://localhost:3008/questions/${question.id}/deleteReponses`, {
                     method: 'DELETE',
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json',
                     },
                 })
@@ -170,7 +170,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
 
             const response = await fetch(`http://localhost:3008/questions/${question.id}`, {
                 method: 'PUT',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
@@ -183,14 +183,14 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                 toast.showError('Erreur lors de la mise a jour de la question')
                 throw new Error(`Erreur HTTP: ${response.status}`);
             }
-            
+
             const result = await response.json();
-    
+
             if (!result.success) {
                 toast.showError('Erreur')
                 throw new Error(result.error || 'Erreur lors de la sauvegarde');
             }
-          
+
             try {
                 const response = await fetch(`http://localhost:3008/questionnaire/${questionnaireId}`);
                 if (!response.ok) {
@@ -224,7 +224,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                 },
                 body: JSON.stringify({ tranches: updatedSlots.tranches })
             })
-            
+
             const result = await response.json()
             console.log('Tranches saved:', result)
             return result
@@ -242,7 +242,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                     <h4 className="question-title">
                        <p>{question.page}.{question.position} </p>
                        {question.id}
-                        {question.label} 
+                        {question.label}
                         {question.mandatory && <span className="mandatory-badge">*</span>}
                         <p className='question-tooltip-text'>{question.tooltip}  </p>
                     </h4>
@@ -261,7 +261,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
 
                     </div>
                 </div>
-                
+
                 <button onClick={handleEditClick} className="btn-edit-question">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -270,7 +270,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                 </button>
                                 <button onClick={handleDeleteClick} className="btn-edit-question">
          🗑️
-                    
+
                 </button>
             </div>
 
@@ -282,7 +282,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
             {/* Section réponses */}
             <div className='question-answers-section'>
                 {/* Réponses choix multiple/simple */}
-                {Array.isArray(question.reponses) && question.reponses.length > 0 && 
+                {Array.isArray(question.reponses) && question.reponses.length > 0 &&
                  (question.questiontype === 'choix_multiple' || question.questiontype === 'choix_simple') && (
                     <div className="answers-toggle-wrapper">
                         <button onClick={toggleAnswers} className="btn-toggle-answers">
@@ -303,9 +303,9 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                             </svg>
                             <span>Réponses ({question.reponses.length})</span>
                         </button>
-  
+
                     </div>
-                    
+
                 )}
 
                 {/* Tranches pour type entier */}
@@ -329,7 +329,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                             answerType={question.questiontype}
                             setQuestionnaire={setQuestionnaire}
                             questionnaireId={questionnaireId}
-                        />        
+                        />
                     ))}
                 </div>
             </div>

@@ -204,60 +204,62 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
     }
 
     return (
-      <div className="w-full h-full pt-8 bg-green-500/50">
-        <div className="max-w-4xl mx-auto">
-            {/* En-tête de la section */}
-            <div className=" mb-6 shadow rounded-xl pl-5 pr-2 pt-3 pb-1 bg-white mx-3">
-                <h2 className="text-2xl font-semibold mb-2">{currentSection.label}</h2>
-                <div className="flex w-full">
-                {currentSection.description && (
-                    <p className="text-gray-600 w-2/3">{currentSection.description}</p>
-                )}
-                {currentSection.tooltip && (
-                    <p className="text-sm text-gray-500 italic mt-1 w-1/3">{currentSection.tooltip}</p>
-                )}
-                </div>
-                <div className="text-sm text-gray-500 mt-8 text-end">
-                    Page {session.page} / {currentSection.nbpages}
-                </div>
-            </div>
+      <div className="w-full h-full pt-8 relative">
+        <div className="w-full h-full absolute top-0 bg-sky-500/40 mask-b-from-5% mask-b-to-80% -z-10"></div>
+          <div className="max-w-4xl mx-auto z-10">
+              {/* En-tête de la section */}
+              <div className="mb-6 shadow rounded-xl pl-5 pr-2 pt-3 pb-1 bg-white">
+                  <h2 className="text-2xl font-semibold mb-2">{currentSection.label}</h2>
+                  <div className="flex w-full">
+                  {currentSection.description && (
+                      <p className="text-gray-600 w-2/3">{currentSection.description}</p>
+                  )}
+                  {currentSection.tooltip && (
+                      <p className="text-sm text-gray-500 italic mt-1 w-1/3">{currentSection.tooltip}</p>
+                  )}
+                  </div>
+                  <div className="text-sm text-gray-500 mt-3 text-end">
+                      Page {session.page} / {currentSection.nbpages}
+                  </div>
+              </div>
 
-            {/* Liste des questions */}
-            <div className="space-y-6">
-                {currentQuestions.length > 0 ? (
-                    currentQuestions.map((question) => (
-                        <QuestionDisplayer
-                            key={question.id}
-                            question={question}
-                            initialAnswer={session} // Passer la réponse existante
-                            onAnswerChange={handleAnswerChange}
-                        />
-                    ))
-                ) : (
-                    <div className="text-center p-8 bg-gray-50 rounded-lg">
-                        <p className="text-gray-500">Aucune question sur cette page</p>
-                    </div>
-                )}
-            </div>
+              {/* Liste des questions */}
+              <div className="space-y-6">
+                  {currentQuestions.length > 0 ? (
+                      currentQuestions.map((question) => (
+                          <QuestionDisplayer
+                              key={question.id}
+                              question={question}
+                              initialAnswer={session} // Passer la réponse existante
+                              onAnswerChange={handleAnswerChange}
+                          />
+                      ))
+                  ) : (
+                      <div className="text-center p-8 bg-gray-50 rounded-lg">
+                          <p className="text-gray-500">Aucune question sur cette page</p>
+                      </div>
+                  )}
+              </div>
 
-            {/* Navigation */}
-            <div className="flex justify-between mt-8 pt-4 border-t">
-                <button
-                    className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isFirstPage()}
-                    onClick={handlePrevious}
-                >
-                    Précédent
-                </button>
-                <button
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isLastPage()}
-                    onClick={handleNext}
-                >
-                    Suivant
-                </button>
-            </div>
-        </div>
+              {/* Navigation */}
+              <div className="flex justify-between mt-8 pt-4 border-t">
+                  <button
+                      className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={isFirstPage()}
+                      onClick={handlePrevious}
+                  >
+                      Précédent
+                  </button>
+                  <button
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={isLastPage()}
+                      onClick={handleNext}
+                  >
+                      Suivant
+                  </button>
+              </div>
+          </div>
+
       </div>
     );
 }
