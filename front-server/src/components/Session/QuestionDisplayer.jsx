@@ -184,7 +184,7 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer }) {
                  image=<img src="/images/math.svg" className="h-13 w-13 md:h-13 md:w-13 absolute top-2 right-3" alt="" />;
                  break
               case "libre":
-                 image=<img src="/images/feather-pen.svg" className="h-8 w-8 md:h-10 md:w-10 absolute md:top-3 top-5 right-3" alt="" />;
+                 image=<img src="/images/feather-pen.svg" className="h-8 w-8 md:h-10 md:w-10 absolute md:top-5 top-7 right-3" alt="" />;
                  break
             }
 

@@ -1,12 +1,22 @@
 import { useState, useEffect } from "react";
 import QuestionDisplayer from "./QuestionDisplayer.jsx";
 import { useToast } from "../../ToastSystem";
+import { useNavigate, useParams } from 'react-router-dom';
 
 function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
     const [currentSection, setCurrentSection] = useState(null);
     const [currentQuestions, setCurrentQuestions] = useState([]);
     const [answers, setAnswers] = useState({});
+    const [messageBeforeNav, setMessageBeforeNav ] = useState(false)
     const toast = useToast();
+    const { session_id } = useParams();
+    const navigate = useNavigate();
+
+
+    const handleClickNavigate = () => {
+        areAllMandatoryQuestionsAnswered() && navigate(`/session/questionnaire/${session_id}/score`);
+        setMessageBeforeNav(true)
+    };
 
     // Calculer le nombre total de pages du questionnaire
     const totalPages = questionnaire?.sections.reduce((total, section) => {
@@ -203,6 +213,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
         );
     }
 
+
     return (
       <div className="w-full h-full pt-8 relative">
         <div className="w-full h-full absolute top-0 bg-sky-500/40 mask-b-from-5% mask-b-to-80% -z-10"></div>
@@ -250,14 +261,31 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
                   >
                       Précédent
                   </button>
-                  
-                  <button
-                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={isLastPage()}
-                      onClick={handleNext}
-                  >
-                      Suivant
-                  </button>
+                  {isLastPage() ?
+                  <div className="relative">
+                    <button
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!isLastPage()}
+                        onClick={handleClickNavigate}
+
+                    >
+                        Envoyer
+                    </button>
+                    {messageBeforeNav ?
+                      (<p className="absolute md:min-w-80 min-w-50 right-0 mt-1 before:content-['*'] before:mr-1 before:font-bold before:text-lg/3 before:align-middle text-sm text-red-500 text-end">Vous devez répondre à toutes les questions obligatoires pour continuer</p>)
+                      :
+                      (<div className="hidden"></div>)
+                    }
+                    </div>
+                    :
+                    <button
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isLastPage()}
+                        onClick={handleNext}
+                    >
+                        Suivant
+                    </button>
+                  }
               </div>
           </div>
 
