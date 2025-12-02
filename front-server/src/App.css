@@ -2,7 +2,7 @@
   --primary-color: #e4eefb;
   --secondary-color: #b6d1f1;
   --tertiary-color: #9fc4f0;
-  --fourthary-color: #77ace9; */
+  --fourthary-color: #77ace9;
 
   --button-blue-color: #4A90E2;
   --button-red-color: #e94b3c;
@@ -166,7 +166,7 @@ body {
   cursor: pointer;
   background-color: var(--tertiary-color);
   color: var(--font-color);
-} 
+}
 
 .popup button:hover {
   background-color: var(--fourthary-color);

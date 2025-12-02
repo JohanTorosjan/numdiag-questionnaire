@@ -190,20 +190,20 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer }) {
 
 
     return (
-        <div className="bg-white px-4 py-2 rounded-lg shadow-sm relative">
+        <div className="bg-white px-5 py-2 rounded-lg shadow-sm relative">
           {image}
             {/* Label de la question */}
             <div className="mb-4">
-                <h3 className="text-lg font-semibold flex items-center ">
+                    {question.theme && (
+                        <span className="inline-block -ml-3 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded">
+                            {question.theme}
+                        </span>
+                    )}
+                <h3 className="mt-2 text-lg font-semibold flex items-center ">
                     {question.label}
                     {question.mandatory && (
                         <span className="ml-2 text-red-500">*</span>
                     )}
-                {question.theme && (
-                    <span className="inline-block ml-3 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded">
-                        {question.theme}
-                    </span>
-                )}
                 </h3>
                 {question.tooltip && (
                     <p className="text-sm text-gray-500 mt-1">{question.tooltip}</p>

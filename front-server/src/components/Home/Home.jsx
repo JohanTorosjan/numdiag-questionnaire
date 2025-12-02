@@ -1,7 +1,7 @@
+import './home.css';
 import React, { useState, useEffect } from 'react';
 import QuestionnaireResume from "../Questionnaire/questionnaireResume";
 import CreateQuestionnaire from "../Questionnaire/createQuestionnaire";
-import './home.css';
 import { useToast } from '../../ToastSystem';
 
 async function getAllQuestionnairesResume() {
