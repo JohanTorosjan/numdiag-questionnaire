@@ -19,7 +19,7 @@ function App() {
           <Route path="/questionnaire/:id" element={<Questionnaire />} />
           <Route path="/session/:questionnaire_id" element={<Session />} />
           <Route path="/session/questionnaire/:session_id" element={<QuestionnaireDisplay />} />
-          <Route path="/session/questionnaire/:session_id/score" element={<ScoreDisplay />} />
+          <Route path="/score/:session_id" element={<ScoreDisplay />} />
 
         </Routes>
       </Router>

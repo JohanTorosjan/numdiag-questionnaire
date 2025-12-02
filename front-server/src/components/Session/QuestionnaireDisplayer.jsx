@@ -14,8 +14,12 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
 
 
     const handleClickNavigate = () => {
-        areAllMandatoryQuestionsAnswered() && navigate(`/session/questionnaire/${session_id}/score`);
-        setMessageBeforeNav(true)
+      if (areAllMandatoryQuestionsAnswered()) {
+         navigate(`/score/${session_id}`);
+      } else {
+        toast.showError('Veuillez remplir toutes les questions obligatoires');
+        setMessageBeforeNav(true);
+      }
     };
 
     // Calculer le nombre total de pages du questionnaire

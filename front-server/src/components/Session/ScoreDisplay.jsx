@@ -1,11 +1,13 @@
-function ScoreDisplay() {
+import { useNavigate, useParams } from 'react-router-dom';
 
+function ScoreDisplay() {
+  const { session_id } = useParams();
 
     return (
         <div
 
         >
-            Hello
+            Hello session {session_id}
         </div>
     );
 }

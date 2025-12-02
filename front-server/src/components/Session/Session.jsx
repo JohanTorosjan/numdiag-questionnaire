@@ -93,23 +93,28 @@ function Session(){
     if (!questionnaire) return <div>Café</div>;
 
     return (
-    <div className="Session px-5 block w-full relative">
+    <div className="Session px-5 w-full h-full relative grid grid-rows-[auto_1fr_auto] pb-10">
 
-        <div className="questionnaires-infos mt-0 w-full flex flex-col gap-y-7 py-10 mx-auto">
-          <div className="md:w-2/3 w-full mx-auto border border-gray-200 px-3 py-2 rounded-xl shadow">
+        <div className="questionnaires-infos mt-0 w-full py-10 mx-auto self-start">
+          <div className="md:w-2/3 w-full mx-auto border border-gray-200 px-6 py-2 rounded-xl shadow">
             <h1 className="text-xl font-semibold tracking-wide">{questionnaire.label}</h1>
-            <h2 className="text-lg text-justify">{questionnaire.description}</h2>
-          </div>
-            <div className="md:w-1/2 flex flex-wrap gap-x-10 w-full mx-auto justify-center items-stretch px-3 py-2 rounded-xl shadow">
-              <p className="text-lg font-light text-wrap max-w-1/2.2 text-justify">{questionnaire.tooltip}</p>
-              <div className="w-0.5 bg-gray-300"></div>
-              <p className="text-lg font-light text-wrap max-w-1/2.2 text-justify">{questionnaire.insight}</p>
+            <div className="w-fit">
+              <hr className="text-indigo-400/50 mt-3 mb-2"/>
+              <h2 className="text-lg text-justify">{questionnaire.description}</h2>
             </div>
+          </div>
+        </div>
+        <div className="questionnaires-infos w-full mx-auto self-start">
+          <div className="md:w-1/2 flex flex-nowrap gap-x-10 mx-auto w-full justify-center items-stretch px-3 py-2">
+            <p className="text-lg font-light text-wrap max-w-1/2.2 text-justify">{questionnaire.tooltip}</p>
+            <div className="w-0.5 bg-gray-300"></div>
+            <p className="text-lg font-light text-wrap max-w-1/2.2 text-justify">{questionnaire.insight}</p>
+          </div>
         </div>
 
 
     {existingSessionId ? (
-            <div className="questionnaires-start-buttons md:w-2/3 w-full mx-auto grid grid-cols-[3fr_1fr_3fr] md:grid-cols-[minmax(300px,3fr)_minmax(20px,1fr)_minmax(300px,3fr)]">
+            <div className="questionnaires-start-buttons self-center md:w-2/3 w-full mx-auto grid grid-cols-[3fr_1fr_3fr] md:grid-cols-[minmax(300px,3fr)_minmax(20px,1fr)_minmax(300px,3fr)]">
 
       <button
         onClick={() => navigate(`/session/questionnaire/${existingSessionId}`)}
