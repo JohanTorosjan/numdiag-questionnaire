@@ -2,7 +2,7 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useToast } from "../../ToastSystem";
-
+import DocumentTitle from '../hooks/documentTitle';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -37,16 +37,12 @@ function Session(){
     const [questionnaire, setQuestionnaire] = useState(null);
     const [session, setSession] = useState(null);
     const [existingSessionId, setExistingSessionId] = useState(null);
-
     const toast = useToast();
 
   useEffect(() => {
 
-
-
     async function fetchCreateSession() {
         setIsLoading(true)
-
         const data = await createSession(questionnaire_id);
         console.log(data.questionnaire)
         setQuestionnaire(data.questionnaire[0]);
@@ -65,6 +61,13 @@ function Session(){
 
         fetchCreateSession();
     }, [questionnaire_id]);
+
+    useEffect(() => {
+    if (questionnaire) {
+        document.title = `Numdiag - ${questionnaire.label}`;
+    }
+    }, [questionnaire]);
+
 
 
 

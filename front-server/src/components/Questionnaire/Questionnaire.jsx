@@ -298,6 +298,12 @@ function Questionnaire() {
   );
 };
 
+  useEffect(() => {
+    if (questionnaire) {
+        document.title = `${questionnaire.label}`;
+    }
+    }, [questionnaire]);
+
 
 
 

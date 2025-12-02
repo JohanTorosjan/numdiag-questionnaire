@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import QuestionnaireResume from "../Questionnaire/questionnaireResume";
 import CreateQuestionnaire from "../Questionnaire/createQuestionnaire";
 import { useToast } from '../../ToastSystem';
+import DocumentTitle from '../hooks/documentTitle';
 
 async function getAllQuestionnairesResume() {
     try {
@@ -39,6 +40,7 @@ async function updateQuestionnaire(idQuestionnaire, isactive) {
 }
 
 export default function Home() {
+    DocumentTitle("Accueil – NumDiag CMS");
     const [questionnaires, setQuestionnaires] = useState([]);
     const [loading, setLoading] = useState(true);
     const [buttonAffichage, setButtonAffichage] = useState(false);

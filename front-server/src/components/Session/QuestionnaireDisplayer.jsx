@@ -22,6 +22,12 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
       }
     };
 
+    useEffect(() => {
+    if (questionnaire) {
+        document.title = `${questionnaire.label}`;
+    }
+    }, [questionnaire]);
+
     // Calculer le nombre total de pages du questionnaire
     const totalPages = questionnaire?.sections.reduce((total, section) => {
         return total + section.nbpages;
@@ -216,6 +222,8 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
             </div>
         );
     }
+
+
 
 
     return (
