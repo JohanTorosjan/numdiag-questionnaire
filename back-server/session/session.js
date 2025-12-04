@@ -460,74 +460,47 @@ async function getScore(session_id) {
 
     const reponsesTranches = await executeQuery(numdiagPool, tranchesQuery, [questionIds]);
 
-    // // 7. Récupérer les dépendances de sections
-    // const sectionDependenciesQuery = `
-    //     SELECT
-    //         sd.section_id,
-    //         sd.reponse_id,
-    //         r.question_id
-    //     FROM SectionDependencies sd
-    //     JOIN Reponses r ON sd.reponse_id = r.id
-    //     JOIN Questions q ON r.question_id = q.id
-    //     JOIN Sections s ON q.section_id = s.id
-    //     WHERE s.questionnaire_id = $1
-    // `;
 
-    // const sectionDependencies = await executeQuery(numdiagPool, sectionDependenciesQuery, [questionnaireId]);
+    // // 9. Organiser les données hiérarchiquement
+    // // Grouper les réponses par question
+    // const reponsesByQuestion = {};
+    // reponses.forEach(reponse => {
+    //     if (!reponsesByQuestion[reponse.question_id]) {
+    //         reponsesByQuestion[reponse.question_id] = [];
+    //     }
+    //     reponsesByQuestion[reponse.question_id].push(reponse);
+    // });
 
-    // // 8. Récupérer les dépendances de questions
-    // const questionDependenciesQuery = `
-    //     SELECT
-    //         qd.question_id,
-    //         qd.reponse_id,
-    //         r.question_id as parent_question_id
-    //     FROM QuestionDependencies qd
-    //     JOIN Reponses r ON qd.reponse_id = r.id
-    //     WHERE qd.question_id = ANY($1)
-    // `;
-
-    // const questionDependencies = await executeQuery(numdiagPool, questionDependenciesQuery, [questionIds]);
-
-    // 9. Organiser les données hiérarchiquement
-    // Grouper les réponses par question
-    const reponsesByQuestion = {};
-    reponses.forEach(reponse => {
-        if (!reponsesByQuestion[reponse.question_id]) {
-            reponsesByQuestion[reponse.question_id] = [];
-        }
-        reponsesByQuestion[reponse.question_id].push(reponse);
-    });
-
-    // Grouper les tranches par question
-    const tranchesByQuestion = {};
-    reponsesTranches.forEach(tranche => {
-        if (!tranchesByQuestion[tranche.question_id]) {
-            tranchesByQuestion[tranche.question_id] = [];
-        }
-        tranchesByQuestion[tranche.question_id].push(tranche);
-    });
+    // // Grouper les tranches par question
+    // const tranchesByQuestion = {};
+    // reponsesTranches.forEach(tranche => {
+    //     if (!tranchesByQuestion[tranche.question_id]) {
+    //         tranchesByQuestion[tranche.question_id] = [];
+    //     }
+    //     tranchesByQuestion[tranche.question_id].push(tranche);
+    // });
 
     // Attacher les réponses aux questions
-    const questionsWithReponses = questions.map(question => ({
-        ...question,
-        reponses: reponsesByQuestion[question.id] || [],
-        reponsesTranches: tranchesByQuestion[question.id] || []
-    }));
+    // const questionsWithReponses = questions.map(question => ({
+    //     ...question,
+    //     reponses: reponsesByQuestion[question.id] || [],
+    //     reponsesTranches: tranchesByQuestion[question.id] || []
+    // }));
 
-    // Grouper les questions par section
-    const questionsBySection = {};
-    questionsWithReponses.forEach(question => {
-        if (!questionsBySection[question.section_id]) {
-            questionsBySection[question.section_id] = [];
-        }
-        questionsBySection[question.section_id].push(question);
-    });
+    // // Grouper les questions par section
+    // const questionsBySection = {};
+    // questionsWithReponses.forEach(question => {
+    //     if (!questionsBySection[question.section_id]) {
+    //         questionsBySection[question.section_id] = [];
+    //     }
+    //     questionsBySection[question.section_id].push(question);
+    // });
 
-    // Attacher les questions aux sections
-    const sectionsWithQuestions = sections.map(section => ({
-        ...section,
-        questions: questionsBySection[section.id] || []
-    }));
+    // // Attacher les questions aux sections
+    // const sectionsWithQuestions = sections.map(section => ({
+    //     ...section,
+    //     questions: questionsBySection[section.id] || []
+    // }));
 
     // // 10. Formater les dépendances
     // const dependances = [
@@ -546,16 +519,27 @@ async function getScore(session_id) {
     // ];
 
     // 11. Construire l'objet final
-    const result = {
-        questionnaire: {
-            ...questionnaire,
-            sections: sectionsWithQuestions,
-        },
-        session: session
-    };
+    // const result = {
+    //     questionnaire: {
+    //         ...questionnaire,
+    //         sections: sectionsWithQuestions,
+    //     },
+    //     session: session
+    // };
 
-    console.log(session.answers)
-
+    console.log("coucou:",session.answers);
+    console.log("coucou2:",reponses[0]);
+    const answersFlat = [];
+    session.answers.forEach( answer => {
+      // loop on array of reponseIds to make an array of all answers
+      if (answer.reponseIds.length === 0) {
+        answersFlat.push({q: answer.questionId, a: answer.flatReponse})
+      } else {
+        answer.reponseIds.forEach(id => answersFlat.push({q: answer.questionId, a:id}))
+      }
+    }
+    )
+    console.log(answersFlat)
     // now need to compute score with session.answers array (questionIds; and reponse Ids in an array)
     // and questionnaire.scoremax - questionnaire.sections.scoremax - questionnaire.sections.questions array
     // in questionnaire.sections.questions array: questionnaire.sections.questions.coeff -
@@ -572,7 +556,7 @@ async function getScore(session_id) {
     // RecommandationsQuestionnaires recommandation -> nvelle query en fonction du score au questionnaire
 
 
-    return result;
+    return true;
 }
 
 export{createSession,launchSession,getSessionQuestionnaire,updateSession, getScore}

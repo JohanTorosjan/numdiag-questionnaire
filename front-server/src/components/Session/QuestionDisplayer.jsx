@@ -200,7 +200,7 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer }) {
                         </span>
                     )}
                 <h3 className="mt-2 text-lg font-semibold flex items-center ">
-                    {question.label}
+                    {question.id}. {question.label}
                     {question.mandatory && (
                         <span className="ml-2 text-red-500">*</span>
                     )}
