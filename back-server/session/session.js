@@ -566,8 +566,8 @@ async function getScore(session_id) {
     // recommandations :
     // Reponses recommandation -> questionnaire.sections.questions.reponses[x].recommandation
     // ReponsesTranches recommandation questionnaire.sections.questions.reponsesTranches[x].plafond
-    // RecommandationsQuestionnaires recommandation -> nvelle query
     // RecommandationsReponses recommandation -> nvelle query
+    // RecommandationsQuestionnaires recommandation -> nvelle query en fonction du score au questionnaire 
 
 
     return result;
