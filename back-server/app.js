@@ -14,7 +14,7 @@ import {
 } from './questionnaire/reponsesTranches.js'
 import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
-import { createSession,launchSession,getSessionQuestionnaire,updateSession } from './session/session.js'
+import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore } from './session/session.js'
 const app = express()
 const port = 3008
 
@@ -724,9 +724,9 @@ app.get('/questionnaires/:id/export', async (req, res) => {
 
   } catch (error) {
     console.error('Erreur lors de l\'export:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Erreur lors de l\'export du questionnaire',
-      details: error.message 
+      details: error.message
     });
   }
 });
@@ -843,11 +843,11 @@ app.get('/questionnaires/:id/export2', async (req, res) => {
         if (dependencies.length > 0) {
           const dep = dependencies[0];
           const parentQuestionType = dep.parent_question_type;
-          
+
           // Déterminer l'opérateur en fonction du type de question parent et du nombre de dépendances
           let operator = 'equals';
           let value;
-          
+
           if (parentQuestionType === 'choix_multiple' || dependencies.length > 1) {
             operator = 'in';
             // Créer un tableau des labels de réponses et le convertir en string JSON
@@ -891,11 +891,11 @@ app.get('/questionnaires/:id/export2', async (req, res) => {
       if (sectionDeps.length > 0) {
         const dep = sectionDeps[0];
         const parentQuestionType = dep.parent_question_type;
-        
+
         // Déterminer l'opérateur en fonction du type de question parent et du nombre de dépendances
         let operator = 'equals';
         let value;
-        
+
         if (parentQuestionType === 'choix_multiple' || sectionDeps.length > 1) {
           operator = 'in';
           // Créer un tableau des labels de réponses et le convertir en string JSON
@@ -933,9 +933,9 @@ app.get('/questionnaires/:id/export2', async (req, res) => {
 
   } catch (error) {
     console.error('Erreur lors de l\'export:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Erreur lors de l\'export du questionnaire',
-      details: error.message 
+      details: error.message
     });
   }
 });
@@ -974,7 +974,6 @@ app.put('/session/start/:id_session',async (req,res) => {
 app.get('/session/questionnaire/:id_session',async (req,res) => {
     const { id_session } = req.params;
     try {
-      console.log("ici")
         const result = await getSessionQuestionnaire(id_session)
         res.status(200).json({
             success: true,
@@ -990,10 +989,10 @@ app.get('/session/questionnaire/:id_session',async (req,res) => {
 app.put('/session/:id_session', async (req, res) => {
     const { id_session } = req.params;
     const sessionData = req.body; // Récupérer les données du body
-    
+
     try {
         const result = await updateSession(id_session, sessionData);
-        
+
         if (result.success) {
             res.status(200).json({
                 success: true,
@@ -1001,9 +1000,9 @@ app.put('/session/:id_session', async (req, res) => {
                 data: result.data
             });
         } else {
-            res.status(500).json({ 
+            res.status(500).json({
                 success: false,
-                error: result.error 
+                error: result.error
             });
         }
     } catch (error) {
@@ -1011,3 +1010,19 @@ app.put('/session/:id_session', async (req, res) => {
         res.status(500).json({ error: 'Failed to update session' });
     }
 });
+
+app.get('/score/:id_session',async (req,res) => {
+    const { id_session } = req.params;
+    try {
+      console.log("ici tu es dans le back score")
+        const result = await getScore(id_session)
+        res.status(200).json({
+            success: true,
+            message: 'Score computed and got successfully',
+            data: result
+        })
+    } catch (error) {
+        console.error('Error getting score:', error)
+        res.status(500).json({ error: 'Failed to get compute and get score' })
+    }
+})

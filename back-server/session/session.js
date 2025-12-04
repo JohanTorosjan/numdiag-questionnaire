@@ -1,17 +1,17 @@
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery } from '../database/client.js'
 
 async function createSession(questionnaireId) {
-    try {    
+    try {
         const sectionQuery = `
             SELECT id FROM Sections WHERE questionnaire_id = $1 ORDER BY id ASC
         `;
-        
+
         const section = await executeQuery(
-            numdiagPool, 
+            numdiagPool,
             sectionQuery,
             [questionnaireId]
         );
-        
+
         if (section.length === 0) {
             return { nosections: true };
         }
@@ -24,7 +24,7 @@ async function createSession(questionnaireId) {
             WHERE s.questionnaire_id = $1
             ORDER BY q.id ASC
         `;
-        
+
         const questions = await executeQuery(
             numdiagPool,
             questionsQuery,
@@ -43,9 +43,9 @@ async function createSession(questionnaireId) {
             VALUES ($1, $2, $3)
             RETURNING *;
         `;
-        
+
         const createdSession = await executeQuery(
-            numdiagPool, 
+            numdiagPool,
             insertSessionQuery,
             [questionnaireId, section[0].id, JSON.stringify(answers)]
         );
@@ -53,9 +53,9 @@ async function createSession(questionnaireId) {
         const questionnaireQuery = `
             SELECT * FROM Questionnaires WHERE id = $1
         `;
-        
+
         const questionnaire = await executeQuery(
-            numdiagPool, 
+            numdiagPool,
             questionnaireQuery,
             [questionnaireId]
         );
@@ -64,7 +64,7 @@ async function createSession(questionnaireId) {
             questionnaire: questionnaire,
             session: createdSession
         };
-    } 
+    }
     catch (error) {
         console.log('erreur:', error);
         throw error;
@@ -81,15 +81,15 @@ async function launchSession(session_id) {
     }
 catch{
     console.log('erreur launching')
-    
+
 }
-    
+
 }
 
 async function getSessionQuestionnaire(session_id) {
     // 1. Récupérer les informations de la session
     const sessionQuery = `
-        SELECT 
+        SELECT
             s.id,
             s.questionnaire_id,
             s.page,
@@ -100,19 +100,19 @@ async function getSessionQuestionnaire(session_id) {
         FROM Session s
         WHERE s.id = $1
     `;
-    
+
     const sessionResult = await executeQuery(numdiagPool, sessionQuery, [session_id]);
-    
+
     if (!sessionResult || sessionResult.length === 0) {
         throw new Error('Session not found');
     }
-    
+
     const session = sessionResult[0];
     const questionnaireId = session.questionnaire_id;
 
     // 2. Récupérer le questionnaire
     const questionnaireQuery = `
-        SELECT 
+        SELECT
             id,
             label,
             description,
@@ -127,13 +127,13 @@ async function getSessionQuestionnaire(session_id) {
         FROM Questionnaires
         WHERE id = $1
     `;
-    
+
     const questionnaireResult = await executeQuery(numdiagPool, questionnaireQuery, [questionnaireId]);
     const questionnaire = questionnaireResult[0];
 
     // 3. Récupérer toutes les sections du questionnaire
     const sectionsQuery = `
-        SELECT 
+        SELECT
             id,
             questionnaire_id,
             label,
@@ -146,12 +146,12 @@ async function getSessionQuestionnaire(session_id) {
         WHERE questionnaire_id = $1
         ORDER BY id
     `;
-    
+
     const sections = await executeQuery(numdiagPool, sectionsQuery, [questionnaireId]);
 
     // 4. Récupérer toutes les questions des sections
     const questionsQuery = `
-        SELECT 
+        SELECT
             q.id,
             q.section_id,
             q.label,
@@ -167,13 +167,13 @@ async function getSessionQuestionnaire(session_id) {
         WHERE q.section_id = ANY($1)
         ORDER BY q.section_id, q.position
     `;
-    
+
     const sectionIds = sections.map(s => s.id);
     const questions = await executeQuery(numdiagPool, questionsQuery, [sectionIds]);
 
     // 5. Récupérer toutes les réponses des questions
     const reponsesQuery = `
-        SELECT 
+        SELECT
             r.id,
             r.question_id,
             r.label,
@@ -186,13 +186,13 @@ async function getSessionQuestionnaire(session_id) {
         WHERE r.question_id = ANY($1)
         ORDER BY r.question_id, r.position
     `;
-    
+
     const questionIds = questions.map(q => q.id);
     const reponses = await executeQuery(numdiagPool, reponsesQuery, [questionIds]);
 
     // 6. Récupérer les tranches de réponses si nécessaire
     const tranchesQuery = `
-        SELECT 
+        SELECT
             rt.id,
             rt.question_id,
             rt.min,
@@ -205,12 +205,12 @@ async function getSessionQuestionnaire(session_id) {
         WHERE rt.question_id = ANY($1)
         ORDER BY rt.question_id, rt.min
     `;
-    
+
     const reponsesTranches = await executeQuery(numdiagPool, tranchesQuery, [questionIds]);
 
     // 7. Récupérer les dépendances de sections
     const sectionDependenciesQuery = `
-        SELECT 
+        SELECT
             sd.section_id,
             sd.reponse_id,
             r.question_id
@@ -220,12 +220,12 @@ async function getSessionQuestionnaire(session_id) {
         JOIN Sections s ON q.section_id = s.id
         WHERE s.questionnaire_id = $1
     `;
-    
+
     const sectionDependencies = await executeQuery(numdiagPool, sectionDependenciesQuery, [questionnaireId]);
 
     // 8. Récupérer les dépendances de questions
     const questionDependenciesQuery = `
-        SELECT 
+        SELECT
             qd.question_id,
             qd.reponse_id,
             r.question_id as parent_question_id
@@ -233,7 +233,7 @@ async function getSessionQuestionnaire(session_id) {
         JOIN Reponses r ON qd.reponse_id = r.id
         WHERE qd.question_id = ANY($1)
     `;
-    
+
     const questionDependencies = await executeQuery(numdiagPool, questionDependenciesQuery, [questionIds]);
 
     // 9. Organiser les données hiérarchiquement
@@ -341,19 +341,19 @@ async function updateSession(session_id, sessionData) {
 
         // Construire et exécuter la requête
         const query = `
-            UPDATE session 
+            UPDATE session
             SET ${updates.join(', ')}
             WHERE id = $${paramIndex}
             RETURNING *
         `;
 
         const result = await executeQuery(numdiagPool, query, values);
-        
+
         return {
             success: true,
             data: result[0]
         };
-        
+
     } catch (error) {
         console.error("ERREUR lors de la mise à jour de la session:", error);
         return {
@@ -362,4 +362,215 @@ async function updateSession(session_id, sessionData) {
         };
     }
 }
-export{createSession,launchSession,getSessionQuestionnaire,updateSession}
+
+async function getScore(session_id) {
+    // 1. Récupérer les informations de la session
+    const sessionQuery = `
+        SELECT
+            s.id,
+            s.questionnaire_id,
+            s.page,
+            s.state,
+            s.score,
+            s.current_section_id,
+            s.answers
+        FROM Session s
+        WHERE s.id = $1
+    `;
+
+    const sessionResult = await executeQuery(numdiagPool, sessionQuery, [session_id]);
+
+    if (!sessionResult || sessionResult.length === 0) {
+        throw new Error('Session not found');
+    }
+
+    const session = sessionResult[0];
+    const questionnaireId = session.questionnaire_id;
+
+    // // 2. Récupérer le questionnaire
+    const questionnaireQuery = `
+        SELECT
+            id,
+            scoremax,
+            created_at
+        FROM Questionnaires
+        WHERE id = $1
+    `;
+
+    const questionnaireResult = await executeQuery(numdiagPool, questionnaireQuery, [questionnaireId]);
+    const questionnaire = questionnaireResult[0];
+
+    // 3. Récupérer toutes les sections du questionnaire
+    const sectionsQuery = `
+        SELECT
+            id,
+            questionnaire_id,
+            scoremax
+        FROM Sections
+        WHERE questionnaire_id = $1
+        ORDER BY id
+    `;
+
+    const sections = await executeQuery(numdiagPool, sectionsQuery, [questionnaireId]);
+
+    // 4. Récupérer toutes les questions des sections
+    const questionsQuery = `
+        SELECT
+            q.id,
+            q.section_id,
+            q.questionType,
+            q.coeff,
+            q.mandatory
+        FROM Questions q
+        WHERE q.section_id = ANY($1)
+        ORDER BY q.section_id, q.position
+    `;
+
+    const sectionIds = sections.map(s => s.id);
+    const questions = await executeQuery(numdiagPool, questionsQuery, [sectionIds]);
+
+    // 5. Récupérer toutes les réponses des questions
+    const reponsesQuery = `
+        SELECT
+            r.id,
+            r.question_id,
+            r.plafond,
+            r.recommandation,
+            r.valeurScore
+        FROM Reponses r
+        WHERE r.question_id = ANY($1)
+        ORDER BY r.question_id, r.position
+    `;
+
+    const questionIds = questions.map(q => q.id);
+    const reponses = await executeQuery(numdiagPool, reponsesQuery, [questionIds]);
+
+    // 6. Récupérer les tranches de réponses si nécessaire
+    const tranchesQuery = `
+        SELECT
+            rt.id,
+            rt.question_id,
+            rt.value,
+            rt.plafond,
+            rt.recommandation
+        FROM ReponsesTranches rt
+        WHERE rt.question_id = ANY($1)
+        ORDER BY rt.question_id, rt.min
+    `;
+
+    const reponsesTranches = await executeQuery(numdiagPool, tranchesQuery, [questionIds]);
+
+    // // 7. Récupérer les dépendances de sections
+    // const sectionDependenciesQuery = `
+    //     SELECT
+    //         sd.section_id,
+    //         sd.reponse_id,
+    //         r.question_id
+    //     FROM SectionDependencies sd
+    //     JOIN Reponses r ON sd.reponse_id = r.id
+    //     JOIN Questions q ON r.question_id = q.id
+    //     JOIN Sections s ON q.section_id = s.id
+    //     WHERE s.questionnaire_id = $1
+    // `;
+
+    // const sectionDependencies = await executeQuery(numdiagPool, sectionDependenciesQuery, [questionnaireId]);
+
+    // // 8. Récupérer les dépendances de questions
+    // const questionDependenciesQuery = `
+    //     SELECT
+    //         qd.question_id,
+    //         qd.reponse_id,
+    //         r.question_id as parent_question_id
+    //     FROM QuestionDependencies qd
+    //     JOIN Reponses r ON qd.reponse_id = r.id
+    //     WHERE qd.question_id = ANY($1)
+    // `;
+
+    // const questionDependencies = await executeQuery(numdiagPool, questionDependenciesQuery, [questionIds]);
+
+    // 9. Organiser les données hiérarchiquement
+    // Grouper les réponses par question
+    const reponsesByQuestion = {};
+    reponses.forEach(reponse => {
+        if (!reponsesByQuestion[reponse.question_id]) {
+            reponsesByQuestion[reponse.question_id] = [];
+        }
+        reponsesByQuestion[reponse.question_id].push(reponse);
+    });
+
+    // Grouper les tranches par question
+    const tranchesByQuestion = {};
+    reponsesTranches.forEach(tranche => {
+        if (!tranchesByQuestion[tranche.question_id]) {
+            tranchesByQuestion[tranche.question_id] = [];
+        }
+        tranchesByQuestion[tranche.question_id].push(tranche);
+    });
+
+    // Attacher les réponses aux questions
+    const questionsWithReponses = questions.map(question => ({
+        ...question,
+        reponses: reponsesByQuestion[question.id] || [],
+        reponsesTranches: tranchesByQuestion[question.id] || []
+    }));
+
+    // Grouper les questions par section
+    const questionsBySection = {};
+    questionsWithReponses.forEach(question => {
+        if (!questionsBySection[question.section_id]) {
+            questionsBySection[question.section_id] = [];
+        }
+        questionsBySection[question.section_id].push(question);
+    });
+
+    // Attacher les questions aux sections
+    const sectionsWithQuestions = sections.map(section => ({
+        ...section,
+        questions: questionsBySection[section.id] || []
+    }));
+
+    // // 10. Formater les dépendances
+    // const dependances = [
+    //     ...sectionDependencies.map(dep => ({
+    //         type: 'section',
+    //         section_id: dep.section_id,
+    //         reponse_id: dep.reponse_id,
+    //         question_id: dep.question_id
+    //     })),
+    //     ...questionDependencies.map(dep => ({
+    //         type: 'question',
+    //         question_id: dep.question_id,
+    //         reponse_id: dep.reponse_id,
+    //         parent_question_id: dep.parent_question_id
+    //     }))
+    // ];
+
+    // 11. Construire l'objet final
+    const result = {
+        questionnaire: {
+            ...questionnaire,
+            sections: sectionsWithQuestions,
+        },
+        session: session
+    };
+
+    // now need to compute score with session.answers array (questionIds; and reponse Ids in an array)
+    // and questionnaire.scoremax - questionnaire.sections.scoremax - questionnaire.sections.questions array
+    // in questionnaire.sections.questions array: questionnaire.sections.questions.coeff -
+    // if questionnaire.sections.questions.questiontype == "choix multiple" -> can take multiple responses
+    // if questionnaire.sections.questions.questiontype == "entier" -> tranche reponse + plafond
+    // in questionnaire.sections.questions.reponses array : take into account plafond
+    // match session.answers reponse ids with questionnaire.sections.questions.reponses ids
+
+
+    // recommandations :
+    // Reponses recommandation -> questionnaire.sections.questions.reponses[x].recommandation
+    // ReponsesTranches recommandation questionnaire.sections.questions.reponsesTranches[x].plafond
+    // RecommandationsQuestionnaires recommandation -> nvelle query
+    // RecommandationsReponses recommandation -> nvelle query
+
+
+    return result;
+}
+
+export{createSession,launchSession,getSessionQuestionnaire,updateSession, getScore}

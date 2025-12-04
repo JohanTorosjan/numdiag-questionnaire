@@ -8,9 +8,9 @@ function ScoreDisplay() {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState([])
 
-  async function getSessionQuestionnaire(session_id){
+  async function getScore(session_id){
     try{
-        const response = await fetch(`http://localhost:3008/session/questionnaire/${session_id}`);
+        const response = await fetch(`http://localhost:3008/score/${session_id}`);
         const data = await response.json()
         return data
     }
@@ -24,7 +24,7 @@ function ScoreDisplay() {
   useEffect(() => {
 
       async function fetchData() {
-        const data = await getSessionQuestionnaire(session_id);
+        const data = await getScore(session_id);
         if (!data.success) {
           toast.showError("Erreur lors du chargement");
           // setIsLoading(true);
@@ -34,10 +34,7 @@ function ScoreDisplay() {
           navigate(`/session/${data.data.questionnaire.id}`)
         }
         const questionnaire = data.data.questionnaire;
-        // setQuestionnaire(data.data.questionnaire);
-        // setSession(data.data.session);
-
-        // setIsLoading(false)
+        console.log(data)
 
         if (questionnaire) {
             document.title = `Your score - ${questionnaire.label}`;
