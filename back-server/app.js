@@ -1014,7 +1014,7 @@ app.put('/session/:id_session', async (req, res) => {
 app.get('/score/:id_session',async (req,res) => {
     const { id_session } = req.params;
     try {
-      console.log("ici tu es dans le back score")
+      // console.log("ici tu es dans le back score")
         const result = await getScore(id_session)
         res.status(200).json({
             success: true,

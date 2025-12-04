@@ -554,6 +554,8 @@ async function getScore(session_id) {
         session: session
     };
 
+    console.log(session.answers)
+
     // now need to compute score with session.answers array (questionIds; and reponse Ids in an array)
     // and questionnaire.scoremax - questionnaire.sections.scoremax - questionnaire.sections.questions array
     // in questionnaire.sections.questions array: questionnaire.sections.questions.coeff -
@@ -567,7 +569,7 @@ async function getScore(session_id) {
     // Reponses recommandation -> questionnaire.sections.questions.reponses[x].recommandation
     // ReponsesTranches recommandation questionnaire.sections.questions.reponsesTranches[x].plafond
     // RecommandationsReponses recommandation -> nvelle query
-    // RecommandationsQuestionnaires recommandation -> nvelle query en fonction du score au questionnaire 
+    // RecommandationsQuestionnaires recommandation -> nvelle query en fonction du score au questionnaire
 
 
     return result;
