@@ -11,7 +11,7 @@ CREATE TABLE Questionnaires (
   insight VARCHAR,
   tooltip VARCHAR,
   isactive BOOLEAN NOT NULL DEFAULT TRUE,
-  scoremax INTEGER NOT NULL DEFAULT 100,
+  scoremax INTEGER NOT NULL DEFAULT 100, -- plus pris en compte
   isPublished BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -23,7 +23,7 @@ CREATE TABLE Sections (
     description TEXT,
     -- position INTEGER NOT NULL,
     tooltip VARCHAR,
-    scoremax INTEGER NOT NULL DEFAULT 100,
+    scoremax INTEGER NOT NULL DEFAULT 100, --plus pris en compte
     nbPages INTEGER NOT NULL DEFAULT 1,
     isactive BOOLEAN NOT NULL DEFAULT TRUE,
 
@@ -132,7 +132,7 @@ CREATE TABLE Tranches (
 );
 
 
-CREATE TABLE Session (    
+CREATE TABLE Session (
     id SERIAL PRIMARY KEY,
     questionnaire_id INTEGER NOT NULL,
     page INTEGER NOT NULL DEFAULT 0,

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-function QuestionDisplayer({ question, onAnswerChange,initialAnswer }) {
+function QuestionDisplayer({ question, onAnswerChange,initialAnswer, section}) {
 
     const [selectedMultiple, setSelectedMultiple] = useState(initialAnswer.answers.find(r=>r.questionId==question.id).reponseIds ||[]);
     const [textValue, setTextValue] = useState(
@@ -14,10 +14,13 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer }) {
     useEffect(() => {
         const answer = {
             questionId: question.id,
+            questionType: question.questiontype,
             reponseIds: [],
-            flatReponse: null
+            flatReponse: null,
+            sectionId: section.id
         };
        // debugger
+       let tranches = [];
         switch (question.questiontype) {
             case "choix_simple":
                 if (selectedValue !== null) {
@@ -28,6 +31,10 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer }) {
                 answer.reponseIds = selectedMultiple;
                 break;
             case "entier":
+              tranches = question.reponsesTranches.filter((tranche) => parseInt(textValue) <= tranche.max && parseInt(textValue) >= tranche.min);
+              tranches.forEach((tranche) => answer.reponseIds.push(tranche.id));
+              answer.flatReponse = textValue;
+              break;
             case "libre":
                 answer.flatReponse = textValue;
                 break;

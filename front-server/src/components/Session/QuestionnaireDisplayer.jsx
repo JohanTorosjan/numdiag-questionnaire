@@ -255,6 +255,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
                               question={question}
                               initialAnswer={session} // Passer la réponse existante
                               onAnswerChange={handleAnswerChange}
+                              section={currentSection}
                           />
                       ))
                   ) : (

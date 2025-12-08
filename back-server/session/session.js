@@ -488,102 +488,59 @@ async function getScore(session_id) {
     questionIds,
   ]);
 
-  // // 9. Organiser les données hiérarchiquement
-  // // Grouper les réponses par question
-  // const reponsesByQuestion = {};
-  // reponses.forEach(reponse => {
-  //     if (!reponsesByQuestion[reponse.question_id]) {
-  //         reponsesByQuestion[reponse.question_id] = [];
-  //     }
-  //     reponsesByQuestion[reponse.question_id].push(reponse);
-  // });
-
-  // // Grouper les tranches par question
-  // const tranchesByQuestion = {};
-  // reponsesTranches.forEach(tranche => {
-  //     if (!tranchesByQuestion[tranche.question_id]) {
-  //         tranchesByQuestion[tranche.question_id] = [];
-  //     }
-  //     tranchesByQuestion[tranche.question_id].push(tranche);
-  // });
-
-  // Attacher les réponses aux questions
-  // const questionsWithReponses = questions.map(question => ({
-  //     ...question,
-  //     reponses: reponsesByQuestion[question.id] || [],
-  //     reponsesTranches: tranchesByQuestion[question.id] || []
-  // }));
-
-  // // Grouper les questions par section
-  // const questionsBySection = {};
-  // questionsWithReponses.forEach(question => {
-  //     if (!questionsBySection[question.section_id]) {
-  //         questionsBySection[question.section_id] = [];
-  //     }
-  //     questionsBySection[question.section_id].push(question);
-  // });
-
-  // // Attacher les questions aux sections
-  // const sectionsWithQuestions = sections.map(section => ({
-  //     ...section,
-  //     questions: questionsBySection[section.id] || []
-  // }));
-
-  // // 10. Formater les dépendances
-  // const dependances = [
-  //     ...sectionDependencies.map(dep => ({
-  //         type: 'section',
-  //         section_id: dep.section_id,
-  //         reponse_id: dep.reponse_id,
-  //         question_id: dep.question_id
-  //     })),
-  //     ...questionDependencies.map(dep => ({
-  //         type: 'question',
-  //         question_id: dep.question_id,
-  //         reponse_id: dep.reponse_id,
-  //         parent_question_id: dep.parent_question_id
-  //     }))
-  // ];
-
-  // 11. Construire l'objet final
-  // const result = {
-  //     questionnaire: {
-  //         ...questionnaire,
-  //         sections: sectionsWithQuestions,
-  //     },
-  //     session: session
-  // };
-
-  console.log("coucou:", session.answers);
-  console.log("coucou2:", reponses[0]);
+  console.log("coucou:", session.answers)
   // now need to compute score with session.answers array (questionIds; and reponse Ids in an array)
   // take all the answer as a single element in answerFlat for future computaton
-  const answersFlat = [];
+  const qAndAnswersFlat = [];
+  const grouped = {};
   session.answers.forEach((answer) => {
-    // loop on array of reponseIds to make an array of all answers
-    if (answer.reponseIds.length === 0) {
-      answersFlat.push({ q: answer.questionId, a: answer.flatReponse });
-    } else {
-      answer.reponseIds.forEach((id) =>
-        answersFlat.push({ q: answer.questionId, a: id })
-      );
-    }
-  });
-  console.log(answersFlat);
+    // loop on array of answers to make an array of all flatten answers within a section
+      if (!grouped[answer.sectionId]) {
+       grouped[answer.sectionId] = [];  // property on an object, NOT an array index
+     }
+    answer.reponseIds.forEach((id) => {
+      grouped[answer.sectionId].push({
+        question: answer.questionId,
+        answerId: id,
+        answer: answer.flatReponse ? parseInt(answer.flatReponse) : null,
+        type: answer.questionType,
+        section: answer.sectionId
+      });
 
-  // distinguish between string answers (entier and choix libre) and the others (choix simple et choix multiple)
-  answersFlat.forEach((answer) => {
-    if (typeof answer.a === "string") {
-      // if questionnaire.sections.questions.questiontype == "entier" -> tranche reponse + plafond
-      // ReponsesTranches recommandation questionnaire.sections.questions.reponsesTranches[x].plafond
-    } else {
-      // in questionnaire.sections.questions.reponses array : take into account plafond
-    }
+  });
+});
+  console.log(grouped);
+
+  // scoremax = 100
+  // score d'une question toujours sur 100
+  let plafond = 100;
+  qAndAnswersFlat.forEach((qAndA) => {
+    if (qAndA.type === "entier") {
+        // if questionnaire.sections.questions.questiontype == "entier" -> tranche reponse + plafond
+        let tranche = reponsesTranches.filter((tranche) => tranche.id === qAndA.answerId);
+        if (tranche.length === 1) {
+          // on crée le plafond si nécessaire
+        plafond = tranche[0].plafond ? tranche[0].plafond : plafond;
+
+
+
+        }
+        // ReponsesTranches recommandation questionnaire.sections.questions.reponsesTranches[x].plafond
+        // enregistrer les coeffs au fur et à mesure
+        // valeurScore (voir db) * coeff
+        // si plafond existe retenir le plafond : si dépasse plafond : redescend au plafond
+      }
+    // } else {
+    //   // in questionnaire.sections.questions.reponses array : take into account plafond
+    //   // valeur * coeff
+    //   // prendre en compte valeur dans tranches
+    // }
     // questionnaire.sections.scoremax - questionnaire.sections.questions.coeff -
     // Reponses recommandation -> questionnaire.sections.questions.reponses[x].recommandation
     // RecommandationsReponses recommandation -> nvelle query
   });
   // questionnaire.scoremax -
+  // score final : valeur de la plus petite section
 
   // RecommandationsQuestionnaires recommandation -> nvelle query en fonction du score au questionnaire
 
