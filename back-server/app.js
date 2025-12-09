@@ -1023,6 +1023,6 @@ app.get('/score/:id_session',async (req,res) => {
         })
     } catch (error) {
         console.error('Error getting score:', error)
-        res.status(500).json({ error: 'Failed to get compute and get score' })
+        res.status(500).json({ error: 'Failed to compute and get score' })
     }
 })

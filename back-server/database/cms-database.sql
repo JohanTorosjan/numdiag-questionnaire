@@ -72,8 +72,8 @@ CREATE TABLE ReponsesTranches (
 CREATE TABLE RecommandationsQuestionnaires (
     id SERIAL PRIMARY KEY,
     questionnaire_id INTEGER NOT NULL,
-    min INTEGER NOT NULL,
-    max INTEGER NOT NULL,
+    min NUMERIC NOT NULL,
+    max NUMERIC NOT NULL,
     recommandation TEXT NOT NULL,
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE
 );

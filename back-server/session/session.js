@@ -488,62 +488,120 @@ async function getScore(session_id) {
     questionIds,
   ]);
 
-  console.log("coucou:", session.answers)
   // now need to compute score with session.answers array (questionIds; and reponse Ids in an array)
   // take all the answer as a single element in answerFlat for future computaton
-  const qAndAnswersFlat = [];
   const grouped = {};
+  const sectionScore = {};
   session.answers.forEach((answer) => {
     // loop on array of answers to make an array of all flatten answers within a section
       if (!grouped[answer.sectionId]) {
        grouped[answer.sectionId] = [];  // property on an object, NOT an array index
      }
+      if (!sectionScore[answer.sectionId]) {
+       sectionScore[answer.sectionId] = {};  // property on an object, NOT an array index
+     }
     answer.reponseIds.forEach((id) => {
       grouped[answer.sectionId].push({
-        question: answer.questionId,
+        questionId: answer.questionId,
         answerId: id,
         answer: answer.flatReponse ? parseInt(answer.flatReponse) : null,
         type: answer.questionType,
-        section: answer.sectionId
+        sectionId: answer.sectionId,
       });
 
+    });
   });
-});
-  console.log(grouped);
 
   // scoremax = 100
   // score d'une question toujours sur 100
-  let plafond = 100;
-  qAndAnswersFlat.forEach((qAndA) => {
+
+  let scores = [];
+  for (const section in grouped) {
+    let plafond = 100;
+    let values=[];
+    let coeffs=[];
+    let recommandations=[];
+
+    grouped[section].forEach((qAndA) => {
+      let value = 0;
+      let recommandation;
     if (qAndA.type === "entier") {
-        // if questionnaire.sections.questions.questiontype == "entier" -> tranche reponse + plafond
-        let tranche = reponsesTranches.filter((tranche) => tranche.id === qAndA.answerId);
-        if (tranche.length === 1) {
-          // on crée le plafond si nécessaire
-        plafond = tranche[0].plafond ? tranche[0].plafond : plafond;
-
-
-
+        // on récupère la tranche de reponse
+        let tranches = reponsesTranches.filter((tranche) => tranche.id === qAndA.answerId);
+        if (tranches.length === 1) {
+        // on ajuste le plafond si nécessaire, on récupère la valeur de la tranche et la reco
+        plafond = plafond > tranches[0].plafond ? tranches[0].plafond : plafond;
+        value = tranches[0].value;
+        recommandation = tranches[0].recommandation;
         }
-        // ReponsesTranches recommandation questionnaire.sections.questions.reponsesTranches[x].plafond
-        // enregistrer les coeffs au fur et à mesure
-        // valeurScore (voir db) * coeff
-        // si plafond existe retenir le plafond : si dépasse plafond : redescend au plafond
+        // } else {
+        //   // si tranches multiples
+        //   let plafonds = [];
+        //   let values = [];
+        //   tranches.forEach((tranche) => {
+        //     plafonds.push(tranche.plafond);
+        //     values.push(tranche.value);
+        //     recommandation.push(tranche.recommandation)
+        //   })
+        //   plafond = plafond > Math.min(...plafonds) ? Math.min(...plafonds) : plafond;
+        //   value = Math.min(...values);
+        // }
+      } else if (qAndA.type === "choix_simple" || qAndA.type === "choix_multiple"){
+        // les questions sont déjà mises à plat donc 1 rép par question dans tous les cas
+        // on récupère les infos de la réponse
+        let answers = reponses.filter((reponse) => reponse.id === qAndA.answerId);
+        // on ajuste le plafond si nécessaire, on récupère la valeur de la réponse et la reco
+        value = answers[0].valeurscore;
+        plafond = plafond > answers[0].plafond ? answers[0].plafond : plafond;
+        recommandation = answers[0].recommandation
       }
-    // } else {
-    //   // in questionnaire.sections.questions.reponses array : take into account plafond
-    //   // valeur * coeff
-    //   // prendre en compte valeur dans tranches
-    // }
-    // questionnaire.sections.scoremax - questionnaire.sections.questions.coeff -
-    // Reponses recommandation -> questionnaire.sections.questions.reponses[x].recommandation
-    // RecommandationsReponses recommandation -> nvelle query
-  });
-  // questionnaire.scoremax -
+      // on calcule la valeur finale de la réponse en prenant en compte le coeff qui est dans la question
+      let question = questions.filter((question) => question.id === qAndA.questionId);
+      value = value * question[0].coeff;
+      coeffs.push(question[0].coeff);
+      values.push(value);
+      recommandations.push(recommandation);
+
+      // ATTENTION !!!!
+      ///////////////////////////////////////////////////////////////////
+      // RecommandationsReponses recommandation -> nvelle query ???
+      // dans quel cas cette table est-elle utilisée ? à garder ?
+    });
+    grouped[section].plafond = plafond;
+    const initialValue = 0;
+    const sumValues = values.reduce(
+      (accumulator, currentValue) => accumulator + currentValue,
+      initialValue,
+    );
+    const sumCoeffs = coeffs.reduce(
+      (accumulator, currentValue) => accumulator + currentValue,
+      initialValue,
+    );
+    sectionScore[section].score = sumValues / sumCoeffs;
+    scores.push(sectionScore[section].score)
+    sectionScore[section].recommandations = recommandations;
+
+  };
   // score final : valeur de la plus petite section
+  sectionScore.scoreQuestionnaire = Math.min(...scores)
 
   // RecommandationsQuestionnaires recommandation -> nvelle query en fonction du score au questionnaire
+  const recoQuestionnaireQuery = `
+      SELECT recommandation
+      FROM RecommandationsQuestionnaires
+      WHERE questionnaire_id = $1
+      AND $2 BETWEEN min AND max;
+    `;
 
+  const recoQuestionnaireResult = await executeQuery(
+    numdiagPool,
+    recoQuestionnaireQuery,
+    [questionnaireId, sectionScore.scoreQuestionnaire ]
+  );
+  sectionScore.recommandationQuestionnaire = recoQuestionnaireResult;
+
+  console.log("grouped:", grouped);
+  console.log("sectionScore:", sectionScore);
   return true;
 }
 
