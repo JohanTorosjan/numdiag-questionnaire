@@ -81,16 +81,19 @@ function QuestionnaireDisplay(){
         }
     };
 
+
+    if (!questionnaire || !session ) {
+      return (<div className="flex justify-center items-center min-h-screen">
+                <div className="text-lg">Le questionnaire n'est plus disponible</div>
+            </div>);
+    }
+
     if (isLoading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
                 <div className="text-lg">Chargement...</div>
             </div>
         );
-    }
-
-    if (!questionnaire || !session) {
-        return null;
     }
 
     return (

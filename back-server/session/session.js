@@ -528,24 +528,10 @@ async function getScore(session_id) {
     if (qAndA.type === "entier") {
         // on récupère la tranche de reponse
         let tranches = reponsesTranches.filter((tranche) => tranche.id === qAndA.answerId);
-        if (tranches.length === 1) {
         // on ajuste le plafond si nécessaire, on récupère la valeur de la tranche et la reco
         plafond = plafond > tranches[0].plafond ? tranches[0].plafond : plafond;
         value = tranches[0].value;
         recommandation = tranches[0].recommandation;
-        }
-        // } else {
-        //   // si tranches multiples
-        //   let plafonds = [];
-        //   let values = [];
-        //   tranches.forEach((tranche) => {
-        //     plafonds.push(tranche.plafond);
-        //     values.push(tranche.value);
-        //     recommandation.push(tranche.recommandation)
-        //   })
-        //   plafond = plafond > Math.min(...plafonds) ? Math.min(...plafonds) : plafond;
-        //   value = Math.min(...values);
-        // }
       } else if (qAndA.type === "choix_simple" || qAndA.type === "choix_multiple"){
         // les questions sont déjà mises à plat donc 1 rép par question dans tous les cas
         // on récupère les infos de la réponse
@@ -568,6 +554,7 @@ async function getScore(session_id) {
       // dans quel cas cette table est-elle utilisée ? à garder ?
     });
     grouped[section].plafond = plafond;
+    console.log("groupé:",grouped)
     const initialValue = 0;
     const sumValues = values.reduce(
       (accumulator, currentValue) => accumulator + currentValue,
@@ -601,6 +588,9 @@ async function getScore(session_id) {
   sectionScore.recommandationQuestionnaire = recoQuestionnaireResult;
 
   const { scoreQuestionnaire, recommandationQuestionnaire, ...sectionsInfos } = sectionScore;
+
+  // update la session pour un state 'finished'
+  // update le score
 
   return {
     sectionsInfos,

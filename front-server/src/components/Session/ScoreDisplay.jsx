@@ -48,6 +48,7 @@ function ScoreDisplay() {
       console.log("Updated answers =", answers);
     }, [answers]);
 
+      
 
 
 
@@ -59,9 +60,9 @@ function ScoreDisplay() {
               <p key={i}>{reco.recommandation}</p>
               )}</div>
 
-            <div className="text-sky-500">{answers.sectionsInfos?.map((info,i) =>
+            {/* <div className="text-sky-500">{answers.sectionsInfos?.map((info,i) =>
               <p key={i}>{info.recommandations}</p>
-              )}</div>
+              )}</div> */}
 
 
 
