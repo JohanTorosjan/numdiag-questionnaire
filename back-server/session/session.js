@@ -600,9 +600,14 @@ async function getScore(session_id) {
   );
   sectionScore.recommandationQuestionnaire = recoQuestionnaireResult;
 
-  console.log("grouped:", grouped);
-  console.log("sectionScore:", sectionScore);
-  return sectionScore;
+  const { scoreQuestionnaire, recommandationQuestionnaire, ...sectionsInfos } = sectionScore;
+
+  return {
+    sectionsInfos,
+    scoreQuestionnaire,
+    recommandationQuestionnaire
+  };
+
 }
 
 export {

@@ -39,7 +39,7 @@ function ScoreDisplay() {
         if (questionnaire) {
             document.title = `Your score - ${questionnaire.label}`;
         }
-        setAnswers(data.data.session.answers)
+        setAnswers(data.data)
       }
       fetchData()
     }, []);
@@ -49,11 +49,22 @@ function ScoreDisplay() {
     }, [answers]);
 
 
-    return (
-        <div
 
-        >
-            Hello session {session_id}
+
+    return (
+        <div className="w-full">
+            <h1>Hello session {session_id}</h1>
+            <p>Score : {answers.scoreQuestionnaire}</p>
+            <div className="text-teal-500">{answers.recommandationQuestionnaire?.map((reco,i) =>
+              <p key={i}>{reco.recommandation}</p>
+              )}</div>
+
+            <div className="text-sky-500">{answers.sectionsInfos?.map((info,i) =>
+              <p key={i}>{info.recommandations}</p>
+              )}</div>
+
+
+
         </div>
     );
 }

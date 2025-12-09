@@ -20,7 +20,7 @@ function App() {
           <Route path="/session/:questionnaire_id" element={<Session />} />
           <Route path="/session/questionnaire/:session_id" element={<QuestionnaireDisplay />} />
           <Route path="/score/:session_id" element={<ScoreDisplay />} />
-
+          {/* une 404 ? */}
         </Routes>
       </Router>
     </ToastProvider>
