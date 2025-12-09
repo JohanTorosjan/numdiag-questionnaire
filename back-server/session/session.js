@@ -602,7 +602,7 @@ async function getScore(session_id) {
 
   console.log("grouped:", grouped);
   console.log("sectionScore:", sectionScore);
-  return true;
+  return sectionScore;
 }
 
 export {
