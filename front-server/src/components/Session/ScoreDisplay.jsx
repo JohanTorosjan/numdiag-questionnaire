@@ -6,7 +6,8 @@ function ScoreDisplay() {
   const { session_id } = useParams();
   const toast = useToast();
   const navigate = useNavigate();
-  const [answers, setAnswers] = useState([])
+  const [answers, setAnswers] = useState({})
+  const [recoSections, setRecoSections] = useState([]);
 
   async function getScore(session_id){
     try{
@@ -19,6 +20,10 @@ function ScoreDisplay() {
         return {success: false}
     }
   }
+
+      useEffect(() => {
+        document.title = `Numdiag - Votre score`;
+    }, []);
 
 
   useEffect(() => {
@@ -42,14 +47,23 @@ function ScoreDisplay() {
         setAnswers(data.data)
       }
       fetchData()
-    }, []);
+    }, [session_id]);
 
     useEffect(() => {
       console.log("Updated answers =", answers);
+
+      const newReco = [];
+
+      for (let sectionId in answers.sectionsInfos) {
+        const section = answers.sectionsInfos[sectionId];
+        section.recommandations.forEach((recommandation) => {
+          newReco.push({ reco: recommandation, section: sectionId });
+        });
+      }
+
+      setRecoSections(newReco);
+      console.log("recoSections:", recoSections);
     }, [answers]);
-
-      
-
 
 
     return (
@@ -60,9 +74,9 @@ function ScoreDisplay() {
               <p key={i}>{reco.recommandation}</p>
               )}</div>
 
-            {/* <div className="text-sky-500">{answers.sectionsInfos?.map((info,i) =>
-              <p key={i}>{info.recommandations}</p>
-              )}</div> */}
+            <div className="text-sky-500">{recoSections.map((reco,i) =>
+              <p key={i}>{reco.reco}</p>
+              )}</div>
 
 
 
