@@ -43,12 +43,20 @@ function Session(){
 
     async function fetchCreateSession() {
         setIsLoading(true)
+
+        // ICI il va falloir gérer la création de session, aller d'abord regarder dans le local storage si il y a déjà une session_id.
+        // Si oui ne pas utiliser createSession, just fetach la session et le questionnaire associé
+        // if (localStorage.getItem("session_id")) {
+        //   const storedSession = localStorage.getItem("session_id");
+        //   const storedQuestionnaire = localStorage.getItem("questionnaire_id");
+        // } else {
         const data = await createSession(questionnaire_id);
         console.log(data.questionnaire)
         setQuestionnaire(data.questionnaire[0]);
         setSession(data.session[0]);
         const storedSession = localStorage.getItem("session_id");
         const storedQuestionnaire = localStorage.getItem("questionnaire_id");
+        // }
 
         console.log(data.questionnaire[0].id)
         if (storedSession && storedQuestionnaire==data.questionnaire[0].id) {
@@ -65,8 +73,11 @@ function Session(){
     useEffect(() => {
     if (questionnaire) {
         document.title = `Numdiag - ${questionnaire.label}`;
+        if (!session.code) {
+          navigate(`/code/${session.id}`)
+        }
     }
-    }, [questionnaire]);
+    }, [questionnaire, session]);
 
 
 

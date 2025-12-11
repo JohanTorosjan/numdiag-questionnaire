@@ -138,6 +138,7 @@ CREATE TABLE Session (
     page INTEGER NOT NULL DEFAULT 0,
     state VARCHAR NOT NULL DEFAULT 'unactive',
     score NUMERIC,
+    code BOOLEAN NOT NULL DEFAULT FALSE,
     current_section_id INTEGER NOT NULL,
     answers JSONB DEFAULT '[]'::jsonb,
 

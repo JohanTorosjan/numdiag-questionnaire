@@ -14,7 +14,7 @@ import {
 } from './questionnaire/reponsesTranches.js'
 import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
-import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore } from './session/session.js'
+import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode } from './session/session.js'
 const app = express()
 const port = 3008
 
@@ -1029,25 +1029,42 @@ app.get('/score/:id_session',async (req,res) => {
 
 
 app.put('/publish/:questionnaire_id', async (req, res) => {
-    const { questionnaire_id } = req.params;
+  const { questionnaire_id } = req.params;
 
-    try {
-        const result = await publishQuestionnaire(questionnaire_id);
+  try {
+    const result = await publishQuestionnaire(questionnaire_id);
 
-        if (result.success) {
-            res.status(200).json({
-                success: true,
-                message: 'Questionnaire published succesfully',
-                data: result.data
-            });
-        } else {
-            res.status(500).json({
-                success: false,
-                error: result.error
-            });
-        }
-    } catch (error) {
-        console.error('Error publishing questionnaire:', error);
-        res.status(500).json({ error: 'Failed to publish questionnaire' });
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        message: 'Questionnaire published succesfully',
+        data: result.data
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
     }
+  } catch (error) {
+    console.error('Error publishing questionnaire:', error);
+    res.status(500).json({ error: 'Failed to publish questionnaire' });
+  }
 });
+
+app.post('/sessioncode/:id_session',async (req,res) => {
+    const { id_session } = req.params;
+    const { code } = req.body;
+    try {
+        const result = await trySessionCode({id_session, code})
+        console.log("Code passed back validation:", result)
+        res.status(200).json({
+            success: true,
+            message: 'Session code ok',
+            data: result
+        })
+    } catch (error) {
+        console.error('Error getting session code:', error)
+        res.status(500).json({ error: 'Failed to get session code' })
+    }
+})

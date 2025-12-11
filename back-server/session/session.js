@@ -611,10 +611,67 @@ async function getScore(session_id) {
 
 }
 
+async function trySessionCode({id_session, code}) {
+  // Récupérer les informations de la session et le code du questionnaire
+  const sessionQuery = `
+        SELECT code, questionnaire_id
+        FROM Session
+        WHERE id = $1;
+    `;
+
+  const sessionResult = await executeQuery(numdiagPool, sessionQuery, [
+    id_session,
+  ]);
+
+  if (!sessionResult || sessionResult.length === 0) {
+
+      throw new Error("Session not found");
+    }
+
+    const session = sessionResult[0]; // first row
+
+
+  const codeQuery = `
+        SELECT
+            code
+        FROM Questionnaires
+        WHERE id = $1
+    `;
+
+  const codeResult = await executeQuery(numdiagPool, codeQuery, [
+    session.questionnaire_id,
+  ]);
+
+
+  if (codeResult[0].code != code) {
+    return false
+  } else {
+    const sessionCodeQuery = `
+        UPDATE Session
+        SET code = $2
+        WHERE id = $1
+    `;
+
+    const sessionCodeResult = await executeQuery(numdiagPool, sessionCodeQuery, [
+      id_session, true
+    ]);
+  }
+
+  const newSessionQuery = await executeQuery(numdiagPool, sessionQuery, [
+    id_session,
+  ]);
+
+  if (newSessionQuery[0].code === true) {
+    return { questionnaire: session.questionnaire_id, code:true }
+  }
+
+}
+
 export {
   createSession,
   launchSession,
   getSessionQuestionnaire,
   updateSession,
   getScore,
+  trySessionCode
 };
