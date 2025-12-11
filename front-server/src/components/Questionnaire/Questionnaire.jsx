@@ -34,7 +34,9 @@ async function updateQuestionnaire(
   idQuestionnaire,
   label,
   description,
-  insight
+  insight,
+  tooltip,
+  code
 ) {
   try {
     const response = await fetch(
@@ -44,7 +46,7 @@ async function updateQuestionnaire(
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ label, description, insight }), // Pass the updated questionnaire data
+        body: JSON.stringify({ label, description, insight, tooltip, code }), // Pass the updated questionnaire data
       }
     );
     if (!response.ok) {
@@ -146,7 +148,9 @@ function Questionnaire() {
           id,
           questionnaire.label,
           questionnaire.description,
-          questionnaire.insight
+          questionnaire.insight,
+          questionnaire.tooltip,
+          questionnaire.code
         );
         setButtonModifierQuest("Modifier");
         console.log("Questionnaire updated:", updateQuest);
@@ -156,6 +160,28 @@ function Questionnaire() {
         toast.showError("Erreur lors de la mise à jour du questionnaire");
         // Optionally show user feedback about the error
       }
+    }
+  }
+
+  async function publishQuest() {
+    try{
+        const response = await fetch(`http://localhost:3008/publish/${questionnaire.id}`,{
+        method: "PUT",});
+        const data = await response.json()
+        if (response.ok) {
+          toast.showSuccess("Questionnaire publié avec succès !");
+
+          setQuestionnaire((prev) => ({
+            ...prev,
+            ispublished: true,
+          }));
+        }
+        return data
+      }
+      catch{
+        console.log("ERREUR lors de la publication du questionnaire")
+        toast.showSuccess("Erreur lors de la publication du questionnaire");
+        return {success: false}
     }
   }
 
@@ -307,6 +333,8 @@ function Questionnaire() {
 
 
 
+
+
   ////////////////////////////////
   // html component part
   // let i = 1
@@ -331,7 +359,7 @@ function Questionnaire() {
             />
           )}
         </div>
-        <div className="questionnaire-actions">
+        <div className="questionnaire-actions relative">
           <button
             type="button"
             className="btn-edit-quest"
@@ -353,6 +381,15 @@ function Questionnaire() {
           >
             {buttonAffichageSection ? "Afficher les actifs" : "Tout afficher"}
           </button>
+          {!questionnaire.ispublished ?
+          <button
+            type="button"
+            className="absolute right-0 bg-orange-700 border border-orange-700 px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-orange-600 hover:border-orange-600"
+            onClick={publishQuest}
+          >
+            Publier
+          </button>
+          : <div className="hidden"></div>}
         </div>
       </div>
 

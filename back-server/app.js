@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase } from './database/client.js'
-import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion } from './questionnaire/questionnaire.js'
+import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion, publishQuestionnaire } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection} from './questionnaire/section.js'
 import {updateQuestion,updatePositions,deleteReponses,createQuestion, deleteQuestion} from './questionnaire/question.js'
 import {createSection, updateSection} from './questionnaire/section.js'
@@ -177,9 +177,9 @@ app.listen(port, () => {
 
 app.put('/updateQuestionnaire/:questionnaireId', async (req, res) => {
   const { questionnaireId } = req.params;
-  const { label, description, insight, isactive } = req.body; // Get data from request body
+  const { label, description, insight, tooltip, code, isactive } = req.body; // Get data from request body
   try {
-    const questionnaireUpdate = await updateQuestionnaireInfo(questionnaireId, label, description, insight, isactive)
+    const questionnaireUpdate = await updateQuestionnaireInfo(questionnaireId, label, description, insight, tooltip, code, isactive)
     res.status(200).json({ message: 'Questionnaire Updated successfully' })
   } catch (error) {
     console.error('Error updating questionnaire infos:', error)
@@ -1026,3 +1026,28 @@ app.get('/score/:id_session',async (req,res) => {
         res.status(500).json({ error: 'Failed to compute and get score' })
     }
 })
+
+
+app.put('/publish/:questionnaire_id', async (req, res) => {
+    const { questionnaire_id } = req.params;
+
+    try {
+        const result = await publishQuestionnaire(questionnaire_id);
+
+        if (result.success) {
+            res.status(200).json({
+                success: true,
+                message: 'Questionnaire published succesfully',
+                data: result.data
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                error: result.error
+            });
+        }
+    } catch (error) {
+        console.error('Error publishing questionnaire:', error);
+        res.status(500).json({ error: 'Failed to publish questionnaire' });
+    }
+});

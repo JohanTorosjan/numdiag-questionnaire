@@ -96,7 +96,7 @@ function getAllQuestionnaireResume() {
     return executeQuery(numdiagPool, query);
 }
 
-function updateQuestionnaireInfo(idQuestionnaire, label = null, description = null, insight = null, isactive=null) {
+function updateQuestionnaireInfo(idQuestionnaire, label = null, description = null, insight = null, tooltip=null, code=null, isactive=null) {
     const fields = []
     const values = []
     let index = 1
@@ -112,6 +112,14 @@ function updateQuestionnaireInfo(idQuestionnaire, label = null, description = nu
     if (insight !== null) {
         fields.push(`insight = $${index++}`)
         values.push(insight)
+    }
+    if (tooltip !== null) {
+        fields.push(`tooltip = $${index++}`)
+        values.push(tooltip)
+    }
+    if (code !== null) {
+        fields.push(`code = $${index++}`)
+        values.push(code)
     }
     if (isactive !== null) {
         fields.push(`isactive = $${index++}`)
@@ -282,6 +290,31 @@ const getDependenciesForQuestion = async (questionId) => {
 
 
 
+const publishQuestionnaire = async (questionnaire_id) => {
+  try {
+    const query = `
+      UPDATE
+        Questionnaires
+      SET isPublished = $2
+      WHERE id = $1
+    `;
+
+    const result = await executeQuery(numdiagPool, query, [questionnaire_id, true]);
+
+    // Transformation des résultats en tableau de clés de dépendance
+    // Maintenant question_id correspond à la question associée à la réponse
+
+    return {result, success: true};
+
+  } catch (error) {
+    console.error('Error in publishQuestionnaire:', error);
+    throw error;
+  }
+};
+
+
+
+
 export {
     createQuestionnaire,
     getQuestionnaireById,
@@ -291,5 +324,6 @@ export {
     getSectionofQuestionnaire,
     updateQuestionnaireInfo,
     getAllQuestionsByQuestionnaire,
-    getDependenciesForQuestion
+    getDependenciesForQuestion,
+    publishQuestionnaire
 }
