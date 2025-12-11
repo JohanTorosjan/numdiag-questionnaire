@@ -156,13 +156,13 @@ export default function Home() {
                 </button>
             </div>
 
-            <div className="questionnaires-grid mt-15 relative w-full bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl shadow-xl">
+            <div className="questionnaires-grid mt-15 relative w-full bg-gray-50 border border-gray-300 px-4 py-3 rounded-xl shadow-xl">
               <div className="absolute flex bg-transparent h-12 -top-12 left-4">
-                  <div className={`cursor-pointer rounded-tl-xl  px-5 py-3 ${showPublished ? "bg-gray-50 inset-shadow z-10 border-gray-300 border-x border-t" : "bg-gray-200"}`}
+                  <div className={`cursor-pointer rounded-tl-xl  px-5 py-3 ${showPublished ? "bg-gray-50 inset-shadow border-gray-300 border-x border-t z-10" : "bg-gray-100 border-b border-gray-300"}`}
                   role='button'
                   onClick={()=>setShowPublished(true)}
                   >Publiés</div>
-                  <div className={`cursor-pointer rounded-tl-xl px-5 py-3 -ml-2 ${showPublished ? "bg-gray-200" : "bg-gray-50 inset-shadow z-10 border-gray-300 border-x border-t"}`}
+                  <div className={`cursor-pointer rounded-tl-xl px-5 py-3 -ml-2 ${showPublished ? "bg-gray-100 border-b border-gray-300" : "bg-gray-50 inset-shadow border-gray-300 border-x border-t"}`}
                   role='button'
                   onClick={()=>setShowPublished(false)}
                   >En cours</div>
