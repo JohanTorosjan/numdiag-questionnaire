@@ -92,7 +92,7 @@ function getAllQuestionnaires(req, res) {
 }
 
 function getAllQuestionnaireResume() {
-    const query = 'SELECT id, label, isactive, created_at FROM questionnaires';
+    const query = 'SELECT id, label, isactive, ispublished, created_at FROM questionnaires';
     return executeQuery(numdiagPool, query);
 }
 

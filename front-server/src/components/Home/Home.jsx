@@ -46,6 +46,7 @@ export default function Home() {
     const [buttonAffichage, setButtonAffichage] = useState(false);
     const [isCreateQuestPopupOpen, setIsCreateQuestPopupOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
+    const [showPublished, setShowPublished] = useState(true);
     const toast = useToast();
 
     useEffect(() => {
@@ -155,9 +156,20 @@ export default function Home() {
                 </button>
             </div>
 
-            <div className="questionnaires-grid">
+            <div className="questionnaires-grid mt-15 relative w-full bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl shadow-xl">
+              <div className="absolute flex bg-transparent h-12 -top-12 left-4">
+                  <div className={`cursor-pointer rounded-tl-xl  px-5 py-3 ${showPublished ? "bg-gray-50 inset-shadow z-10 border-gray-300 border-x border-t" : "bg-gray-200"}`}
+                  role='button'
+                  onClick={()=>setShowPublished(true)}
+                  >Publiés</div>
+                  <div className={`cursor-pointer rounded-tl-xl px-5 py-3 -ml-2 ${showPublished ? "bg-gray-200" : "bg-gray-50 inset-shadow z-10 border-gray-300 border-x border-t"}`}
+                  role='button'
+                  onClick={()=>setShowPublished(false)}
+                  >En cours</div>
+              </div>
                 {questionnaires.map(q => (
                   (q.isactive || buttonAffichage) ? (
+                    (showPublished && q.ispublished || !showPublished && !q.ispublished) ? (
                     <div key={q.id+'questionnaire'} className={`questionnaire-card ${q.isactive ? "bg-green-300" : "bg-red-300"}`}>
                         <div className={`status-badge ${q.isactive ? "active" : "inactive"}`}>
                             {q.isactive ? "Actif" : "Inactif"}
@@ -167,7 +179,7 @@ export default function Home() {
                             {q.isactive ? "Désactiver" : "Activer"}
                         </button>
                     </div>
-                  ) : (<div key={q.id+'error'} className="hidden"></div>)
+                  ) : (<div key={q.id+'error'} className="hidden">Flûte</div>)) : <div key={q.id+'error'} className="hidden"></div>
                 ))}
             </div>
 
