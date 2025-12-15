@@ -225,16 +225,16 @@ function Session(){
     );
   } else if (!code && questionnaire.ispublished && questionnaire.isactive) {
     return (
-      <div className="bg-red-500">
-        coucou
-      <label htmlFor="code" >Entre ton code</label>
+      <div className="w-full h-full flex flex-col items-center justify-center">
+      <label htmlFor="code" className="text-xl"> Un code est nécessaire pour accéder à ce questionnaire</label>
       <input type="text" name='code' placeholder="xxxx"
       value={sessionCode}
       onChange={(e) => setSessionCode(e.target.value)}
+      className="border border-gray-200 rounded-lg mt-4 px-2 py-1"
       />
-      <button onClick={handleCodeSubmit}>Envoyer</button>
+      <button onClick={handleCodeSubmit} className="rounded-xl bg-indigo-500 px-3 py-2 text-white font-semibold mt-6 tracking-wide">Envoyer</button>
       {errorCode ?
-      <div className="bg-green-500">Tu dois entrer le bon code
+      <div className="text-sm text-orange-700 mt-1">Il est nécessaire d'entrer le bon code pour continuer
       </div>
     :
     <div className="hidden"></div>}
@@ -242,7 +242,13 @@ function Session(){
     )
   } else if (!questionnaire.ispublished || !questionnaire.isactive) {
     return (
-      <div>Ce questionnaire n'a pas encore été publié par son auteur ou n'est plus actif.</div>
+      <div className="w-full h-full">
+        <img src="/images/sorry_pardon.svg" alt="" className="sm:h-40 sm:w-40 h-25 w-25 absolute top-30 md:top-20 lg:left-60 md:left-40 sm:left-5 sm:top-20 left-1" />
+        <img src="/images/sorry.svg" alt="" className="sm:h-25 sm:w-25 h-17 w-17 absolute md:top-20 lg:right-60 md:right-40 sm:right-5 sm:top-20 top-25 right-3" />
+        <p className="text-center mt-40 text-2xl text-orange-700 font-bold">Nous sommes navrés</p>
+        <p className="text-center mt-10 text-xl font-semibold">Ce questionnaire n'est pas accessible.</p>
+        <p className="text-center mt-3 text-md">Il n'a pas encore été publié par son auteur ou n'est plus actif.</p>
+        </div>
     )
   }
 

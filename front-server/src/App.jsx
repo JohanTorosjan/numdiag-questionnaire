@@ -7,6 +7,7 @@ import Questionnaire from './components/Questionnaire/Questionnaire.jsx'
 import Session  from './components/Session/Session.jsx'
 import QuestionnaireDisplay from './components/Session/QuestionnaireDisplay.jsx'
 import ScoreDisplay from './components/Session/ScoreDisplay.jsx'
+import NotFound from './notFound.jsx'
 
 import { ToastProvider } from './ToastSystem';
 
@@ -20,7 +21,7 @@ function App() {
           <Route path="/session/:questionnaire_id" element={<Session />} />
           <Route path="/session/questionnaire/:session_id" element={<QuestionnaireDisplay />} />
           <Route path="/score/:session_id" element={<ScoreDisplay />} />
-          {/* une 404 ? */}
+          <Route path="*" element={<NotFound />} /> {/* Route 404 */}
         </Routes>
       </Router>
     </ToastProvider>
