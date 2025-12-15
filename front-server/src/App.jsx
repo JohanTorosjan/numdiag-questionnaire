@@ -4,7 +4,6 @@ import './App.css'
 
 import Home from './components/Home/Home.jsx'
 import Questionnaire from './components/Questionnaire/Questionnaire.jsx'
-import Code from './components/Session/Code.jsx'
 import Session  from './components/Session/Session.jsx'
 import QuestionnaireDisplay from './components/Session/QuestionnaireDisplay.jsx'
 import ScoreDisplay from './components/Session/ScoreDisplay.jsx'
@@ -18,7 +17,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/questionnaire/:id" element={<Questionnaire />} />
-          <Route path="/code/:session_id" element={<Code />} />
           <Route path="/session/:questionnaire_id" element={<Session />} />
           <Route path="/session/questionnaire/:session_id" element={<QuestionnaireDisplay />} />
           <Route path="/score/:session_id" element={<ScoreDisplay />} />

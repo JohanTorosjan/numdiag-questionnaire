@@ -28,6 +28,21 @@ async function createSession(idQuestionnaire) {
   }
 }
 
+async function codeQuestionnaire(idQuestionnaire) {
+  try {
+    const response = await fetch(`http://localhost:3008/code/${idQuestionnaire}`);
+    if (!response.ok) {
+      throw new Error("Erreur lors de la récupération du code du questionnaire");
+    }
+    const data = await response.json();
+    console.log("Code :", data);
+    return data.data
+  } catch (error) {
+    console.error("Error getting questionnaire code:", error);
+    return null;
+  }
+}
+
 
 
 function Session(){
@@ -37,6 +52,9 @@ function Session(){
     const [questionnaire, setQuestionnaire] = useState(null);
     const [session, setSession] = useState(null);
     const [existingSessionId, setExistingSessionId] = useState(null);
+    const [code, setCode] = useState(false)
+    const [sessionCode, setSessionCode] = useState("")
+    const [errorCode, setErrorCode]= useState(false)
     const toast = useToast();
 
   useEffect(() => {
@@ -51,36 +69,75 @@ function Session(){
         //   const storedQuestionnaire = localStorage.getItem("questionnaire_id");
         // } else {
         const data = await createSession(questionnaire_id);
-        console.log(data.questionnaire)
         setQuestionnaire(data.questionnaire[0]);
         setSession(data.session[0]);
         const storedSession = localStorage.getItem("session_id");
         const storedQuestionnaire = localStorage.getItem("questionnaire_id");
         // }
 
-        console.log(data.questionnaire[0].id)
         if (storedSession && storedQuestionnaire==data.questionnaire[0].id) {
           setExistingSessionId(storedSession);
         }
-
-
         setIsLoading(false)
     }
-
         fetchCreateSession();
     }, [questionnaire_id]);
 
+
     useEffect(() => {
+    async function fetchCodeQuestionnaire() {
+      console.log("Questionnaire:", questionnaire)
     if (questionnaire) {
         document.title = `Numdiag - ${questionnaire.label}`;
-        if (!session.code) {
-          navigate(`/code/${session.id}`)
+        const data = await codeQuestionnaire(questionnaire.id);
+        console.log("Code for React state:", data)
+        console.log("Session:", session)
+
+        if (data) {
+            const testCode = await codeForSession({session_id: session.id,
+            code: session.code})
+            if (testCode) {
+              setCode(true)
+            }
+        } else {
+          setCode(true)
         }
     }
+  }
+  fetchCodeQuestionnaire()
     }, [questionnaire, session]);
 
 
 
+  async function codeForSession({session_id, code, isUserSubmit = false}) {
+    try {
+      const response = await fetch(`http://localhost:3008/sessioncode/${session_id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            code
+          }),
+        });
+      if (!response.ok) {
+        throw new Error("Erreur lors du traitement du code");
+      }
+      const data = await response.json();
+      console.log("Code validation : ", data);
+      if (data.data.code === true) {
+        setCode(true)
+      } else if (data.data.code != true && isUserSubmit) {
+        setErrorCode(true)
+        toast.showError("Ce n'est pas le bon code")
+      }
+      return data.data;
+    } catch (error) {
+      console.error("Error sending code:", error);
+      toast.showError("Problème lors de l'envoi du code")
+      return null;
+    }
+  }
 
     const handleGoToQuestionnaireClick = async() =>{
 
@@ -102,10 +159,16 @@ function Session(){
         }
     }
 
+    const handleCodeSubmit = async () => {
+      await codeForSession({session_id: session.id, code: sessionCode, isUserSubmit: true});
+    };
+
+
     if (isLoading) return <div>Chargement...</div>;
 
     if (!questionnaire) return <div>Café</div>;
 
+    if (code && questionnaire.ispublished && questionnaire.isactive) {
     return (
     <div className="Session px-5 w-full h-full relative grid grid-rows-[auto_1fr_auto] pb-10">
 
@@ -160,6 +223,28 @@ function Session(){
 
     </div>
     );
+  } else if (!code && questionnaire.ispublished && questionnaire.isactive) {
+    return (
+      <div className="bg-red-500">
+        coucou
+      <label htmlFor="code" >Entre ton code</label>
+      <input type="text" name='code' placeholder="xxxx"
+      value={sessionCode}
+      onChange={(e) => setSessionCode(e.target.value)}
+      />
+      <button onClick={handleCodeSubmit}>Envoyer</button>
+      {errorCode ?
+      <div className="bg-green-500">Tu dois entrer le bon code
+      </div>
+    :
+    <div className="hidden"></div>}
+    </div>
+    )
+  } else if (!questionnaire.ispublished || !questionnaire.isactive) {
+    return (
+      <div>Ce questionnaire n'a pas encore été publié par son auteur ou n'est plus actif.</div>
+    )
+  }
 
 
 }

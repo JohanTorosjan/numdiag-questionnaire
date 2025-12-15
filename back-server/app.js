@@ -14,7 +14,7 @@ import {
 } from './questionnaire/reponsesTranches.js'
 import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
-import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode } from './session/session.js'
+import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode } from './session/session.js'
 const app = express()
 const port = 3008
 
@@ -1066,5 +1066,21 @@ app.post('/sessioncode/:id_session',async (req,res) => {
     } catch (error) {
         console.error('Error getting session code:', error)
         res.status(500).json({ error: 'Failed to get session code' })
+    }
+})
+
+app.get('/code/:id_questionnaire',async (req,res) => {
+    const { id_questionnaire } = req.params;
+    try {
+        const result = await getQuestionnaireCode(id_questionnaire)
+        console.log("Code got from questionnaire",id_questionnaire,":", result)
+        res.status(200).json({
+            success: true,
+            message: 'Code from questionnaire exist',
+            data: result
+        })
+    } catch (error) {
+        console.error('Error getting questionnaire code:', error)
+        res.status(500).json({ error: 'Failed to get questionnaire code' })
     }
 })

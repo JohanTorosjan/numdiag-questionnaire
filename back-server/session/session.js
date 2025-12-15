@@ -52,7 +52,7 @@ async function createSession(questionnaireId) {
     ]);
 
     const questionnaireQuery = `
-            SELECT * FROM Questionnaires WHERE id = $1
+            SELECT id, label, description, tooltip, insight, ispublished, isactive FROM Questionnaires WHERE id = $1
         `;
 
     const questionnaire = await executeQuery(numdiagPool, questionnaireQuery, [
@@ -564,7 +564,9 @@ async function getScore(session_id) {
       (accumulator, currentValue) => accumulator + currentValue,
       initialValue,
     );
-    sectionScore[section].score = sumValues / sumCoeffs;
+    let score = sumValues / sumCoeffs;
+    sectionScore[section].score = score > plafond ? plafond : score;
+
     scores.push(sectionScore[section].score)
     sectionScore[section].recommandations = recommandations;
 
@@ -667,11 +669,32 @@ async function trySessionCode({id_session, code}) {
 
 }
 
+async function getQuestionnaireCode(id_questionnaire) {
+  // Récupérer le code du questionnaire
+  const codeQuery = `
+        SELECT
+            code
+        FROM Questionnaires
+        WHERE id = $1
+    `;
+
+  const codeResult = await executeQuery(numdiagPool, codeQuery, [
+    id_questionnaire,
+  ]);
+
+  if (codeResult[0].code) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 export {
   createSession,
   launchSession,
   getSessionQuestionnaire,
   updateSession,
   getScore,
-  trySessionCode
+  trySessionCode,
+  getQuestionnaireCode
 };
