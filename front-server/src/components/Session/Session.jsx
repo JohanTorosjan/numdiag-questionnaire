@@ -227,7 +227,7 @@ function Session(){
     return (
       <div className="w-full h-full flex flex-col items-center justify-center">
       <label htmlFor="code" className="text-xl"> Un code est nécessaire pour accéder à ce questionnaire</label>
-      <input type="text" name='code' placeholder="xxxx"
+      <input type="password" name='code' placeholder="xxxx"
       value={sessionCode}
       onChange={(e) => setSessionCode(e.target.value)}
       className="border border-gray-200 rounded-lg mt-4 px-2 py-1"

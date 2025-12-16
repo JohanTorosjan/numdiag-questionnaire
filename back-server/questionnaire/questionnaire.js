@@ -117,9 +117,12 @@ function updateQuestionnaireInfo(idQuestionnaire, label = null, description = nu
         fields.push(`tooltip = $${index++}`)
         values.push(tooltip)
     }
-    if (code !== null) {
+    if (code !== null && code !== "") {
         fields.push(`code = $${index++}`)
         values.push(code)
+    } else if (code === "") {
+        fields.push(`code = $${index++}`)
+        values.push(null)
     }
     if (isactive !== null) {
         fields.push(`isactive = $${index++}`)

@@ -106,6 +106,7 @@ function CreateQuestionnaire({ onSave, onClose }) {
                           <input
                               id="code"
                               name="code"
+                              type="number"
                               value={formData.code}
                               onChange={handleInputChange}
                               placeholder='Pas de code ou code pin (e.g. 0000)'
