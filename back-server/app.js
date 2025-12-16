@@ -546,401 +546,6 @@ app.delete('/reponse/:reponseId/', async (req, res) => {
 })
 
 
-
-app.get('/questionnaires/:id/export', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    // 1. Récupérer le questionnaire
-    const questionnaires = await executeQuery(
-      numdiagPool,
-      'SELECT id, label, description, code, version, scoremax FROM Questionnaires WHERE id = $1 AND isactive = TRUE',
-      [id]
-    );
-
-    if (questionnaires.length === 0) {
-      return res.status(404).json({ error: 'Questionnaire non trouvé' });
-    }
-
-    const questionnaire = questionnaires[0];
-
-    // 2. Récupérer toutes les sections
-    const sections = await executeQuery(
-      numdiagPool,
-      'SELECT id, label, description, tooltip, scoremax, nbpages FROM Sections WHERE questionnaire_id = $1 AND isactive = TRUE ORDER BY id',
-      [id]
-    );
-
-    // 3. Pour chaque section, récupérer les questions, réponses et dépendances
-    const form = [];
-
-    for (const section of sections) {
-      // Récupérer les questions de la section
-      const questions = await executeQuery(
-        numdiagPool,
-        'SELECT id, label, questiontype, position, page, tooltip, coeff, theme, mandatory FROM Questions WHERE section_id = $1 ORDER BY position, page',
-        [section.id]
-      );
-
-      const questionsList = [];
-
-      for (const question of questions) {
-        // Mapper le type de question
-        const typeMapping = {
-          'choix_simple': 'single_choice',
-          'choix_multiple': 'multiple_choice',
-          'entier': 'range',
-          'libre': 'free_answer'
-        };
-
-        const questionObj = {
-          id: question.id,
-          code: `q_${question.id}`,
-          title: question.label,
-          type: typeMapping[question.questiontype] || 'free_answer',
-          mandatory: question.mandatory,
-          help: question.tooltip || ''
-        };
-
-        // Ajouter description si thème existe
-        if (question.theme) {
-          questionObj.description = question.theme;
-        }
-
-        // Récupérer les réponses selon le type de question
-        if (question.questiontype === 'entier') {
-          // Pour les questions de type range, récupérer les tranches
-          const tranches = await executeQuery(
-            numdiagPool,
-            'SELECT min, max, value, tooltip, plafond, recommandation FROM ReponsesTranches WHERE question_id = $1 ORDER BY min',
-            [question.id]
-          );
-
-          if (tranches.length > 0) {
-            questionObj.options = tranches.map(tranche => ({
-              min: tranche.min,
-              max: tranche.max,
-              score: tranche.value,
-              code: `range_${tranche.min}_${tranche.max}`
-            }));
-          }
-        } else if (['choix_simple', 'choix_multiple'].includes(question.questiontype)) {
-          // Pour les questions à choix, récupérer les réponses
-          const reponses = await executeQuery(
-            numdiagPool,
-            'SELECT id, label, position, tooltip, plafond, recommandation, valeurscore FROM Reponses WHERE question_id = $1 ORDER BY position',
-            [question.id]
-          );
-
-          if (reponses.length > 0) {
-            questionObj.options = reponses.map(reponse => ({
-              label: reponse.label,
-              code: `r_${reponse.id}`,
-              score: reponse.valeurscore || 0
-            }));
-          }
-        }
-
-        // Récupérer les dépendances de la question
-        const dependencies = await executeQuery(
-          numdiagPool,
-          `SELECT qd.reponse_id, r.label as reponse_label, q.id as parent_question_id
-           FROM QuestionDependencies qd
-           JOIN Reponses r ON qd.reponse_id = r.id
-           JOIN Questions q ON r.question_id = q.id
-           WHERE qd.question_id = $1`,
-          [question.id]
-        );
-
-        if (dependencies.length > 0) {
-          const dep = dependencies[0];
-          questionObj.dependsOn = {
-            code: `q_${dep.parent_question_id}`,
-            operator: 'equals',
-            value: `r_${dep.reponse_id}`
-          };
-
-          // Si plusieurs dépendances, utiliser l'opérateur "in"
-          if (dependencies.length > 1) {
-            questionObj.dependsOn.operator = 'in';
-            questionObj.dependsOn.value = dependencies.map(d => `r_${d.reponse_id}`);
-          }
-        }
-
-        questionsList.push(questionObj);
-      }
-
-      // Construire l'objet section
-      const sectionObj = {
-        id: section.id,
-        name: section.label,
-        description: section.description || '',
-        help: section.tooltip || '',
-        questions: questionsList
-      };
-
-      // Récupérer les dépendances de la section
-      const sectionDeps = await executeQuery(
-        numdiagPool,
-        `SELECT sd.reponse_id, r.label as reponse_label, q.id as parent_question_id
-         FROM SectionDependencies sd
-         JOIN Reponses r ON sd.reponse_id = r.id
-         JOIN Questions q ON r.question_id = q.id
-         WHERE sd.section_id = $1`,
-        [section.id]
-      );
-
-      if (sectionDeps.length > 0) {
-        const dep = sectionDeps[0];
-        sectionObj.dependsOn = {
-          code: `q_${dep.parent_question_id}`,
-          operator: 'equals',
-          value: `r_${dep.reponse_id}`
-        };
-
-        if (sectionDeps.length > 1) {
-          sectionObj.dependsOn.operator = 'in';
-          sectionObj.dependsOn.value = sectionDeps.map(d => `r_${d.reponse_id}`);
-        }
-      }
-
-      form.push(sectionObj);
-    }
-
-    // 4. Construire le JSON final
-    const numdiagJson = {
-      audit: {
-        code: questionnaire.code ? questionnaire.code.toString() : `AUDIT_${questionnaire.id}`,
-        name: questionnaire.label,
-        description: questionnaire.description || '',
-        form: form
-      }
-    };
-
-    // 5. Retourner le JSON
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Content-Disposition', `attachment; filename="audit_${questionnaire.id}.json"`);
-    res.json(numdiagJson);
-
-  } catch (error) {
-    console.error('Erreur lors de l\'export:', error);
-    res.status(500).json({
-      error: 'Erreur lors de l\'export du questionnaire',
-      details: error.message
-    });
-  }
-});
-
-
-app.get('/questionnaires/:id/export2', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    // 1. Récupérer le questionnaire
-    const questionnaires = await executeQuery(
-      numdiagPool,
-      'SELECT id, label, description, code, version, scoremax FROM Questionnaires WHERE id = $1 AND isactive = TRUE',
-      [id]
-    );
-
-    if (questionnaires.length === 0) {
-      return res.status(404).json({ error: 'Questionnaire non trouvé' });
-    }
-
-    const questionnaire = questionnaires[0];
-
-    // 2. Récupérer toutes les sections
-    const sections = await executeQuery(
-      numdiagPool,
-      'SELECT id, label, description, tooltip, scoremax, nbpages FROM Sections WHERE questionnaire_id = $1 AND isactive = TRUE ORDER BY id',
-      [id]
-    );
-
-    // 3. Pour chaque section, récupérer les questions, réponses et dépendances
-    const form = [];
-
-    for (const section of sections) {
-      // Récupérer les questions de la section
-      const questions = await executeQuery(
-        numdiagPool,
-        'SELECT id, label, questiontype, position, page, tooltip, coeff, theme, mandatory FROM Questions WHERE section_id = $1 ORDER BY position, page',
-        [section.id]
-      );
-
-      const questionsList = [];
-
-      for (const question of questions) {
-        // Mapper le type de question
-        const typeMapping = {
-          'choix_simple': 'single_choice',
-          'choix_multiple': 'multiple_choice',
-          'entier': 'range',
-          'libre': 'free_answer'
-        };
-
-        const questionObj = {
-          id: question.id,
-          code: `q_${question.id}`,
-          title: question.label,
-          type: typeMapping[question.questiontype] || 'free_answer',
-          mandatory: question.mandatory,
-          help: question.tooltip || '',
-          coefficient:question.coeff
-        };
-
-        // Ajouter description si thème existe
-        if (question.theme) {
-          questionObj.description = question.theme;
-        }
-
-        // Récupérer les réponses selon le type de question
-        if (question.questiontype === 'entier') {
-          // Pour les questions de type range, récupérer les tranches
-          const tranches = await executeQuery(
-            numdiagPool,
-            'SELECT min, max, value, tooltip, plafond, recommandation FROM ReponsesTranches WHERE question_id = $1 ORDER BY min',
-            [question.id]
-          );
-
-          if (tranches.length > 0) {
-            questionObj.options = tranches.map(tranche => ({
-              min: tranche.min,
-              max: tranche.max,
-              score: tranche.value,
-              unit:'number',
-              code: `range_${tranche.min}_${tranche.max}`
-            }));
-          }
-        } else if (['choix_simple', 'choix_multiple'].includes(question.questiontype)) {
-          // Pour les questions à choix, récupérer les réponses
-          const reponses = await executeQuery(
-            numdiagPool,
-            'SELECT id, label, position, tooltip, plafond, recommandation, valeurscore FROM Reponses WHERE question_id = $1 ORDER BY position',
-            [question.id]
-          );
-
-          if (reponses.length > 0) {
-            questionObj.options = reponses.map(reponse => ({
-              label: reponse.label,
-              code: `r_${reponse.id}`,
-              ceiling:reponse.plafond || 100,
-              score: reponse.valeurscore || 0
-            }));
-          }
-        }
-
-        // Récupérer les dépendances de la question
-        const dependencies = await executeQuery(
-          numdiagPool,
-          `SELECT qd.reponse_id, r.label as reponse_label, q.id as parent_question_id, q.questiontype as parent_question_type
-           FROM QuestionDependencies qd
-           JOIN Reponses r ON qd.reponse_id = r.id
-           JOIN Questions q ON r.question_id = q.id
-           WHERE qd.question_id = $1`,
-          [question.id]
-        );
-
-        if (dependencies.length > 0) {
-          const dep = dependencies[0];
-          const parentQuestionType = dep.parent_question_type;
-
-          // Déterminer l'opérateur en fonction du type de question parent et du nombre de dépendances
-          let operator = 'equals';
-          let value;
-
-          if (parentQuestionType === 'choix_multiple' || dependencies.length > 1) {
-            operator = 'in';
-            // Créer un tableau des labels de réponses et le convertir en string JSON
-            const valuesArray = dependencies.map(d => d.reponse_label);
-            value = JSON.stringify(valuesArray);
-          } else {
-            operator = 'equals';
-            value = dep.reponse_label;
-          }
-
-          questionObj.dependsOn = {
-            code: `q_${dep.parent_question_id}`,
-            operator: operator,
-            value: value
-          };
-        }
-
-        questionsList.push(questionObj);
-      }
-
-      // Construire l'objet section
-      const sectionObj = {
-        id: section.id,
-        name: section.label,
-        description: section.description || '',
-        help: section.tooltip || '',
-        questions: questionsList
-      };
-
-      // Récupérer les dépendances de la section
-      const sectionDeps = await executeQuery(
-        numdiagPool,
-        `SELECT sd.reponse_id, r.label as reponse_label, q.id as parent_question_id, q.questiontype as parent_question_type
-         FROM SectionDependencies sd
-         JOIN Reponses r ON sd.reponse_id = r.id
-         JOIN Questions q ON r.question_id = q.id
-         WHERE sd.section_id = $1`,
-        [section.id]
-      );
-
-      if (sectionDeps.length > 0) {
-        const dep = sectionDeps[0];
-        const parentQuestionType = dep.parent_question_type;
-
-        // Déterminer l'opérateur en fonction du type de question parent et du nombre de dépendances
-        let operator = 'equals';
-        let value;
-
-        if (parentQuestionType === 'choix_multiple' || sectionDeps.length > 1) {
-          operator = 'in';
-          // Créer un tableau des labels de réponses et le convertir en string JSON
-          const valuesArray = sectionDeps.map(d => d.reponse_label);
-          value = JSON.stringify(valuesArray);
-        } else {
-          operator = 'equals';
-          value = dep.reponse_label;
-        }
-
-        sectionObj.dependsOn = {
-          code: `q_${dep.parent_question_id}`,
-          operator: operator,
-          value: value
-        };
-      }
-
-      form.push(sectionObj);
-    }
-
-    // 4. Construire le JSON final
-    const numdiagJson = {
-      audit: {
-        code: questionnaire.code ? questionnaire.code.toString() : `AUDIT_${questionnaire.id}`,
-        name: questionnaire.label,
-        description: questionnaire.description || '',
-        form: form
-      }
-    };
-
-    // 5. Retourner le JSON
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Content-Disposition', `attachment; filename="audit_${questionnaire.id}.json"`);
-    res.json(numdiagJson);
-
-  } catch (error) {
-    console.error('Erreur lors de l\'export:', error);
-    res.status(500).json({
-      error: 'Erreur lors de l\'export du questionnaire',
-      details: error.message
-    });
-  }
-});
-
-
 app.post('/session/:id_questionnaire',async (req,res) => {
     const { id_questionnaire } = req.params;
     try {
@@ -1084,3 +689,196 @@ app.get('/code/:id_questionnaire',async (req,res) => {
         res.status(500).json({ error: 'Failed to get questionnaire code' })
     }
 })
+
+app.get("/questionnaires/:id/export", async (req, res) => {
+  const { id } = req.params;
+  try {
+    // 1. Récupérer le questionnaire
+    const questionnaires = await executeQuery(
+      numdiagPool,
+      "SELECT id, label, description, code, version, scoremax FROM Questionnaires WHERE id = $1 AND isactive = TRUE",
+      [id]
+    );
+    if (questionnaires.length === 0) {
+      return res.status(404).json({ error: "Questionnaire non trouvé" });
+    }
+    const questionnaire = questionnaires[0];
+    // 2. Récupérer toutes les sections
+    const sections = await executeQuery(
+      numdiagPool,
+      `SELECT id, label, description, tooltip, scoremax
+       FROM Sections
+       WHERE questionnaire_id = $1 AND isactive = TRUE
+       ORDER BY id`,
+      [id]
+    );
+    // 3. Pour chaque section, récupérer les dépendances
+    const sectionDependencies = await executeQuery(
+      numdiagPool,
+      `SELECT sd.section_id, r.id as reponse_id, r.label as reponse_label, q.id as question_id
+       FROM SectionDependencies sd
+       JOIN Reponses r ON sd.reponse_id = r.id
+       JOIN Questions q ON r.question_id = q.id
+       WHERE sd.section_id = ANY($1)`,
+      [sections.map(s => s.id)]
+    );
+    // 4. Récupérer toutes les questions avec leurs dépendances
+    const questions = await executeQuery(
+      numdiagPool,
+      `SELECT q.id, q.section_id, q.label, q.questiontype, q.position, q.page,
+              q.tooltip, q.coeff, q.theme, q.mandatory, q.public_cible
+       FROM Questions q
+       WHERE q.section_id = ANY($1)
+       ORDER BY q.section_id, q.position`,
+      [sections.map(s => s.id)]
+    );
+    // 5. Récupérer les dépendances des questions
+    const questionDependencies = await executeQuery(
+      numdiagPool,
+      `SELECT qd.question_id, r.id as reponse_id, r.label as reponse_label,
+              q.id as parent_question_id
+       FROM QuestionDependencies qd
+       JOIN Reponses r ON qd.reponse_id = r.id
+       JOIN Questions q ON r.question_id = q.id
+       WHERE qd.question_id = ANY($1)`,
+      [questions.map(q => q.id)]
+    );
+    // 6. Récupérer toutes les réponses
+    const reponses = await executeQuery(
+      numdiagPool,
+      `SELECT id, question_id, label, position, tooltip, plafond, recommandation, valeurscore
+       FROM Reponses
+       WHERE question_id = ANY($1)
+       ORDER BY question_id, position`,
+      [questions.map(q => q.id)]
+    );
+    // 7. Récupérer les tranches pour les questions de type 'entier'
+    const tranches = await executeQuery(
+      numdiagPool,
+      `SELECT question_id, min, max, value, tooltip, plafond, recommandation
+       FROM ReponsesTranches
+       WHERE question_id = ANY($1)
+       ORDER BY question_id, min`,
+      [questions.map(q => q.id)]
+    );
+    // 8. Récupérer les tags
+    const tags = await executeQuery(
+      numdiagPool,
+      `SELECT t.question_id, t.label, d.label as document_label
+       FROM Tags t
+       JOIN Documents d ON t.document_id = d.id
+       WHERE t.question_id = ANY($1)`,
+      [questions.map(q => q.id)]
+    );
+    // Construction du JSON de sortie
+    const audit = {
+      audit: {
+        id: questionnaire.id,
+        code: questionnaire.code || `AUDIT_${questionnaire.id}`,
+        name: questionnaire.label,
+        description: questionnaire.description || "",
+        form: []
+      }
+    };
+    // Mapper les types de questions
+    const mapQuestionType = (dbType) => {
+      const typeMapping = {
+        'choix_simple': 'single_choice',
+        'choix_multiple': 'multiple_choice',
+        'entier': 'range',
+        'libre': 'free_answer'
+      };
+      return typeMapping[dbType] || 'free_answer';
+    };
+    // Construire chaque section
+    for (const section of sections) {
+      const sectionObj = {
+        id: section.id,
+        name: section.label,
+        description: section.description || "",
+        help: section.tooltip || "",
+        questions: []
+      };
+      // Ajouter dependsOn si la section a des dépendances
+      const sectionDeps = sectionDependencies.filter(sd => sd.section_id === section.id);
+      if (sectionDeps.length > 0) {
+        // Pour simplifier, on prend la première dépendance
+        // Dans un cas réel, il faudrait gérer les dépendances multiples
+        const dep = sectionDeps[0];
+        const parentQuestion = questions.find(q => q.id === dep.question_id);
+        sectionObj.dependsOn = {
+          code: `Q${dep.question_id}`,
+          operator: "equals",
+          value: dep.reponse_label
+        };
+      }
+      // Récupérer les questions de cette section (triées par position)
+      const sectionQuestions = questions.filter(q => q.section_id === section.id);
+      for (const question of sectionQuestions) {
+        const questionObj = {
+          id: question.id,
+          code: `Q${question.id}`,
+          title: question.label,
+          description: question.tooltip || "",
+          type: mapQuestionType(question.questiontype),
+          mandatory: question.mandatory,
+          tags: []
+        };
+        // Ajouter le coefficient si présent
+        if (question.coeff && question.coeff !== 1) {
+          questionObj.coefficient = question.coeff;
+        }
+        // Ajouter les tags
+        const questionTags = tags.filter(t => t.question_id === question.id);
+        if (questionTags.length > 0) {
+          questionObj.tags = questionTags.map(t => t.label);
+        }
+        // Ajouter dependsOn si la question a des dépendances
+        const questionDeps = questionDependencies.filter(qd => qd.question_id === question.id);
+        if (questionDeps.length > 0) {
+          const dep = questionDeps[0];
+          questionObj.dependsOn = {
+            code: `Q${dep.parent_question_id}`,
+            operator: "equals",
+            value: dep.reponse_label
+          };
+        }
+        // Gérer les options selon le type de question
+        if (question.questiontype === 'entier') {
+          // Questions de type range
+          const questionTranches = tranches.filter(t => t.question_id === question.id);
+          questionObj.options = questionTranches.map(t => ({
+            min: t.min,
+            max: t.max,
+            unit: "",
+            score: t.value,
+            ...(t.plafond && { ceiling: t.plafond })
+          }));
+        } else if (question.questiontype !== 'libre') {
+          // Questions à choix (simple ou multiple)
+          const questionReponses = reponses.filter(r => r.question_id === question.id);
+          questionObj.options = questionReponses.map(r => ({
+            label: r.label,
+            score: r.valeurscore || 0,
+            code: `Q${question.id}_R${r.id}`,
+            ...(r.plafond && { ceiling: r.plafond })
+          }));
+        }
+        // Ne pas ajouter options si c'est une question libre
+        if (question.questiontype === 'libre') {
+          delete questionObj.options;
+        }
+        sectionObj.questions.push(questionObj);
+      }
+      audit.audit.form.push(sectionObj);
+    }
+    // Retourner le JSON formaté
+    res.json(audit);
+  } catch (error) {
+    console.error("Erreur lors de l'export du questionnaire:", error);
+    res.status(500).json({
+      error: "Erreur lors de l'export du questionnaire",
+      details: error.message
+    });
+  }
+});

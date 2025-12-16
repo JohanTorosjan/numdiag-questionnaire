@@ -200,6 +200,7 @@ function Session(){
         Continuer le questionnaire précédent
       </button>
       <img src="/images/way.svg" className="h-9 w-9 mt-4 self-center md:self-start justify-self-center" alt="" />
+      {/* ajouter une conditionnelle pour accéder au score si session.state = finished */}
       <button
         onClick={handleGoToQuestionnaireClick}
         className="btn-go-to-questionnaire self-center justify-self-end px-4 py-2 bg-indigo-500 rounded text-white w-fit md:w-[210px] text-wrap"

@@ -596,14 +596,16 @@ async function getScore(session_id) {
   const updateSessionQuery = `
     UPDATE Session
     SET state = $2, score = $3
-    WHERE id = $1;
+    WHERE id = $1 RETURNING *;
   `;
 
   const updateSessionResult = await executeQuery(
     numdiagPool,
     updateSessionQuery,
-    [questionnaireId, 'finished', sectionScore.scoreQuestionnaire ]
+    [session_id, 'finished', sectionScore.scoreQuestionnaire ]
   );
+
+  console.log("Ici:", updateSessionResult)
 
   return {
     sectionsInfos,

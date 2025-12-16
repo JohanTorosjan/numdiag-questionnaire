@@ -180,7 +180,40 @@ function Questionnaire() {
       }
       catch{
         console.log("ERREUR lors de la publication du questionnaire")
-        toast.showSuccess("Erreur lors de la publication du questionnaire");
+        toast.showError("Erreur lors de la publication du questionnaire");
+        return {success: false}
+    }
+  }
+
+  async function downloadJson() {
+    try{
+        const response = await fetch(`http://localhost:3008/questionnaires/${questionnaire.id}/export`);
+        const data = await response.json()
+        console.log("Creating JSON:", data)
+        const jsonString = JSON.stringify(data, null, 2);
+        // Create a blob from the JSON string
+    const blob = new Blob([jsonString], { type: 'application/json' });
+
+    // Create a temporary URL for the blob
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary anchor element and trigger download
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `questionnaire-${questionnaire.id}.json`; // Customize filename as needed
+    document.body.appendChild(link);
+    link.click();
+
+    // Cleanup
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    console.log("File sent to browser")
+
+    return { success: true };
+      }
+      catch{
+        console.log("ERREUR lors de la création du JSON")
+        toast.showError("Erreur lors du téléchargement du JSON");
         return {success: false}
     }
   }
@@ -381,15 +414,31 @@ function Questionnaire() {
           >
             {buttonAffichageSection ? "Afficher les actifs" : "Tout afficher"}
           </button>
+
           {!questionnaire.ispublished ?
+          <div className="flex absolute right-0 space-x-3">
           <button
             type="button"
-            className="absolute right-0 bg-orange-700 border border-orange-700 px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-orange-600 hover:border-orange-600"
+            className=" bg-orange-700 border border-orange-700 px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-orange-600 hover:border-orange-600"
             onClick={publishQuest}
           >
             Publier
           </button>
-          : <div className="hidden"></div>}
+          <button
+            type="button"
+            className=" bg-emerald-600 border border-emerald-600 px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-emerald-500 hover:border-emerald-500"
+            onClick={downloadJson}
+          >
+            Télécharger
+          </button>
+          </div>
+          : <button
+            type="button"
+            className="absolute right-0 bg-emerald-600 border border-emerald-600 px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-emerald-500 hover:border-emerald-500"
+            onClick={downloadJson}
+          >Télécharger
+          </button>}
+
         </div>
       </div>
 
