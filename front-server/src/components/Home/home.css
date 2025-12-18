@@ -7,6 +7,7 @@
   --success-color: #10b981;
   --success-light: #d1fae5;
   --danger-color: #ef4444;
+  --orange-color: #d9a90b;
   --danger-light: #fee2e2;
   --bg-main: #f8fafc;
   --bg-card: #ffffff;
@@ -152,6 +153,15 @@
 
 .bg-red-300::before {
   background: var(--danger-color);
+}
+
+.bg-orange-300 {
+  border-color: var(--orange-color);
+  opacity: 0.7;
+}
+
+.bg-orange-300::before {
+  background: var(--orange-color);
 }
 
 /* Badge de statut */

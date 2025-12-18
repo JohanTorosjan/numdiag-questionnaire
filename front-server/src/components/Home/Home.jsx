@@ -169,8 +169,8 @@ export default function Home() {
               </div>
                 {questionnaires.map(q => (
                   (q.isactive || buttonAffichage) ? (
-                    (showPublished && q.ispublished || !showPublished && !q.ispublished) ? (
-                    <div key={q.id+'questionnaire'} className={`questionnaire-card ${q.isactive ? "bg-green-300" : "bg-red-300"}`}>
+                    ((showPublished && q.ispublished) || (!showPublished && !q.ispublished)) ? (
+                    <div key={q.id+'questionnaire'} className={`questionnaire-card ${(q.isactive && q.ispublished) ? "bg-green-300" : (q.isactive && !q.ispublished) ? "bg-orange-300": "bg-red-300"}`}>
                         <div className={`status-badge ${q.isactive ? "active" : "inactive"}`}>
                             {q.isactive ? "Actif" : "Inactif"}
                         </div>
