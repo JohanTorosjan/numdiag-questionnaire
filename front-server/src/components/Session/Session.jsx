@@ -1,4 +1,4 @@
-
+import './session.css'
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useToast } from "../../ToastSystem";
@@ -170,13 +170,13 @@ function Session(){
 
     if (code && questionnaire.ispublished && questionnaire.isactive) {
     return (
-    <div className="Session px-5 w-full h-full relative grid grid-rows-[auto_1fr_auto] pb-10">
+    <div className="Session px-5 w-full h-full relative grid grid-rows-[auto_1fr_auto] pb-10 background-new-visual">
 
         <div className="questionnaires-infos mt-0 w-full py-10 mx-auto self-start">
-          <div className="md:w-2/3 w-full mx-auto border border-gray-200 px-6 py-2 rounded-xl shadow">
+          <div className="md:w-2/3 w-full mx-auto border-b border-calypso-700 px-6 py-2 rounded-xl shadow-lg">
             <h1 className="text-xl font-semibold tracking-wide">{questionnaire.label}</h1>
             <div className="w-fit">
-              <hr className="text-indigo-400/50 mt-3 mb-2"/>
+              <hr className="text-calypso-500 mt-3 mb-2"/>
               <h2 className="text-lg text-justify">{questionnaire.description}</h2>
             </div>
           </div>
@@ -190,31 +190,50 @@ function Session(){
         </div>
 
 
-    {existingSessionId ? (
+    {(existingSessionId && !session.score) ? (
             <div className="questionnaires-start-buttons self-center md:w-2/3 w-full mx-auto grid grid-cols-[3fr_1fr_3fr] md:grid-cols-[minmax(300px,3fr)_minmax(20px,1fr)_minmax(300px,3fr)]">
 
       <button
         onClick={() => navigate(`/session/questionnaire/${existingSessionId}`)}
-        className="btn-go-to-questionnaire self-center justify-self-start px-4 py-2 bg-indigo-500 rounded text-white w-fit md:w-[210px]"
-      >
+        className="btn-go-to-questionnaire self-center justify-self-start px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit md:w-[210px]"
+      >{session.state} /
         Continuer le questionnaire précédent
       </button>
       <img src="/images/way.svg" className="h-9 w-9 mt-4 self-center md:self-start justify-self-center" alt="" />
       {/* ajouter une conditionnelle pour accéder au score si session.state = finished */}
       <button
         onClick={handleGoToQuestionnaireClick}
-        className="btn-go-to-questionnaire self-center justify-self-end px-4 py-2 bg-indigo-500 rounded text-white w-fit md:w-[210px] text-wrap"
+        className="btn-go-to-questionnaire self-center justify-self-end px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit md:w-[210px] text-wrap"
       >
         Commencer un nouveau questionnaire
       </button>
       </div>
 
-    ) : (
+    ) : (existingSessionId && session.state==='finished') ?
+    <div className="questionnaires-start-buttons self-center md:w-2/3 w-full mx-auto grid grid-cols-[3fr_1fr_3fr] md:grid-cols-[minmax(300px,3fr)_minmax(20px,1fr)_minmax(300px,3fr)]">
+
+      <button
+        onClick={() => navigate(`/score/${existingSessionId}`)}
+        className="btn-go-to-questionnaire self-center justify-self-start px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit md:w-[210px]"
+      >
+        Accéder au score et aux recommandations
+      </button>
+      <img src="/images/way.svg" className="h-9 w-9 mt-4 self-center md:self-start justify-self-center" alt="" />
+      {/* ajouter une conditionnelle pour accéder au score si session.state = finished */}
+      <button
+        onClick={handleGoToQuestionnaireClick}
+        className="btn-go-to-questionnaire self-center justify-self-end px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit md:w-[210px] text-wrap"
+      >
+        Commencer un nouveau questionnaire
+      </button>
+      </div>
+      :
+      (
             <div className="questionnaires-start-buttons w-full flex flex-col justify-center flex-nowrap">
 
       <button
         onClick={handleGoToQuestionnaireClick}
-        className="btn-go-to-questionnaire px-4 py-2 bg-indigo-500 rounded text-white w-fit mx-auto"
+        className="btn-go-to-questionnaire px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit mx-auto"
       >
         Lancer le questionnaire
       </button>
@@ -226,16 +245,16 @@ function Session(){
     );
   } else if (!code && questionnaire.ispublished && questionnaire.isactive) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center">
-      <label htmlFor="code" className="text-xl"> Un code est nécessaire pour accéder à ce questionnaire</label>
-      <input type="password" name='code' placeholder="xxxx"
-      value={sessionCode}
-      onChange={(e) => setSessionCode(e.target.value)}
-      className="border border-gray-200 rounded-lg mt-4 px-2 py-1"
-      />
-      <button onClick={handleCodeSubmit} className="rounded-xl bg-indigo-500 px-3 py-2 text-white font-semibold mt-6 tracking-wide">Envoyer</button>
-      {errorCode ?
-      <div className="text-sm text-orange-700 mt-1">Il est nécessaire d'entrer le bon code pour continuer
+      <div className="background-new-visual w-full h-full flex flex-col items-center justify-center">
+        <label htmlFor="code" className="text-xl"> Un code est nécessaire pour accéder à ce questionnaire</label>
+        <input type="password" name='code' placeholder="xxxx"
+        value={sessionCode}
+        onChange={(e) => setSessionCode(e.target.value)}
+        className="border border-gray-200 rounded-lg mt-4 px-2 py-1"
+        />
+        <button onClick={handleCodeSubmit} className="rounded-xl bg-calypso-400 shadow-calypso-800 shadow-lg hover:bg-calypso-500 hover:-translate-y-0.5 px-3 py-2 text-white font-semibold mt-6 tracking-wide">Envoyer</button>
+        {errorCode ?
+        <div className="text-sm text-orange-700 mt-1">Il est nécessaire d'entrer le bon code pour continuer
       </div>
     :
     <div className="hidden"></div>}

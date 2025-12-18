@@ -97,7 +97,7 @@ function QuestionnaireDisplay(){
     }
 
     return (
-        <div className="w-screen h-screen text-lg">
+        <div className="background-new-visual w-screen h-screen text-lg">
             <QuestionnaireDisplayer
                 questionnaire={questionnaire}
                 session={session}

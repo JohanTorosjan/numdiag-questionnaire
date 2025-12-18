@@ -171,8 +171,8 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer, section}) {
 
                 default:
                   return (
-                    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded">
-                        <p className="text-yellow-800">
+                    <div className="p-4 bg-transparent">
+                        <p className="text-white">
                             Type de question non supporté: {question.questiontype}
                         </p>
                     </div>
@@ -197,23 +197,23 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer, section}) {
 
 
     return (
-        <div className="bg-white px-5 py-2 rounded-lg shadow-sm relative">
+        <div className="bg-transparent px-5 py-2 relative border-l-4 rounded-3xl border-calypso-600">
           {image}
             {/* Label de la question */}
-            <div className="mb-4">
+            <div className="mb-2">
                     {question.theme && (
-                        <span className="inline-block -ml-3 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded">
+                        <span className="inline-block -ml-1 px-2 py-1 text-xs bg-calypso-600 text-calypso-200 rounded">
                             {question.theme}
                         </span>
                     )}
                 <h3 className="mt-2 text-lg font-semibold flex items-center ">
                     {question.id}. {question.label}
                     {question.mandatory && (
-                        <span className="ml-2 text-red-500">*</span>
+                        <span className="ml-2 text-calypso-50">*</span>
                     )}
                 </h3>
                 {question.tooltip && (
-                    <p className="text-sm text-gray-500 mt-1">{question.tooltip}</p>
+                    <p className="text-sm text-calypso-100 mt-1">{question.tooltip}</p>
                 )}
             </div>
 

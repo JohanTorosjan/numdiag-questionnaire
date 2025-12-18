@@ -228,20 +228,19 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
 
     return (
       <div className="w-full h-full pt-8 relative">
-        <div className="w-full h-full absolute top-0 bg-sky-500/40 mask-b-from-5% mask-b-to-80% -z-10"></div>
           <div className="max-w-4xl mx-auto z-10 px-3 pb-10">
               {/* En-tête de la section */}
-              <div className="mb-6 shadow rounded-xl pl-5 pr-2 pt-3 pb-1 bg-white">
+              <div className="mb-6 rounded-xl pl-5 pr-2 pt-3 pb-1 bg-transparent text-white border-b-3 border-t border-calypso-800">
                   <h2 className="text-2xl font-semibold mb-2">{currentSection.label}</h2>
-                  <div className="flex w-full">
+                  <div className="flex w-full bg-transparent">
                   {currentSection.description && (
-                      <p className="text-gray-600 w-2/3">{currentSection.description}</p>
+                      <p className="text-white w-2/3">{currentSection.description}</p>
                   )}
                   {currentSection.tooltip && (
-                      <p className="text-sm text-gray-500 italic mt-1 w-1/3">{currentSection.tooltip}</p>
+                      <p className="text-sm text-white italic mt-1 w-1/3">{currentSection.tooltip}</p>
                   )}
                   </div>
-                  <div className="text-sm text-gray-500 mt-3 text-end">
+                  <div className="text-sm text-white mt-3 text-end">
                       Page {session.page} / {currentSection.nbpages}
                   </div>
               </div>
@@ -259,8 +258,8 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
                           />
                       ))
                   ) : (
-                      <div className="text-center p-8 bg-gray-50 rounded-lg">
-                          <p className="text-gray-500">Aucune question sur cette page</p>
+                      <div className="text-center p-8 rounded-lg bg-transparent">
+                          <p className="text-white">Aucune question sur cette page</p>
                       </div>
                   )}
               </div>
@@ -268,7 +267,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
               {/* Navigation */}
               <div className="flex justify-between mt-8 pt-4 mb-10">
                   <button
-                      className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-calypso-500 rounded hover:bg-calypso-600 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={isFirstPage()}
                       onClick={handlePrevious}
                   >
@@ -277,7 +276,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
                   {isLastPage() ?
                   <div className="relative">
                     <button
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2 bg-calypso-600 text-white rounded hover:bg-calypso-500 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={!isLastPage()}
                         onClick={handleClickNavigate}
 
@@ -292,7 +291,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
                     </div>
                     :
                     <button
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2 bg-calypso-600 text-white rounded hover:bg-calypso-500 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={isLastPage()}
                         onClick={handleNext}
                     >
