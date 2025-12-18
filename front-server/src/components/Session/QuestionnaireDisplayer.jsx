@@ -230,7 +230,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
       <div className="w-full h-full pt-8 relative">
           <div className="max-w-4xl mx-auto z-10 px-3 pb-10">
               {/* En-tête de la section */}
-              <div className="mb-6 rounded-xl pl-5 pr-2 pt-3 pb-1 bg-transparent text-white border-b-3 border-t border-calypso-800">
+              <div className="mb-10 rounded-xl pl-5 pr-2 pt-3 pb-1 bg-transparent text-white border-b-3 border-t border-calypso-800">
                   <h2 className="text-2xl font-semibold mb-2">{currentSection.label}</h2>
                   <div className="flex w-full bg-transparent">
                   {currentSection.description && (
