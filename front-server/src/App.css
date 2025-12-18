@@ -25,7 +25,7 @@
 }
 
 body {
-  height: 100vh;
+  height: 100dvh;
   width: 100vw;
 }
 
@@ -278,6 +278,6 @@ body {
 #root {
   display: block;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   place-items: center;
 }

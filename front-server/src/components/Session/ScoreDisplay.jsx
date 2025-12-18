@@ -67,19 +67,35 @@ function ScoreDisplay() {
 
 
     return (
-        <div className="w-full">
-            <h1>Hello session {session_id}</h1>
-            <p>Score : {answers.scoreQuestionnaire}</p>
-            <div className="text-teal-500">{answers.recommandationQuestionnaire?.map((reco,i) =>
-              <p key={i}>{reco.recommandation}</p>
-              )}</div>
+        <div className="w-full background-new-visual">
+          <div className="max-w-4xl mx-auto pt-20 px-5 text-white">
 
-            <div className="text-sky-500">{recoSections.map((reco,i) =>
-              <p key={i}>{reco.reco}</p>
-              )}</div>
+            <p>Hello session {session_id}</p>
+            <h1 className="text-center mx-auto w-fit text-xl px-5 pb-1 rounded-3xl border-b border-calypso-600">Vous obtenez un score de {answers.scoreQuestionnaire}</h1>
+
+            <div className="text-white mt-20">
+              <div className="w-fit mb-5">
+                <h2 className="text-xl">Nos recommandations :</h2>
+                <hr className="w-1/3 text-calypso-500 mt-1"/>
+              </div>
+
+              {answers.recommandationQuestionnaire?.map((reco,i) =>
+              <p key={i} className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-xl">{reco.recommandation}</p>
+              )}
+              </div>
+
+            <div className="w-fit mt-20 mb-5 mr-0 ml-auto">
+              <h2 className="text-xl">Certaines de vos réponses nous amènent aussi à vous conseiller :</h2>
+              <hr className="w-1/3 text-calypso-500 mt-1 mr-0 ml-auto"/>
+            </div>
+            <div className="w-full">
+              {recoSections.map((reco,i) =>
+              <p key={i} className="text-end">{reco.reco}</p>
+              )}
+            </div>
 
 
-
+          </div>
         </div>
     );
 }

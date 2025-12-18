@@ -227,7 +227,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
 
 
     return (
-      <div className="w-full h-full pt-8 relative">
+      <div className="w-full h-full pt-8 pb-5 relative">
           <div className="max-w-4xl mx-auto z-10 px-3 pb-10">
               {/* En-tête de la section */}
               <div className="mb-10 rounded-xl pl-5 pr-2 pt-3 pb-1 bg-transparent text-white border-b-3 border-t border-calypso-800">
@@ -265,9 +265,9 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
               </div>
 
               {/* Navigation */}
-              <div className="flex justify-between mt-8 pt-4 mb-10">
+              <div className="flex justify-between mt-8 pt-4 pb-10">
                   <button
-                      className="px-4 py-2 bg-calypso-500 rounded hover:bg-calypso-600 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-calypso-600 text-white rounded hover:bg-calypso-500 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                       disabled={isFirstPage()}
                       onClick={handlePrevious}
                   >
@@ -276,7 +276,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
                   {isLastPage() ?
                   <div className="relative">
                     <button
-                        className="px-4 py-2 bg-calypso-600 text-white rounded hover:bg-calypso-500 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2 bg-calypso-600 text-white rounded hover:bg-calypso-500 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         disabled={!isLastPage()}
                         onClick={handleClickNavigate}
 
@@ -291,7 +291,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
                     </div>
                     :
                     <button
-                        className="px-4 py-2 bg-calypso-600 text-white rounded hover:bg-calypso-500 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2 bg-calypso-600 text-white rounded hover:bg-calypso-500 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         disabled={isLastPage()}
                         onClick={handleNext}
                     >

@@ -16,7 +16,7 @@
 }
 
 .background-new-visual {
-  min-height: 100%;
+  min-height: 100dvh;
   width: 100%;
   background: radial-gradient(circle at center, #297089 0%, #297089 15%, #1A3F4C 50%, #000000 100%);
   color: #F9FFFF;

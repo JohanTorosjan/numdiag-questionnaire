@@ -52,7 +52,7 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer, section}) {
                         {question.reponses.map((reponse) => (
                           <label
                           key={reponse.id}
-                          className="mb-3 flex items-center justify-items-center px-2 py-1 rounded hover:bg-gray-100 cursor-pointer"
+                          className="mb-3 flex items-center justify-items-center px-2 py-1 rounded hover:bg-calypso-700 hover:scale-107 ease-in-out duration-100 cursor-pointer"
                           >
                                 <input
                                     type="radio"
@@ -81,10 +81,11 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer, section}) {
                         {question.reponses.map((reponse) => (
                           <label
                           key={reponse.id}
-                          className="mb-3 flex items-center justify-items-center px-2 py-1 rounded hover:bg-gray-100 cursor-pointer"
+                          className="mb-3 flex items-center justify-items-center px-2 py-1 rounded hover:bg-calypso-700 hover:scale-107 ease-in-out duration-100 cursor-pointer"
                           >
                                 <input
                                     type="checkbox"
+                                    
                                     value={reponse.id}
                                     checked={selectedMultiple.includes(reponse.id)}
                                     onChange={(e) => {
@@ -124,7 +125,7 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer, section}) {
                     <div className="flex flex-wrap gap-x-4 relative mb-3">
                         <input
                             type="number"
-                            className="md:w-1/3 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="md:w-1/3 p-3 rounded border-2 border-calypso-400 focus:outline-none focus:ring-2 focus:ring-calypso-300"
                             placeholder="Entrez un nombre entier"
                             value={textValue}
                             onChange={(e) => {
@@ -179,26 +180,26 @@ function QuestionDisplayer({ question, onAnswerChange,initialAnswer, section}) {
                 );
               }
             };
-            let image;
-            switch (question.questiontype) {
-              case "choix_simple":
-                 image= <img src="/images/number-1.svg" className="h-9 w-9 md:h-10 md:w-10 absolute top-2 right-3" alt="" />;
-                 break
-              case "choix_multiple":
-                 image=<img src="/images/hello.svg" className="h-9 w-9 md:h-10 md:w-10 absolute top-2 right-3" alt="" />;
-                 break
-              case "entier":
-                 image=<img src="/images/math.svg" className="h-13 w-13 md:h-13 md:w-13 absolute top-2 right-3" alt="" />;
-                 break
-              case "libre":
-                 image=<img src="/images/feather-pen.svg" className="h-8 w-8 md:h-10 md:w-10 absolute md:top-5 top-7 right-3" alt="" />;
-                 break
-            }
+            // let image;
+            // switch (question.questiontype) {
+            //   case "choix_simple":
+            //      image= <img src="/images/number-1.svg" className="h-9 w-9 md:h-10 md:w-10 absolute top-2 right-3" alt="" />;
+            //      break
+            //   case "choix_multiple":
+            //      image=<img src="/images/hello.svg" className="h-9 w-9 md:h-10 md:w-10 absolute top-2 right-3" alt="" />;
+            //      break
+            //   case "entier":
+            //      image=<img src="/images/math.svg" className="h-13 w-13 md:h-13 md:w-13 absolute top-2 right-3" alt="" />;
+            //      break
+            //   case "libre":
+            //      image=<img src="/images/feather-pen.svg" className="h-8 w-8 md:h-10 md:w-10 absolute md:top-5 top-7 right-3" alt="" />;
+            //      break
+            // }
 
 
     return (
         <div className="bg-transparent px-5 py-2 relative border-l-4 rounded-3xl border-calypso-600">
-          {image}
+          {/* {image} */}
             {/* Label de la question */}
             <div className="mb-2">
                     {question.theme && (

@@ -245,7 +245,7 @@ function Session(){
     );
   } else if (!code && questionnaire.ispublished && questionnaire.isactive) {
     return (
-      <div className="background-new-visual w-full h-full flex flex-col items-center justify-center">
+      <div className="background-new-visual px-5 w-full h-full flex flex-col items-center justify-center">
         <label htmlFor="code" className="text-xl"> Un code est nécessaire pour accéder à ce questionnaire</label>
         <input type="password" name='code' placeholder="xxxx"
         value={sessionCode}
