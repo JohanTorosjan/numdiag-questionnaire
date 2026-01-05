@@ -39,9 +39,7 @@ CREATE TABLE Questions (
     page INTEGER NOT NULL,
     tooltip VARCHAR,
     coeff INTEGER NOT NULL,
-    theme VARCHAR,
     mandatory BOOLEAN NOT NULL DEFAULT FALSE,
-    public_cible VARCHAR DEFAULT 'Tous',
     FOREIGN KEY (section_id) REFERENCES Sections(id) ON DELETE CASCADE
 );
 
@@ -131,7 +129,6 @@ CREATE TABLE Tranches (
     FOREIGN KEY (reponse_id) REFERENCES Reponses(id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE Session (
     id SERIAL PRIMARY KEY,
     questionnaire_id INTEGER NOT NULL,
@@ -141,9 +138,45 @@ CREATE TABLE Session (
     code BOOLEAN NOT NULL DEFAULT FALSE,
     current_section_id INTEGER NOT NULL,
     answers JSONB DEFAULT '[]'::jsonb,
-
-    -- REPONSES PLUS TARD
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE,
     FOREIGN KEY (current_section_id) REFERENCES Sections(id) ON DELETE CASCADE
+);
 
-)
+CREATE TABLE Themes (
+    id SERIAL PRIMARY KEY,
+    label VARCHAR NOT NULL
+);
+CREATE TABLE Publics (
+    id SERIAL PRIMARY KEY,
+    label VARCHAR NOT NULL
+);
+
+CREATE TABLE JoinThemesQuestionnaires (
+    questionnaire_id INTEGER NOT NULL,
+    theme_id INTEGER NOT NULL,
+    PRIMARY KEY (questionnaire_id, theme_id),
+    FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE,
+    FOREIGN KEY (theme_id) REFERENCES Themes(id) ON DELETE CASCADE
+);
+CREATE TABLE JoinThemesQuestions (
+    question_id INTEGER NOT NULL,
+    theme_id INTEGER NOT NULL,
+    PRIMARY KEY (question_id, theme_id),
+    FOREIGN KEY (question_id) REFERENCES Questions(id) ON DELETE CASCADE,
+    FOREIGN KEY (theme_id) REFERENCES Themes(id) ON DELETE CASCADE
+);
+
+CREATE TABLE JoinPublicsQuestionnaires (
+    questionnaire_id INTEGER NOT NULL,
+    public_id INTEGER NOT NULL,
+    PRIMARY KEY (questionnaire_id, public_id),
+    FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE,
+    FOREIGN KEY (public_id) REFERENCES Publics(id) ON DELETE CASCADE
+);
+CREATE TABLE JoinPublicsQuestions (
+    question_id INTEGER NOT NULL,
+    public_id INTEGER NOT NULL,
+    PRIMARY KEY (question_id, public_id),
+    FOREIGN KEY (question_id) REFERENCES Questions(id) ON DELETE CASCADE,
+    FOREIGN KEY (public_id) REFERENCES Publics(id) ON DELETE CASCADE
+);

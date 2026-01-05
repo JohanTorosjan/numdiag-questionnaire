@@ -2,12 +2,26 @@ import './home.css';
 import React, { useState, useEffect } from 'react';
 import QuestionnaireResume from "../Questionnaire/questionnaireResume";
 import CreateQuestionnaire from "../Questionnaire/createQuestionnaire";
+import CreateThemePublic from "../ThemePublic/createThemePublic.jsx";
 import { useToast } from '../../ToastSystem';
 import DocumentTitle from '../hooks/documentTitle';
 
 async function getAllQuestionnairesResume() {
     try {
         const response = await fetch('http://localhost:3008/questionnairesResume');
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        }
+    } catch (error) {
+        console.error('Error fetching questionnaires:', error);
+        return [];
+    }
+}
+
+async function getAllPublic() {
+    try {
+        const response = await fetch('http://localhost:3008/publics');
         if (response.ok) {
             const data = await response.json();
             return data;
@@ -48,6 +62,10 @@ export default function Home() {
     const [isCreating, setIsCreating] = useState(false);
     const [showPublished, setShowPublished] = useState(false);
     const toast = useToast();
+    const [themes, setThemes] = useState(false)
+    const [isThemeOpen, setIsThemeOpen] = useState(false)
+    const [isPublicOpen, setIsPublicOpen] = useState(false)
+    const [allPublic, setAllPublic] = useState([])
 
     useEffect(() => {
         const fetchQuestionnaires = async () => {
@@ -126,6 +144,67 @@ export default function Home() {
       }
   };
 
+
+////////////////////////// Save Public
+////////////////////////////////////////
+  const handleSavePublic = async (newPublic) => {
+      try {
+          console.log('Appel API pour sauvegarder un public:', {
+              updatedData: newPublic
+          });
+          setIsCreating(true)
+          const response = await fetch(`http://localhost:3008/createPublic`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  ...newPublic
+              })
+              });
+
+          if (!response.ok) {
+              throw new Error(`Erreur HTTP: ${response.status}`);
+          }
+
+          const result = await response.json();
+
+          if (!result.success) {
+            toast.showError('Erreur lors de la création du public');
+            throw new Error(result.error || 'Erreur lors de la sauvegarde du public');
+          } else {
+            toast.showSuccess('Public créé avec succès!');
+          }
+          const data = await getAllPublic();
+          console.log(data.data)
+          setAllPublic(data.data);
+          setIsPublicOpen(false);
+      } catch (error) {
+          console.error('Erreur lors de la sauvegard du public:', error);
+      }
+      finally{
+          setIsCreating(false)
+      }
+  };
+
+  const handleThemesClick = () => {
+      themes ? setThemes(false) : setThemes(true) ;
+    };
+  const handlePopUpTheme = () => {
+      setIsThemeOpen(true);
+    };
+  const handlePopUpPublic = () => {
+      setIsPublicOpen(true);
+    };
+  const handleClosePopupTheme = () => {
+      setIsPublicOpen(false);
+      setIsThemeOpen(false);
+    };
+
+
+
+
+
     if (loading) {
         return (
             <div className="home">
@@ -140,6 +219,58 @@ export default function Home() {
         );
     }
 
+    if (themes) {
+      return (
+        <div className="home">
+          <header>
+              <h1>Bienvenue sur le CMS NumDiag</h1>
+              <p>Voici la liste des thèmes et publics cibles :</p>
+          </header>
+          <div className="w-full text-end">
+            <button onClick={handleThemesClick} className="edit-button">
+                ✨ Revenir aux questionnaires
+            </button>
+          </div>
+
+          <div className="mt-20 grid grid-cols-2 border-r border-l divide-x divide-black">
+            <div className="w-full mx-auto px-10 ">
+              <h2 className="text-xl font-semibold">Liste des thèmes</h2>
+              <div className="text-end">
+                <button onClick={handlePopUpTheme} className="bg-blue-600 text-white mt-2">
+                    Créer un thème
+                </button>
+              </div>
+            </div>
+            <div className="w-full mx-auto px-10 ">
+              <h2 className="text-xl font-semibold">Liste des publics</h2>
+              <div className="text-end">
+                <button onClick={handlePopUpPublic} className="bg-blue-600 text-white mt-2">
+                    Créer un public
+                </button>
+              </div>
+              {allPublic.map(singlePublic => (
+                <div key={singlePublic.id+'public'}>{singlePublic.label}</div>
+              ))}
+            </div>
+          </div>
+
+          {isThemeOpen ? (
+            <CreateThemePublic
+                onSave={handleSaveTheme}
+                onClose={handleClosePopupTheme}
+                type={"theme"}
+            />
+          ) : isPublicOpen ? (
+            <CreateThemePublic
+                onSave={handleSavePublic}
+                onClose={handleClosePopupTheme}
+                type={"public"}
+            />
+          ) : <div className="hidden"></div>}
+        </div>
+      )
+    }
+
     return (
         <div className="home">
             <header>
@@ -148,15 +279,18 @@ export default function Home() {
             </header>
 
             <div className="home-controls">
-                <button type="button" onClick={() => setButtonAffichage(!buttonAffichage)}>
+                <button type="button" className='mt-[2rem]' onClick={() => setButtonAffichage(!buttonAffichage)}>
                     {buttonAffichage ? "📋 Afficher les actifs" : "📊 Tout afficher"}
                 </button>
                 <button onClick={handleCreateQuestClick} className="edit-button">
                     ✨ Créer un questionnaire
                 </button>
+                <button onClick={handleThemesClick} className="edit-button">
+                    👓 &nbsp;&nbsp;Gérer les thèmes et publics cibles
+                </button>
             </div>
 
-            <div className="questionnaires-grid mt-15 relative w-full bg-gray-50 border-x border-t border-gray-300 px-4 py-3 rounded-xl shadow-xl">
+            <div className="questionnaires-grid mt-20 relative w-full bg-gray-50 border-x border-t border-gray-300 px-4 py-3 rounded-xl shadow-xl">
               <div className="absolute flex bg-transparent h-12 -top-12 left-4">
                   <div className={`cursor-pointer rounded-tl-xl  px-5 py-3 ${showPublished ? "bg-gray-50 inset-shadow border-gray-300 border-x border-t z-10" : "bg-gray-100 border-b border-gray-300"}`}
                   role='button'
