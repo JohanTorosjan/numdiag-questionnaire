@@ -60,7 +60,7 @@ function Session(){
   useEffect(() => {
 
     async function fetchCreateSession() {
-        setIsLoading(true)
+
 
         // ICI il va falloir gérer la création de session, aller d'abord regarder dans le local storage si il y a déjà une session_id.
         // Si oui ne pas utiliser createSession, just fetach la session et le questionnaire associé
@@ -75,10 +75,12 @@ function Session(){
         const storedQuestionnaire = localStorage.getItem("questionnaire_id");
         // }
 
+
+
         if (storedSession && storedQuestionnaire==data.questionnaire[0].id) {
           setExistingSessionId(storedSession);
         }
-        setIsLoading(false)
+
     }
         fetchCreateSession();
     }, [questionnaire_id]);
@@ -164,11 +166,32 @@ function Session(){
     };
 
 
-    if (isLoading) return <div>Chargement...</div>;
+    // if (isLoading) return <div>Chargement...</div>;
 
-    if (!questionnaire) return <div>Café</div>;
-
-    if (code && questionnaire.ispublished && questionnaire.isactive) {
+    // if (!questionnaire) return <div>Café</div>;
+ if (!questionnaire) {
+    return (
+      <div className="w-full h-full">
+        <img src="/images/sorry_pardon.svg" alt="" className="sm:h-40 sm:w-40 h-25 w-25 absolute top-30 md:top-20 lg:left-60 md:left-40 sm:left-5 sm:top-20 left-1" />
+        <img src="/images/sorry.svg" alt="" className="sm:h-25 sm:w-25 h-17 w-17 absolute md:top-20 lg:right-60 md:right-40 sm:right-5 sm:top-20 top-25 right-3" />
+        <p className="text-center mt-40 text-2xl text-orange-700 font-bold">Nous sommes navrés</p>
+        <p className="text-center mt-10 text-xl font-semibold">Ce questionnaire semble ne pas exister.</p>
+        <p className="text-center mt-3 text-md">Vérifiez que l'url entrée est correcte.</p>
+        <p className="text-center mt-3 text-md">En cas de problème, n'hésitez pas à contacter l'auteur du questionnaire.</p>
+        </div>
+    )
+  } else if (!questionnaire.ispublished || !questionnaire.isactive) {
+    return (
+      <div className="w-full h-full">
+        <img src="/images/sorry_pardon.svg" alt="" className="sm:h-40 sm:w-40 h-25 w-25 absolute top-30 md:top-20 lg:left-60 md:left-40 sm:left-5 sm:top-20 left-1" />
+        <img src="/images/sorry.svg" alt="" className="sm:h-25 sm:w-25 h-17 w-17 absolute md:top-20 lg:right-60 md:right-40 sm:right-5 sm:top-20 top-25 right-3" />
+        <p className="text-center mt-40 text-2xl text-orange-700 font-bold">Nous sommes navrés</p>
+        <p className="text-center mt-10 text-xl font-semibold">Ce questionnaire n'est pas accessible.</p>
+        <p className="text-center mt-3 text-md">Il n'a pas encore été publié par son auteur ou n'est plus actif.</p>
+        </div>
+    )
+  }
+    else if (code && questionnaire.ispublished && questionnaire.isactive) {
     return (
     <div className="Session px-5 w-full h-full relative grid grid-rows-[auto_1fr_auto] pb-10 background-new-visual">
 
@@ -259,16 +282,6 @@ function Session(){
     :
     <div className="hidden"></div>}
     </div>
-    )
-  } else if (!questionnaire.ispublished || !questionnaire.isactive) {
-    return (
-      <div className="w-full h-full">
-        <img src="/images/sorry_pardon.svg" alt="" className="sm:h-40 sm:w-40 h-25 w-25 absolute top-30 md:top-20 lg:left-60 md:left-40 sm:left-5 sm:top-20 left-1" />
-        <img src="/images/sorry.svg" alt="" className="sm:h-25 sm:w-25 h-17 w-17 absolute md:top-20 lg:right-60 md:right-40 sm:right-5 sm:top-20 top-25 right-3" />
-        <p className="text-center mt-40 text-2xl text-orange-700 font-bold">Nous sommes navrés</p>
-        <p className="text-center mt-10 text-xl font-semibold">Ce questionnaire n'est pas accessible.</p>
-        <p className="text-center mt-3 text-md">Il n'a pas encore été publié par son auteur ou n'est plus actif.</p>
-        </div>
     )
   }
 

@@ -19,7 +19,7 @@ async function getAllQuestionnairesResume() {
     }
 }
 
-async function getAllPublic() {
+async function getAllPublics() {
     try {
         const response = await fetch('http://localhost:3008/publics');
         if (response.ok) {
@@ -27,7 +27,19 @@ async function getAllPublic() {
             return data;
         }
     } catch (error) {
-        console.error('Error fetching questionnaires:', error);
+        console.error('Error fetching publics:', error);
+        return [];
+    }
+}
+async function getAllThemes() {
+    try {
+        const response = await fetch('http://localhost:3008/themes');
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        }
+    } catch (error) {
+        console.error('Error fetching themes:', error);
         return [];
     }
 }
@@ -35,6 +47,27 @@ async function getAllPublic() {
 async function updateQuestionnaire(idQuestionnaire, isactive) {
   try {
     const response = await fetch(`http://localhost:3008/updateQuestionnaire/${idQuestionnaire}`, {
+    method: 'PUT',
+    headers: {
+    'Content-Type': 'application/json',
+  },
+    body: JSON.stringify({isactive})
+  });
+    if (!response.ok) {
+        throw new Error('Erreur lors du chargement des sections');
+    }
+    const data = await response.json();
+    console.log('Response from server:', data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching sections:', error);
+    return null;
+  }
+}
+
+async function updateTheme(idTheme) {
+  try {
+    const response = await fetch(`http://localhost:3008/updateTheme/${idTheme}`, {
     method: 'PUT',
     headers: {
     'Content-Type': 'application/json',
@@ -65,7 +98,9 @@ export default function Home() {
     const [themes, setThemes] = useState(false)
     const [isThemeOpen, setIsThemeOpen] = useState(false)
     const [isPublicOpen, setIsPublicOpen] = useState(false)
-    const [allPublic, setAllPublic] = useState([])
+    const [allPublics, setAllPublics] = useState([])
+    const [allThemes, setAllThemes] = useState([])
+    const [editThemes, setEditThemes] = useState(false)
 
     useEffect(() => {
         const fetchQuestionnaires = async () => {
@@ -74,7 +109,20 @@ export default function Home() {
             setLoading(false);
         };
 
+        const fetchThemes = async () => {
+          const data = await getAllThemes();
+          setAllThemes(data.data);
+        }
+
+        const fetchPublics = async () => {
+          const data = await getAllPublics();
+          setAllPublics(data.data);
+        }
+
+
         fetchQuestionnaires();
+        fetchThemes();
+        fetchPublics();
     }, []);
 
     console.log('Questionnaires:', questionnaires);
@@ -175,9 +223,8 @@ export default function Home() {
           } else {
             toast.showSuccess('Public créé avec succès!');
           }
-          const data = await getAllPublic();
-          console.log(data.data)
-          setAllPublic(data.data);
+          const data = await getAllPublics();
+          setAllPublics(data.data);
           setIsPublicOpen(false);
       } catch (error) {
           console.error('Erreur lors de la sauvegard du public:', error);
@@ -187,8 +234,52 @@ export default function Home() {
       }
   };
 
+  ////////////////////////// Save Theme
+////////////////////////////////////////
+  const handleSaveTheme = async (newTheme) => {
+      try {
+          console.log('Appel API pour sauvegarder un public:', {
+              updatedData: newTheme
+          });
+          setIsCreating(true)
+          const response = await fetch(`http://localhost:3008/createTheme`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  ...newTheme
+              })
+              });
+
+          if (!response.ok) {
+              throw new Error(`Erreur HTTP: ${response.status}`);
+          }
+
+          const result = await response.json();
+
+          if (!result.success) {
+            toast.showError('Erreur lors de la création du thème');
+            throw new Error(result.error || 'Erreur lors de la sauvegarde du thème');
+          } else {
+            toast.showSuccess('Thème créé avec succès!');
+          }
+          const data = await getAllThemes();
+          console.log(data.data)
+          setAllThemes(data.data);
+          setIsThemeOpen(false);
+      } catch (error) {
+          console.error('Erreur lors de la sauvegard du thème:', error);
+      }
+      finally{
+          setIsCreating(false)
+      }
+  };
+
+
+
   const handleThemesClick = () => {
-      themes ? setThemes(false) : setThemes(true) ;
+      themes ? setThemes(false) : setThemes(true);
     };
   const handlePopUpTheme = () => {
       setIsThemeOpen(true);
@@ -196,10 +287,14 @@ export default function Home() {
   const handlePopUpPublic = () => {
       setIsPublicOpen(true);
     };
-  const handleClosePopupTheme = () => {
+  const handleClosePopupThemePublic = () => {
       setIsPublicOpen(false);
       setIsThemeOpen(false);
     };
+
+  const editTheme = (id) => {
+    setEditThemes(id)
+  }
 
 
 
@@ -236,20 +331,50 @@ export default function Home() {
             <div className="w-full mx-auto px-10 ">
               <h2 className="text-xl font-semibold">Liste des thèmes</h2>
               <div className="text-end">
-                <button onClick={handlePopUpTheme} className="bg-blue-600 text-white mt-2">
+                <button onClick={handlePopUpTheme} className="bg-blue-600 text-white mt-2 mb-4">
                     Créer un thème
                 </button>
               </div>
+               {allThemes.map(singleTheme => (
+                <div key={singleTheme.id+'theme'} className="mt-2" >
+                  <div className="w-full flex items-center">
+                    {(editThemes === singleTheme.id) ?
+                    <input type="text" className="border border-gray-300 rounded py-1" />
+                    :
+                    <p >{singleTheme.label}</p>
+
+                    }
+                    <div className="mr-0 ml-auto space-x-3">
+                    {(editThemes === singleTheme.id) ?
+                    <button onClick={()=>updateTheme(singleTheme.id)} className="bg-cyan-400/50">✓</button>
+                    :
+                    <button onClick={()=>editTheme(singleTheme.id)} className="bg-cyan-400/50">🖊️ </button>
+                    }
+                    <button className="bg-orange-700/50"> 🗑️</button>
+                    </div>
+                  </div>
+                  <hr className='w-3/4 mt-2 text-gray-300'/>
+                </div>
+              ))}
             </div>
             <div className="w-full mx-auto px-10 ">
               <h2 className="text-xl font-semibold">Liste des publics</h2>
               <div className="text-end">
-                <button onClick={handlePopUpPublic} className="bg-blue-600 text-white mt-2">
+                <button onClick={handlePopUpPublic} className="bg-blue-600 text-white mt-2 mb-4">
                     Créer un public
                 </button>
               </div>
-              {allPublic.map(singlePublic => (
-                <div key={singlePublic.id+'public'}>{singlePublic.label}</div>
+              {allPublics.map(singlePublic => (
+                <div key={singlePublic.id+'public'} className="mt-2" >
+                  <div className="w-full flex items-center">
+                    <p >{singlePublic.label}</p>
+                    <div className="mr-0 ml-auto space-x-3">
+                    <button  className="bg-cyan-400/50">🖊️ </button>
+                    <button className="bg-orange-700/50"> 🗑️</button>
+                    </div>
+                  </div>
+                  <hr className='w-3/4 mt-2 text-gray-300'/>
+                </div>
               ))}
             </div>
           </div>
@@ -257,13 +382,13 @@ export default function Home() {
           {isThemeOpen ? (
             <CreateThemePublic
                 onSave={handleSaveTheme}
-                onClose={handleClosePopupTheme}
+                onClose={handleClosePopupThemePublic}
                 type={"theme"}
             />
           ) : isPublicOpen ? (
             <CreateThemePublic
                 onSave={handleSavePublic}
-                onClose={handleClosePopupTheme}
+                onClose={handleClosePopupThemePublic}
                 type={"public"}
             />
           ) : <div className="hidden"></div>}

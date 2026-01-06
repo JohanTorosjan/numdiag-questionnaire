@@ -15,7 +15,7 @@ import {
 import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
 import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode } from './session/session.js'
-import { getAllPublics, createPublic } from './questionnaire/themePublic.js'
+import { getAllPublics, createPublic, getAllThemes, createTheme } from './questionnaire/themePublic.js'
 
 const app = express()
 const port = 3008
@@ -903,7 +903,6 @@ app.get('/publics',async (req,res) => {
 
 app.post('/createPublic',async (req,res) => {
     const { label } = req.body;
-    console.log("Coucou c'est nous")
     try {
         const result = await createPublic(label)
         console.log("New public created:", result)
@@ -914,5 +913,36 @@ app.post('/createPublic',async (req,res) => {
     } catch (error) {
         console.error('Error creating public:', error)
         res.status(500).json({ error: 'Failed to create public' })
+    }
+})
+
+app.get('/themes',async (req,res) => {
+
+    try {
+      // console.log("ici tu es dans le back score")
+        const result = await getAllThemes()
+        res.status(200).json({
+            success: true,
+            message: 'All themes loaded',
+            data: result
+        })
+    } catch (error) {
+        console.error('Error getting themes:', error)
+        res.status(500).json({ error: 'Failed to get themes' })
+    }
+})
+
+app.post('/createTheme',async (req,res) => {
+    const { label } = req.body;
+    try {
+        const result = await createTheme(label)
+        console.log("New theme created:", result)
+        res.status(200).json({
+            success: true,
+            data: result
+        })
+    } catch (error) {
+        console.error('Error creating theme:', error)
+        res.status(500).json({ error: 'Failed to create theme' })
     }
 })

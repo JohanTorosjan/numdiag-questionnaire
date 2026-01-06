@@ -23,4 +23,27 @@ function createPublic(label = null) {
     )
 }
 
-export { getAllPublics, createPublic}
+function getAllThemes() {
+    return executeQuery(numdiagPool, 'SELECT * FROM themes')
+}
+
+function createTheme(label = null) {
+    const fields = [];
+    const placeholders=[];
+    const values = [];
+    let index = 1;
+
+    if (label !== null && label!=='') {
+      fields.push(`label`);
+      placeholders.push(`$${index++}`);
+      values.push(label);
+    }
+
+     return executeQuery(
+        numdiagPool,
+        `INSERT INTO Themes (${fields.join(', ')}) VALUES (${placeholders.join(', ')}) RETURNING *`,
+        values
+    )
+}
+
+export { getAllPublics, createPublic, getAllThemes, createTheme }

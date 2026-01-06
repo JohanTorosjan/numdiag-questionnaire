@@ -144,11 +144,13 @@ CREATE TABLE Session (
 
 CREATE TABLE Themes (
     id SERIAL PRIMARY KEY,
-    label VARCHAR NOT NULL
+    label VARCHAR NOT NULL,
+    isactive BOOLEAN NOT NULL DEFAULT TRUE
 );
 CREATE TABLE Publics (
     id SERIAL PRIMARY KEY,
-    label VARCHAR NOT NULL
+    label VARCHAR NOT NULL,
+    isactive BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE JoinThemesQuestionnaires (
