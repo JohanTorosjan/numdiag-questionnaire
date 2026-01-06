@@ -435,7 +435,7 @@ export default function Home() {
                         value={themeLabel}
                         onChange={(e) => setThemeLabel(e.target.value)}/>
                       :
-                      <p >{singleTheme.label}</p>
+                      <p className="text-wrap w-1/2 break-all">{singleTheme.label}</p>
 
                       }
                       <div className="mr-0 ml-auto space-x-3">
@@ -449,7 +449,7 @@ export default function Home() {
                       (<button onClick={()=>deactivateTheme(singleTheme.id, singleTheme.isactive)} className="bg-orange-700/50"><span className="w-6 h-6 inline-flex items-center justify-center">🗑️</span></button>)
                       :
                       (<button onClick={()=>deactivateTheme(singleTheme.id, singleTheme.isactive)} className="bg-orange-700/10 translate-y-1 -mt-1">
-                        <img src="/images/ferme_yeux.svg" className="w-6 h-6"/>
+                        <img src="/images/ferme_yeux.svg" className="w-6 h-5.5"/>
                       </button>)
                     }
                     </div>
@@ -475,7 +475,7 @@ export default function Home() {
                         value={publicLabel}
                         onChange={(e) => setPublicLabel(e.target.value)}/>
                       :
-                      <p >{singlePublic.label}</p>
+                      <p className="text-wrap w-1/2 break-all">{singlePublic.label}</p>
 
                       }
                       <div className="mr-0 ml-auto space-x-3">
@@ -489,7 +489,7 @@ export default function Home() {
                       (<button onClick={()=>deactivatePublic(singlePublic.id, singlePublic.isactive)} className="bg-orange-700/50"><span className="w-6 h-6 inline-flex items-center justify-center">🗑️</span></button>)
                       :
                       (<button onClick={()=>deactivatePublic(singlePublic.id, singlePublic.isactive)} className="bg-orange-700/10 translate-y-1 -mt-1">
-                        <img src="/images/ferme_yeux.svg" className="w-6 h-6"/>
+                        <img src="/images/ferme_yeux.svg" className="w-6 h-5.5"/>
                       </button>)
                     }
                     </div>
