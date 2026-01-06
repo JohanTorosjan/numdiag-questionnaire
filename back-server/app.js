@@ -15,7 +15,7 @@ import {
 import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
 import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode } from './session/session.js'
-import { getAllPublics, createPublic, getAllThemes, createTheme } from './questionnaire/themePublic.js'
+import { getAllPublics, createPublic, getAllThemes, createTheme, updateTheme, activationTheme, updatePublic, activationPublic } from './questionnaire/themePublic.js'
 
 const app = express()
 const port = 3008
@@ -945,4 +945,54 @@ app.post('/createTheme',async (req,res) => {
         console.error('Error creating theme:', error)
         res.status(500).json({ error: 'Failed to create theme' })
     }
+})
+
+app.put('/updateTheme/:themeId', async (req, res) => {
+  const { themeId } = req.params;
+  const { label } = req.body; // Get data from request body
+  try {
+    const themeUpdate = await updateTheme(themeId, label)
+    res.status(200).json({ message: 'Theme label Updated successfully' })
+  } catch (error) {
+    console.error('Error updating theme label:', error)
+    res.status(500).json({ error: 'Failed to update theme label' })
+  }
+})
+
+app.post('/deactivateTheme/:themeId', async (req, res) => {
+  console.log("Hello")
+  const { themeId } = req.params;
+  const { themeState } = req.body; // Get data from request body
+  try {
+    const themeActivate = await activationTheme(themeId, themeState)
+    res.status(200).json({ message: 'Theme activation Updated successfully' })
+  } catch (error) {
+    console.error('Error updating theme activation:', error)
+    res.status(500).json({ error: 'Failed to update theme activation' })
+  }
+})
+
+app.put('/updatePublic/:publicId', async (req, res) => {
+  const { publicId } = req.params;
+  const { label } = req.body; // Get data from request body
+  try {
+    const publicUpdate = await updatePublic(publicId, label)
+    res.status(200).json({ message: 'public label Updated successfully' })
+  } catch (error) {
+    console.error('Error updating public label:', error)
+    res.status(500).json({ error: 'Failed to update public label' })
+  }
+})
+
+app.post('/deactivatePublic/:publicId', async (req, res) => {
+  console.log("Hello")
+  const { publicId } = req.params;
+  const { publicState } = req.body; // Get data from request body
+  try {
+    const publicActivate = await activationPublic(publicId, publicState)
+    res.status(200).json({ message: 'public activation Updated successfully' })
+  } catch (error) {
+    console.error('Error updating public activation:', error)
+    res.status(500).json({ error: 'Failed to update public activation' })
+  }
 })

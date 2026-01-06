@@ -65,27 +65,6 @@ async function updateQuestionnaire(idQuestionnaire, isactive) {
   }
 }
 
-async function updateTheme(idTheme) {
-  try {
-    const response = await fetch(`http://localhost:3008/updateTheme/${idTheme}`, {
-    method: 'PUT',
-    headers: {
-    'Content-Type': 'application/json',
-  },
-    body: JSON.stringify({isactive})
-  });
-    if (!response.ok) {
-        throw new Error('Erreur lors du chargement des sections');
-    }
-    const data = await response.json();
-    console.log('Response from server:', data);
-    return data;
-  } catch (error) {
-    console.error('Error fetching sections:', error);
-    return null;
-  }
-}
-
 export default function Home() {
     DocumentTitle("Accueil – NumDiag CMS");
     const [questionnaires, setQuestionnaires] = useState([]);
@@ -101,6 +80,9 @@ export default function Home() {
     const [allPublics, setAllPublics] = useState([])
     const [allThemes, setAllThemes] = useState([])
     const [editThemes, setEditThemes] = useState(false)
+    const [editPublics, setEditPublics] = useState(false)
+    const [themeLabel, setThemeLabel] = useState("");
+    const [publicLabel, setPublicLabel] = useState("");
 
     useEffect(() => {
         const fetchQuestionnaires = async () => {
@@ -126,6 +108,110 @@ export default function Home() {
     }, []);
 
     console.log('Questionnaires:', questionnaires);
+
+  async function updateTheme(idTheme, label) {
+    if (label !="") {
+    try {
+      const response = await fetch(`http://localhost:3008/updateTheme/${idTheme}`, {
+      method: 'PUT',
+      headers: {
+      'Content-Type': 'application/json',
+      },
+        body: JSON.stringify({label})
+      });
+      if (!response.ok) {
+          throw new Error('Erreur lors de la modification du label du thème');
+      }
+      const data = await response.json();
+      console.log('Response from server:', data);
+      const newThemes = await getAllThemes();
+      setAllThemes(newThemes.data)
+      setEditThemes(false)
+      return data;
+    } catch (error) {
+      console.error('Error updating theme label:', error);
+      return null;
+    }
+    } else {
+      setEditThemes(false)
+    }
+  }
+
+  async function updatePublic(idPublic, label) {
+    if (label !="") {
+    try {
+      const response = await fetch(`http://localhost:3008/updatePublic/${idPublic}`, {
+      method: 'PUT',
+      headers: {
+      'Content-Type': 'application/json',
+      },
+        body: JSON.stringify({label})
+      });
+      if (!response.ok) {
+          throw new Error('Erreur lors de la modification du label du public');
+      }
+      const data = await response.json();
+      console.log('Response from server:', data);
+      const newThemes = await getAllPublics();
+      setAllPublics(newThemes.data)
+      setEditPublics(false)
+      return data;
+    } catch (error) {
+      console.error('Error updating public label:', error);
+      return null;
+    }
+    } else {
+      setEditPublics(false)
+    }
+  }
+
+  async function deactivateTheme(idTheme,themeState) {
+
+    try {
+      const response = await fetch(`http://localhost:3008/deactivateTheme/${idTheme}`, {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json',
+      },
+       body: JSON.stringify({themeState})
+      });
+      if (!response.ok) {
+          throw new Error("Erreur lors du toggle d'activation du thème");
+      }
+      const data = await response.json();
+      console.log('Response from server:', data);
+      const newThemes = await getAllThemes();
+      setAllThemes(newThemes.data)
+      return data;
+    } catch (error) {
+      console.error('Error toggling theme activation:', error);
+      return null;
+    }
+  }
+
+  async function deactivatePublic(idPublic,publicState) {
+
+    try {
+      const response = await fetch(`http://localhost:3008/deactivatePublic/${idPublic}`, {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json',
+      },
+       body: JSON.stringify({publicState})
+      });
+      if (!response.ok) {
+          throw new Error("Erreur lors du toggle d'activation du public");
+      }
+      const data = await response.json();
+      console.log('Response from server:', data);
+      const newPublics = await getAllPublics();
+      setAllPublics(newPublics.data)
+      return data;
+    } catch (error) {
+      console.error('Error toggling Public activation:', error);
+      return null;
+    }
+  }
 
     const toggleButtonActive = async (id, currentStatus) => {
     try {
@@ -292,8 +378,13 @@ export default function Home() {
       setIsThemeOpen(false);
     };
 
-  const editTheme = (id) => {
-    setEditThemes(id)
+  const editTheme = (id, label) => {
+    setEditThemes(id);
+    setThemeLabel(label);
+  }
+  const editPublic = (id, label) => {
+    setEditPublics(id);
+    setPublicLabel(label);
   }
 
 
@@ -338,25 +429,36 @@ export default function Home() {
                {allThemes.map(singleTheme => (
                 <div key={singleTheme.id+'theme'} className="mt-2" >
                   <div className="w-full flex items-center">
-                    {(editThemes === singleTheme.id) ?
-                    <input type="text" className="border border-gray-300 rounded py-1" />
-                    :
-                    <p >{singleTheme.label}</p>
 
-                    }
-                    <div className="mr-0 ml-auto space-x-3">
                     {(editThemes === singleTheme.id) ?
-                    <button onClick={()=>updateTheme(singleTheme.id)} className="bg-cyan-400/50">✓</button>
-                    :
-                    <button onClick={()=>editTheme(singleTheme.id)} className="bg-cyan-400/50">🖊️ </button>
+                      <input type="text" className="border border-gray-300 rounded py-1"
+                        value={themeLabel}
+                        onChange={(e) => setThemeLabel(e.target.value)}/>
+                      :
+                      <p >{singleTheme.label}</p>
+
+                      }
+                      <div className="mr-0 ml-auto space-x-3">
+                      {(editThemes === singleTheme.id) ?
+                      <button onClick={()=>updateTheme(singleTheme.id, themeLabel)} className="bg-cyan-400/50">✓</button>
+                      :
+                      <button onClick={()=>editTheme(singleTheme.id, singleTheme.label)} className="bg-cyan-400/50">🖊️ </button>
                     }
-                    <button className="bg-orange-700/50"> 🗑️</button>
+
+                    { singleTheme.isactive ?
+                      (<button onClick={()=>deactivateTheme(singleTheme.id, singleTheme.isactive)} className="bg-orange-700/50"><span className="w-6 h-6 inline-flex items-center justify-center">🗑️</span></button>)
+                      :
+                      (<button onClick={()=>deactivateTheme(singleTheme.id, singleTheme.isactive)} className="bg-orange-700/10 translate-y-1 -mt-1">
+                        <img src="/images/ferme_yeux.svg" className="w-6 h-6"/>
+                      </button>)
+                    }
                     </div>
                   </div>
                   <hr className='w-3/4 mt-2 text-gray-300'/>
                 </div>
               ))}
             </div>
+
             <div className="w-full mx-auto px-10 ">
               <h2 className="text-xl font-semibold">Liste des publics</h2>
               <div className="text-end">
@@ -365,12 +467,31 @@ export default function Home() {
                 </button>
               </div>
               {allPublics.map(singlePublic => (
-                <div key={singlePublic.id+'public'} className="mt-2" >
+                <div key={singlePublic.id+'Public'} className="mt-2" >
                   <div className="w-full flex items-center">
-                    <p >{singlePublic.label}</p>
-                    <div className="mr-0 ml-auto space-x-3">
-                    <button  className="bg-cyan-400/50">🖊️ </button>
-                    <button className="bg-orange-700/50"> 🗑️</button>
+
+                    {(editPublics === singlePublic.id) ?
+                      <input type="text" className="border border-gray-300 rounded py-1"
+                        value={publicLabel}
+                        onChange={(e) => setPublicLabel(e.target.value)}/>
+                      :
+                      <p >{singlePublic.label}</p>
+
+                      }
+                      <div className="mr-0 ml-auto space-x-3">
+                      {(editPublics === singlePublic.id) ?
+                      <button onClick={()=>updatePublic(singlePublic.id, publicLabel)} className="bg-cyan-400/50">✓</button>
+                      :
+                      <button onClick={()=>editPublic(singlePublic.id, singlePublic.label)} className="bg-cyan-400/50">🖊️ </button>
+                    }
+
+                    { singlePublic.isactive ?
+                      (<button onClick={()=>deactivatePublic(singlePublic.id, singlePublic.isactive)} className="bg-orange-700/50"><span className="w-6 h-6 inline-flex items-center justify-center">🗑️</span></button>)
+                      :
+                      (<button onClick={()=>deactivatePublic(singlePublic.id, singlePublic.isactive)} className="bg-orange-700/10 translate-y-1 -mt-1">
+                        <img src="/images/ferme_yeux.svg" className="w-6 h-6"/>
+                      </button>)
+                    }
                     </div>
                   </div>
                   <hr className='w-3/4 mt-2 text-gray-300'/>
