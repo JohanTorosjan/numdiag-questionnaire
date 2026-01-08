@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-calypso-50: #f0fafb;
+  --color-calypso-100: #d9f0f4;
+  --color-calypso-200: #b7e2ea;
+  --color-calypso-300: #85cbdb;
+  --color-calypso-400: #4cacc4;
+  --color-calypso-500: #3090aa;
+  --color-calypso-600: #297089;
+  --color-calypso-700: #296075;
+  --color-calypso-800: #295061;
+  --color-calypso-900: #264453;
+  --color-calypso-950: #142c38;
+
+}
+
+.background-new-visual {
+  min-height: 100dvh;
+  width: 100%;
+  background: radial-gradient(circle at center, #297089 0%, #297089 15%, #1A3F4C 50%, #000000 100%);
+  color: #F9FFFF;
+}

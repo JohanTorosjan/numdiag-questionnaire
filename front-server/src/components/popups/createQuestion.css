@@ -1,0 +1,283 @@
+/* Overlay de la popup - par-dessus tout */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 1rem;
+    backdrop-filter: blur(2px);
+}
+
+/* Contenu de la popup */
+.popup-content {
+    background: white;
+    border-radius: 12px;
+    padding: 0;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    position: relative;
+    animation: popupSlideIn 0.2s ease-out;
+}
+
+@keyframes popupSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Header de la popup */
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fafafa;
+    border-radius: 12px 12px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.popup-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.close-button {
+    background: white;
+    border: 1px solid #e5e7eb;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: #6b7280;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.close-button:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+    color: #111827;
+}
+
+/* Formulaire */
+.popup-form {
+    padding: 1.5rem;
+}
+
+/* Groupes de formulaire */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9375rem;
+    color: #111827;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Disposition en ligne pour plusieurs champs */
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+/* Groupe checkbox */
+.checkbox-group {
+    margin: 1.5rem 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: #374151;
+    padding: 0.75rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.checkbox-label:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 1.125rem;
+    height: 1.125rem;
+    cursor: pointer;
+    accent-color: #3b82f6;
+}
+
+/* Actions de la popup */
+.popup-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    background: #fafafa;
+    border-radius: 0 0 12px 12px;
+    position: sticky;
+    bottom: 0;
+}
+
+.cancel-button,
+.save-button {
+    padding: 0.625rem 1.25rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.cancel-button {
+    background-color: white;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+.save-button {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.cancel-button:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.save-button:hover {
+    background-color: #2563eb;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .popup-content {
+        max-width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .popup-header,
+    .popup-actions {
+        border-radius: 0;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .popup-actions {
+        flex-direction: column-reverse;
+    }
+
+    .cancel-button,
+    .save-button {
+        width: 100%;
+    }
+}
+
+/* Scrollbar personnalisée pour le contenu de la popup */
+.popup-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.popup-content::-webkit-scrollbar-track {
+    background: #f3f4f6;
+}
+
+.popup-content::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+}
+
+.popup-content::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+
+/* Message d'information */
+.info-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.875rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    margin-bottom: 1.25rem;
+}
+
+.info-icon {
+    font-size: 1rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.info-message p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #1e40af;
+    line-height: 1.5;
+}
