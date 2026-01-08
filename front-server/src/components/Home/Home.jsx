@@ -19,6 +19,19 @@ async function getAllQuestionnairesResume() {
     }
 }
 
+async function getAssociatedThemesAndPublics(questionnaire_id) {
+  try {
+        const response = await fetch(`http://localhost:3008/associatedThemesAndPublics/${questionnaire_id}`);
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        }
+    } catch (error) {
+        console.error('Error fetching associated themes and publics:', error);
+        return [];
+    }
+}
+
 async function getAllPublics() {
     try {
         const response = await fetch('http://localhost:3008/publics');
@@ -83,6 +96,7 @@ export default function Home() {
     const [editPublics, setEditPublics] = useState(false)
     const [themeLabel, setThemeLabel] = useState("");
     const [publicLabel, setPublicLabel] = useState("");
+    const [associatedThemesAndPublics, setAssociatedThemesAndPublics] = useState([]);
 
     useEffect(() => {
         const fetchQuestionnaires = async () => {
@@ -107,7 +121,23 @@ export default function Home() {
         fetchPublics();
     }, []);
 
-    console.log('Questionnaires:', questionnaires);
+
+  useEffect(() => {
+    const allAssociates=[];
+    for (const questionnaire of questionnaires) {
+      data = fetchAssociateThemesAndPublics(questionnaire.id);
+      allAssociates.push(data)
+    }
+    setAssociatedThemesAndPublics(allAssociates)
+  }, [])
+
+  console.log('Questionnaires:', questionnaires);
+  console.log("Associated themes and publics:", associatedThemesAndPublics)
+
+  const fetchAssociateThemesAndPublics = async (id) => {
+    const data = await getAssociatedThemesAndPublics(id);
+    return data
+  }
 
   async function updateTheme(idTheme, label) {
     if (label !="") {
@@ -591,7 +621,10 @@ export default function Home() {
                         <div className={`status-badge ${q.isactive ? "active" : "inactive"}`}>
                             {q.isactive ? "Actif" : "Inactif"}
                         </div>
-                        <QuestionnaireResume key={q.id} idQuestionnaire={q.id} label={q.label} />
+                        <div className="flex space-between">
+                          <QuestionnaireResume key={q.id} idQuestionnaire={q.id} label={q.label} />
+
+                        </div>
                         <button type="button" onClick={() => toggleButtonActive(q.id, q.isactive)}>
                             {q.isactive ? "Désactiver" : "Activer"}
                         </button>

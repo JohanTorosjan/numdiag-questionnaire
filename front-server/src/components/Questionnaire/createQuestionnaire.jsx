@@ -169,7 +169,7 @@ function CreateQuestionnaire({ onSave, onClose }) {
 
                   <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="theme_id">Thèmes : </label>
+                            <label htmlFor="theme_ids">Thèmes : </label>
                             <select
                                 id="theme_ids"
                                 name="theme_ids"
@@ -188,7 +188,7 @@ function CreateQuestionnaire({ onSave, onClose }) {
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="publics_id">Publics : </label>
+                            <label htmlFor="public_ids">Publics : </label>
                             <select
                                 id="public_ids"
                                 name="public_ids"

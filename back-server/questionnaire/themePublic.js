@@ -162,4 +162,24 @@ const createThemePublicQuestionnaire = async ({theme, publicSelect, questionnair
   return {resultTheme, resultPublic}
 }
 
-export { getAllPublics, createPublic, getAllThemes, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire }
+const associatedThemesAndPublics = async (questionnaireId) => {
+  try {
+    const query = `
+    SELECT theme_id
+    FROM JoinThemesQuestionnaires
+    WHERE questionnaire_id = $1
+    `;
+
+    const result = await executeQuery(numdiagPool, query, [questionnaireId]);
+    console.log(result)
+    return {result, questionnaireId, success: true};
+
+  } catch (error) {
+    console.error('Error updating theme activation:', error);
+    throw error;
+  }
+};
+
+
+
+export { getAllPublics, createPublic, getAllThemes, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics }
