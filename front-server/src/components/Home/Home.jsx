@@ -239,10 +239,11 @@ export default function Home() {
       setIsCreateQuestPopupOpen(false);
   };
 
-  const handleSaveQuestionnaire = async (newQuestionnaire) => {
+  const handleSaveQuestionnaire = async ({formData, theme, publicSelect}) => {
+    let questionnaire_id = undefined;
       try {
           console.log('Appel API pour sauvegarder:', {
-              updatedData: newQuestionnaire
+              updatedData: formData
           });
           setIsCreating(true)
           const response = await fetch(`http://localhost:3008/createQuestionnaire`, {
@@ -251,7 +252,7 @@ export default function Home() {
                   'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                  ...newQuestionnaire
+                  ...formData
               })
               });
 
@@ -260,7 +261,7 @@ export default function Home() {
           }
 
           const result = await response.json();
-
+          questionnaire_id=result.questionnaire.id
           if (!result.success) {
             toast.showError('Erreur lors de la création du questionnaire');
             throw new Error(result.error || 'Erreur lors de la sauvegarde');
@@ -276,6 +277,42 @@ export default function Home() {
       finally{
           setIsCreating(false)
       }
+
+      try {
+        console.log("Sauvegarde des thèmes et publics associés", {theme, publicSelect})
+        setIsCreating(true)
+
+          const response = await fetch(`http://localhost:3008/themePublicQuestionnaire`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                 theme, publicSelect, questionnaire_id
+              })
+              });
+
+          if (!response.ok) {
+              throw new Error(`Erreur HTTP: ${response.status}`);
+          }
+
+          const result = await response.json();
+          console.log(result)
+
+          if (!result.success) {
+            toast.showError('Erreur lors de la sauvegarde des thèmes et publics');
+            throw new Error(result.error || 'Erreur lors de la sauvegarde des thèmes et publics');
+          }
+          // const data = await getAllQuestionnairesResume();
+          // setQuestionnaires(data);
+          // setIsCreateQuestPopupOpen(false);
+      } catch (error) {
+          console.error('Erreur lors de la sauvegarde:', error);
+      }
+      finally{
+          setIsCreating(false)
+      }
+
   };
 
 

@@ -122,4 +122,44 @@ const activationPublic = async (publicId, publicState) => {
   }
 };
 
-export { getAllPublics, createPublic, getAllThemes, createTheme, updateTheme, activationTheme, updatePublic, activationPublic }
+const createThemePublicQuestionnaire = async ({theme, publicSelect, questionnaire_id}) => {
+  let resultTheme=[];
+  let resultPublic=[];
+
+
+
+
+  if (theme !== null && theme.theme_id[0] !== '') {
+    for (const themeElement of theme.theme_id) {
+        const result = await executeQuery(
+            numdiagPool,
+            `INSERT INTO JoinThemesQuestionnaires  (
+                theme_id, questionnaire_id
+            )
+            VALUES ($1, $2)
+            RETURNING *
+        `,
+            [ themeElement, questionnaire_id ]
+        );
+        resultTheme.push(result)
+    }
+  }
+  if (publicSelect !== null && publicSelect.public_id[0]!=='') {
+    for (const publicElement of publicSelect.public_id) {
+        const result = await executeQuery(
+            numdiagPool,
+            `INSERT INTO JoinPublicsQuestionnaires  (
+                public_id, questionnaire_id
+            )
+            VALUES ($1, $2)
+            RETURNING *
+        `,
+            [ publicElement, questionnaire_id ]
+        );
+        resultPublic.push(result)
+    }
+  }
+  return {resultTheme, resultPublic}
+}
+
+export { getAllPublics, createPublic, getAllThemes, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire }

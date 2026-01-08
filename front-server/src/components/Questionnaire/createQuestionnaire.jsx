@@ -1,6 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import '../popups/editQuestion.css';
-import { useParams } from 'react-router-dom';
+
+
+async function getAllPublics() {
+    try {
+        const response = await fetch('http://localhost:3008/publics');
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        }
+    } catch (error) {
+        console.error('Error fetching publics:', error);
+        return [];
+    }
+}
+async function getAllThemes() {
+    try {
+        const response = await fetch('http://localhost:3008/themes');
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        }
+    } catch (error) {
+        console.error('Error fetching themes:', error);
+        return [];
+    }
+}
 
 
 function CreateQuestionnaire({ onSave, onClose }) {
@@ -11,10 +36,29 @@ function CreateQuestionnaire({ onSave, onClose }) {
         tooltip: '',
         code: '',
     });
-    const [themePublic, setThemePublic] = useState({
-        theme_id: '',
-        public_id: '',
+    const [theme, setTheme] = useState({
+        theme_id: [],
     });
+    const [publicSelect, setPublic] = useState({
+        public_id: [],
+    });
+    const [allPublics, setAllPublics] = useState([])
+    const [allThemes, setAllThemes] = useState([])
+
+    useEffect(() => {
+      const fetchThemes = async () => {
+        const data = await getAllThemes();
+        setAllThemes(data.data);
+      }
+
+      const fetchPublics = async () => {
+        const data = await getAllPublics();
+        setAllPublics(data.data);
+      }
+
+        fetchThemes();
+        fetchPublics();
+    }, []);
 
     const handleInputChange = (e) => {
       const { name, value } = e.target;
@@ -27,17 +71,22 @@ function CreateQuestionnaire({ onSave, onClose }) {
         }));
     };
 
-    const handleThemePublicChange = (e) => {
-        const { name, value } = e.target;
-        setThemePublic(prev => ({
-            ...prev,
-            [name]: value
-        }));
+    const handleThemeChange = (e) => {
+        const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+        setTheme({
+            theme_id: selectedOptions
+        });
+    };
+    const handlePublicChange = (e) => {
+        const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+        setPublic({
+            public_id: selectedOptions
+        });
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave(formData, themePublic);
+        onSave({formData, theme, publicSelect});
     };
 
     const handleBackdropClick = (e) => {
@@ -120,16 +169,18 @@ function CreateQuestionnaire({ onSave, onClose }) {
 
                   <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="theme_id">Thème :</label>
+                            <label htmlFor="theme_id">Thèmes : </label>
                             <select
-                                type="text"
-                                id="theme_id"
-                                name="theme_id"
-                                value={themePublic.theme_id || ''}
-                                onChange={handleThemePublicChange}
+                                id="theme_ids"
+                                name="theme_ids"
+                                value={theme.theme_id}
+                                onChange={handleThemeChange}
+                                multiple
+                                size="1"
                             >
-                            {themes.map(theme => (
-                                    <option key={theme.value || 'null'} value={theme.value || ''}>
+                            <option value=""></option>
+                            {allThemes.map(theme => (
+                                    <option key={theme.id} value={theme.id}>
                                         {theme.label}
                                     </option>
                                 ))}
@@ -137,21 +188,25 @@ function CreateQuestionnaire({ onSave, onClose }) {
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="public_id">Public :</label>
+                            <label htmlFor="publics_id">Publics : </label>
                             <select
-                                type="text"
-                                id="public_id"
-                                name="public_id"
-                                value={themePublic.public_id}
-                                onChange={handleThemePublicChange}
+                                id="public_ids"
+                                name="public_ids"
+                                value={publicSelect.public_id}
+                                onChange={handlePublicChange}
+                                multiple
+                                size="1"
                             >
-                            {themes.map(theme => (
-                                    <option key={theme.value || 'null'} value={theme.value || ''}>
-                                        {theme.label}
+                            <option value=""></option>
+                            {allPublics.map(publicElement => (
+                                    <option key={publicElement.id} value={publicElement.id}>
+                                        {publicElement.label}
                                     </option>
                                 ))}
                             </select>
                         </div>
+
+
                     </div>
 
 

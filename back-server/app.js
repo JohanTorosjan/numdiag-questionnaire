@@ -15,7 +15,7 @@ import {
 import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
 import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode } from './session/session.js'
-import { getAllPublics, createPublic, getAllThemes, createTheme, updateTheme, activationTheme, updatePublic, activationPublic } from './questionnaire/themePublic.js'
+import { getAllPublics, createPublic, getAllThemes, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire } from './questionnaire/themePublic.js'
 
 const app = express()
 const port = 3008
@@ -191,7 +191,7 @@ app.post('/createQuestionnaire', async (req,res) => {
   const { label, description, insight, tooltip, code } = req.body; // Get data from request body
   try {
     const questionnaireCreate = await createQuestionnaire(label, description, insight, tooltip, code)
-    res.status(200).json({success: true})
+    res.status(200).json({success: true, questionnaire: questionnaireCreate[0]})
   } catch (error) {
     console.error('Error creating questionnaire:', error)
     res.status(500).json({ error: 'Failed to create questionnaire' })
@@ -989,4 +989,19 @@ app.post('/deactivatePublic/:publicId', async (req, res) => {
     console.error('Error updating public activation:', error)
     res.status(500).json({ error: 'Failed to update public activation' })
   }
+})
+
+app.post('/themePublicQuestionnaire',async (req,res) => {
+    const { theme, publicSelect, questionnaire_id } = req.body;
+    try {
+        const result = await createThemePublicQuestionnaire({ theme, publicSelect, questionnaire_id })
+        console.log("Theme and publics saved for questionnaire:", questionnaire_id)
+        res.status(200).json({
+            success: true,
+            data: result
+        })
+    } catch (error) {
+        console.error('Error creating theme:', error)
+        res.status(500).json({ error: 'Failed to create theme' })
+    }
 })
