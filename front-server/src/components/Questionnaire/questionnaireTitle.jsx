@@ -10,6 +10,9 @@ function QuestionnaireTitle ({questionnaire}) {
       <p>
         {questionnaire.insight}
       </p>
+      <p>
+        {questionnaire.tooltip}
+      </p>
     </div>
   )
 }

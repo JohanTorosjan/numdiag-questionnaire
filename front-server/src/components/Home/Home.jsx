@@ -5,6 +5,7 @@ import CreateQuestionnaire from "../Questionnaire/createQuestionnaire";
 import CreateThemePublic from "../ThemePublic/createThemePublic.jsx";
 import { useToast } from '../../ToastSystem';
 import DocumentTitle from '../hooks/documentTitle';
+import { getAllPublics, getAllThemes } from '../ThemePublic/themePublic.js';
 
 async function getAllQuestionnairesResume() {
     try {
@@ -15,44 +16,6 @@ async function getAllQuestionnairesResume() {
         }
     } catch (error) {
         console.error('Error fetching questionnaires:', error);
-        return [];
-    }
-}
-
-async function getAssociatedThemesAndPublics(questionnaire_id) {
-  try {
-        const response = await fetch(`http://localhost:3008/associatedThemesAndPublics/${questionnaire_id}`);
-        if (response.ok) {
-            const data = await response.json();
-            return data;
-        }
-    } catch (error) {
-        console.error('Error fetching associated themes and publics:', error);
-        return [];
-    }
-}
-
-async function getAllPublics() {
-    try {
-        const response = await fetch('http://localhost:3008/publics');
-        if (response.ok) {
-            const data = await response.json();
-            return data;
-        }
-    } catch (error) {
-        console.error('Error fetching publics:', error);
-        return [];
-    }
-}
-async function getAllThemes() {
-    try {
-        const response = await fetch('http://localhost:3008/themes');
-        if (response.ok) {
-            const data = await response.json();
-            return data;
-        }
-    } catch (error) {
-        console.error('Error fetching themes:', error);
         return [];
     }
 }
@@ -96,7 +59,6 @@ export default function Home() {
     const [editPublics, setEditPublics] = useState(false)
     const [themeLabel, setThemeLabel] = useState("");
     const [publicLabel, setPublicLabel] = useState("");
-    const [associatedThemesAndPublics, setAssociatedThemesAndPublics] = useState([]);
 
     useEffect(() => {
         const fetchQuestionnaires = async () => {
@@ -121,23 +83,6 @@ export default function Home() {
         fetchPublics();
     }, []);
 
-
-  useEffect(() => {
-    const allAssociates=[];
-    for (const questionnaire of questionnaires) {
-      data = fetchAssociateThemesAndPublics(questionnaire.id);
-      allAssociates.push(data)
-    }
-    setAssociatedThemesAndPublics(allAssociates)
-  }, [])
-
-  console.log('Questionnaires:', questionnaires);
-  console.log("Associated themes and publics:", associatedThemesAndPublics)
-
-  const fetchAssociateThemesAndPublics = async (id) => {
-    const data = await getAssociatedThemesAndPublics(id);
-    return data
-  }
 
   async function updateTheme(idTheme, label) {
     if (label !="") {

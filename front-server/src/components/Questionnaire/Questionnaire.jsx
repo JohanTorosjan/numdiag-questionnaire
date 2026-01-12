@@ -9,6 +9,7 @@ import CreateSection from "../Section/createSection.jsx";
 import CreateReco from "../recommandations/createReco.jsx";
 import RecoQuestionnaire from "../recommandations/reco_questionnaire.jsx";
 import SideModal from "../recommandations/side_modal.jsx";
+import { getAllPublics, getAllThemes } from '../ThemePublic/themePublic.js';
 
 
 import "./Questionnaire.css"; // Import du CSS
@@ -80,6 +81,40 @@ async function getReco(idQuestionnaire) {
   }
 }
 
+async function getAssociatedThemesAndPublics(questionnaire_id) {
+  try {
+        const response = await fetch(`http://localhost:3008/associatedThemesAndPublics/${questionnaire_id}`);
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        }
+    } catch (error) {
+        console.error('Error fetching associated themes and publics:', error);
+        return [];
+    }
+}
+
+async function editQuestionnaireThemesAndPublics({questionnaire_id, theme, publicSelect}) {
+  try {
+        const response = await fetch(`http://localhost:3008/questionnaireThemesAndPublics/${questionnaire_id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ theme, publicSelect }), // Pass the updated questionnaire data
+        }
+        );
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        }
+    } catch (error) {
+        console.error('Error editing associated themes and publics:', error);
+        return [];
+    }
+}
+
 function Questionnaire() {
   const { id } = useParams();
   const [questionnaire, setQuestionnaire] = useState(null);
@@ -91,6 +126,11 @@ function Questionnaire() {
   const [buttonAffichageSection, setButtonAffichageSection] = useState(false);
   const toast = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [associatedThemesAndPublics, setAssociatedThemesAndPublics] = useState([]);
+  const [allPublics, setAllPublics] = useState([])
+  const [allThemes, setAllThemes] = useState([])
+  const [theme, setTheme] = useState([]);
+  const [publicSelect, setPublic] = useState([]);
 
   useEffect(() => {
     async function fetchQuestionnaire() {
@@ -100,8 +140,55 @@ function Questionnaire() {
       setRecommandations(reco.recommandations);
     }
 
+    const fetchThemes = async () => {
+      const data = await getAllThemes();
+      setAllThemes(data.data);
+    }
+
+    const fetchPublics = async () => {
+      const data = await getAllPublics();
+      setAllPublics(data.data);
+    }
+
     fetchQuestionnaire();
+    fetchThemes();
+    fetchPublics();
   }, [id]);
+
+  useEffect(() => {
+    if (!questionnaire?.id) return;
+    const fetchAssociateThemesAndPublics = async () => {
+        try {
+        const data = await getAssociatedThemesAndPublics(questionnaire.id);
+        setAssociatedThemesAndPublics(data);
+      } catch (error) {
+        console.error("Error fetching associated themes and publics:", error);
+      }
+    }
+    fetchAssociateThemesAndPublics();
+  }, [questionnaire]);
+
+  useEffect(() => {
+    const themesQuest=[];
+    const publicQuest=[];
+    associatedThemesAndPublics.themesAndPublics?.resultTheme?.forEach((theme)=>
+      themesQuest.push(theme.theme_id)
+    )
+    setTheme(themesQuest)
+    associatedThemesAndPublics.themesAndPublics?.resultPublic?.forEach((publicS)=>
+      publicQuest.push(publicS.public_id)
+    )
+    setTheme(themesQuest);
+    setPublic(publicQuest);
+  }, [associatedThemesAndPublics])
+
+
+  useEffect(() => {
+    if (questionnaire) {
+        document.title = `${questionnaire.label}`;
+    }
+    }, [questionnaire]);
+
 
   const updateSection = (sectionId, updatedSection) => {
     setQuestionnaire((prevQuestionnaire) => ({
@@ -152,8 +239,14 @@ function Questionnaire() {
           questionnaire.tooltip,
           questionnaire.code
         );
+        const updateThemesAndPublics = await editQuestionnaireThemesAndPublics(
+          {questionnaire_id:questionnaire.id,theme, publicSelect}
+        )
         setButtonModifierQuest("Modifier");
+        const refreshed = await getAssociatedThemesAndPublics(questionnaire.id);
+        setAssociatedThemesAndPublics(refreshed);
         console.log("Questionnaire updated:", updateQuest);
+        console.log("Themes and publics updated:", updateThemesAndPublics)
         toast.showSuccess("Questionnaire mis à jour avec succès !");
       } catch (error) {
         console.error("Error updating questionnaire:", error);
@@ -357,16 +450,14 @@ function Questionnaire() {
   );
 };
 
-  useEffect(() => {
-    if (questionnaire) {
-        document.title = `${questionnaire.label}`;
-    }
-    }, [questionnaire]);
-
-
-
-
-
+  const handleThemeChange = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+    setTheme(selectedOptions);
+};
+const handlePublicChange = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+    setPublic(selectedOptions);
+};
 
   ////////////////////////////////
   // html component part
@@ -382,16 +473,72 @@ function Questionnaire() {
     <div className="questionnaire-container main-content">
       {/* Header du questionnaire */}
       <div className="questionnaire-header">
-        <div className="questionnaire-header-content">
           {buttonModifierQuest === "Modifier" ? (
+            <div className="questionnaire-header-content grid grid-cols-[4fr_1fr] gap-x-2">
             <QuestionnaireTitle questionnaire={questionnaire} />
+            <div className='w-full'>
+              <div className="w-full mt-6">
+              {associatedThemesAndPublics?.themesAndPublics?.themeLabels?.map( theme =>
+                <p key={theme} className="inline ml-1 bg-blue-100 text-blue-400 px-2 py-1 text-sm rounded">{theme}</p>
+              )}
+              </div>
+              <div className="w-full mt-2">
+              {associatedThemesAndPublics?.themesAndPublics?.publicLabels?.map( theme =>
+                <p key={theme} className="inline ml-1 bg-emerald-100 text-emerald-400 px-2 py-1 text-sm rounded">{theme}</p>
+              )}
+              </div>
+            </div>
+            </div>
           ) : (
+            <div className="questionnaire-header-content grid grid-cols-[4fr_1fr] gap-x-4">
             <QuestionnaireTitleForm
               questionnaire={questionnaire}
               onChange={handleInputChange}
             />
+            <div>
+              <div className="form-group bg-blue-100 px-2 py-1 rounded">
+                <label htmlFor="theme_ids" className="text-blue-400!">Thèmes : </label>
+                <select
+                    id="theme_ids"
+                    name="theme_ids"
+                    value={theme}
+                    onChange={handleThemeChange}
+                    multiple
+                    size="1"
+                    className="text-blue-400!"
+                >
+                <option value="" className="px-2"></option>
+                {allThemes.map(theme => (
+                        <option key={theme.id} value={theme.id} className="px-2">
+                            {theme.label}
+                        </option>
+
+                    ))}
+                </select>
+            </div>
+
+            <div className="form-group bg-emerald-100 px-2 py-1 rounded">
+                <label htmlFor="public_ids" className="text-emerald-500!">Publics : </label>
+                <select
+                    id="public_ids"
+                    name="public_ids"
+                    value={publicSelect}
+                    onChange={handlePublicChange}
+                    multiple
+                    size="1"
+                    className="text-emerald-500! accent-emerald-500!"
+                >
+                <option value="" className="px-2"></option>
+                {allPublics.map(publicElement => (
+                        <option key={publicElement.id} value={publicElement.id} className="px-2 accent-emerald-500!">
+                            {publicElement.label}
+                        </option>
+                    ))}
+                </select>
+              </div>
+            </div>
+            </div>
           )}
-        </div>
         <div className="questionnaire-actions relative">
           <button
             type="button"

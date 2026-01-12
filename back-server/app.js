@@ -15,7 +15,7 @@ import {
 import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
 import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode } from './session/session.js'
-import { getAllPublics, createPublic, getAllThemes, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics } from './questionnaire/themePublic.js'
+import { getAllPublics, createPublic, getAllThemes, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics } from './questionnaire/themePublic.js'
 
 const app = express()
 const port = 3008
@@ -1010,7 +1010,19 @@ app.get('/associatedThemesAndPublics/:questionnaireId', async (req,res) => {
   const { questionnaireId } = req.params;
   try {
     const themesAndPublics = await associatedThemesAndPublics(questionnaireId);
-    res.status(200).json({themesAndPublics, message: 'Themes and publics found for questionnaire', questionnaireId })
+    res.status(200).json({themesAndPublics})
+  } catch (error) {
+    console.error('Error finding themes and publics:', error)
+    res.status(500).json({ error: 'Failed to find themes and publics for questionnaire' })
+  }
+})
+
+app.post('/questionnaireThemesAndPublics/:questionnaireId', async (req,res) => {
+  const { questionnaireId } = req.params;
+  const { theme, publicSelect } = req.body;
+  try {
+    const themesAndPublics = await updateAssociatedThemesAndPublics({questionnaireId, theme, publicSelect});
+    res.status(200).json({themesAndPublics})
   } catch (error) {
     console.error('Error finding themes and publics:', error)
     res.status(500).json({ error: 'Failed to find themes and publics for questionnaire' })

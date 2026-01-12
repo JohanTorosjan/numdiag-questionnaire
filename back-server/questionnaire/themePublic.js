@@ -131,55 +131,133 @@ const createThemePublicQuestionnaire = async ({theme, publicSelect, questionnair
 
   if (theme !== null && theme.theme_id[0] !== '') {
     for (const themeElement of theme.theme_id) {
-        const result = await executeQuery(
-            numdiagPool,
-            `INSERT INTO JoinThemesQuestionnaires  (
-                theme_id, questionnaire_id
-            )
-            VALUES ($1, $2)
-            RETURNING *
-        `,
-            [ themeElement, questionnaire_id ]
+      const result = await executeQuery(
+        numdiagPool,
+        `INSERT INTO JoinThemesQuestionnaires  (
+          theme_id, questionnaire_id
+          )
+          VALUES ($1, $2)
+          RETURNING *
+          `,
+          [ themeElement, questionnaire_id ]
         );
         resultTheme.push(result)
+      }
     }
-  }
-  if (publicSelect !== null && publicSelect.public_id[0]!=='') {
-    for (const publicElement of publicSelect.public_id) {
+    if (publicSelect !== null && publicSelect.public_id[0]!=='') {
+      for (const publicElement of publicSelect.public_id) {
         const result = await executeQuery(
-            numdiagPool,
-            `INSERT INTO JoinPublicsQuestionnaires  (
-                public_id, questionnaire_id
+          numdiagPool,
+          `INSERT INTO JoinPublicsQuestionnaires  (
+            public_id, questionnaire_id
             )
             VALUES ($1, $2)
             RETURNING *
-        `,
+            `,
             [ publicElement, questionnaire_id ]
-        );
-        resultPublic.push(result)
+          );
+          resultPublic.push(result)
+        }
+      }
+      return {resultTheme, resultPublic}
     }
-  }
-  return {resultTheme, resultPublic}
-}
 
-const associatedThemesAndPublics = async (questionnaireId) => {
-  try {
-    const query = `
-    SELECT theme_id
-    FROM JoinThemesQuestionnaires
-    WHERE questionnaire_id = $1
-    `;
+    const associatedThemesAndPublics = async (questionnaireId) => {
+      try {
+        const queryTheme = `
+        SELECT theme_id
+        FROM JoinThemesQuestionnaires
+        WHERE questionnaire_id = $1
+        `;
+        const resultTheme = await executeQuery(numdiagPool, queryTheme, [questionnaireId]);
 
-    const result = await executeQuery(numdiagPool, query, [questionnaireId]);
-    console.log(result)
-    return {result, questionnaireId, success: true};
+        const queryLabelTheme=`SELECT label FROM Themes WHERE id= $1`
+        const themeLabels = [];
 
-  } catch (error) {
-    console.error('Error updating theme activation:', error);
-    throw error;
-  }
-};
+        for (const result of resultTheme) {
+          const label = await executeQuery(
+            numdiagPool,
+            queryLabelTheme,
+            [result.theme_id]
+          );
+          themeLabels.push(label[0].label);
+        }
+
+        const queryPublic = `
+        SELECT public_id
+        FROM JoinPublicsQuestionnaires
+        WHERE questionnaire_id = $1
+        `;
+        const resultPublic = await executeQuery(numdiagPool, queryPublic, [questionnaireId]);
+
+        const queryLabelPublic=`SELECT label FROM Publics WHERE id= $1`
+        const publicLabels = [];
+
+        for (const result of resultPublic) {
+          const label = await executeQuery(
+            numdiagPool,
+            queryLabelPublic,
+            [result.public_id]
+          );
+          publicLabels.push(label[0].label);
+        }
+
+        return {resultTheme, themeLabels, resultPublic, publicLabels, questionnaireId, success: true};
+
+      } catch (error) {
+        console.error('Error updating theme activation:', error);
+        throw error;
+      }
+    };
 
 
+    const updateAssociatedThemesAndPublics = async ({questionnaireId, theme, publicSelect}) => {
+      try {
+        const deleteJoinedTheme =
+        `DELETE FROM JoinThemesQuestionnaires WHERE questionnaire_id = $1`;
+        const resultDeleteTheme = await executeQuery(numdiagPool, deleteJoinedTheme, [questionnaireId]);
+        const deleteJoinedPublic =
+        `DELETE FROM JoinPublicsQuestionnaires WHERE questionnaire_id = $1`;
+        const resultDeletePublic = await executeQuery(numdiagPool, deleteJoinedPublic, [questionnaireId]);
 
-export { getAllPublics, createPublic, getAllThemes, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics }
+
+        const queryPublic = `
+        INSERT INTO JoinPublicsQuestionnaires  (
+          public_id, questionnaire_id
+          )
+          VALUES ($1, $2)
+          RETURNING *
+        `;
+
+        for (const aPublic of publicSelect) {
+          const result = await executeQuery(
+            numdiagPool,
+            queryPublic,
+            [aPublic, questionnaireId]
+          );
+        }
+        const queryTheme = `
+        INSERT INTO JoinThemesQuestionnaires  (
+          theme_id, questionnaire_id
+          )
+          VALUES ($1, $2)
+          RETURNING *
+        `;
+
+        for (const aTheme of theme) {
+          const result = await executeQuery(
+            numdiagPool,
+            queryTheme,
+            [aTheme, questionnaireId]
+          );
+        }
+
+        return {result, success: true};
+
+      } catch (error) {
+        console.error('Error updating public label:', error);
+        throw error;
+      }
+    };
+
+export { getAllPublics, createPublic, getAllThemes, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics }
