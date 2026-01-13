@@ -132,9 +132,6 @@ const createThemePublicQuestionnaire = async ({theme, publicSelect, questionnair
   let resultTheme=[];
   let resultPublic=[];
 
-
-
-
   if (theme !== null && theme.theme_id[0] !== '') {
     for (const themeElement of theme.theme_id) {
       const result = await executeQuery(
@@ -166,9 +163,44 @@ const createThemePublicQuestionnaire = async ({theme, publicSelect, questionnair
         }
       }
       return {resultTheme, resultPublic}
-    }
+  }
 
-    const associatedThemesAndPublics = async (questionnaireId) => {
+const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => {
+  let resultTheme=[];
+  let resultPublic=[];
+
+  if (theme !== null && theme[0] !== '') {
+    for (const themeElement of theme) {
+      const result = await executeQuery(
+        numdiagPool,
+        `INSERT INTO JoinThemesQuestions  (
+          theme_id, question_id)
+          VALUES ($1, $2)
+          RETURNING *
+          `,
+          [ themeElement, question_id ]
+        );
+        resultTheme.push(result)
+      }
+    }
+    if (publicSelect !== null && publicSelect[0]!=='') {
+      for (const publicElement of publicSelect) {
+        const result = await executeQuery(
+          numdiagPool,
+          `INSERT INTO JoinPublicsQuestions  (
+            public_id, question_id )
+            VALUES ($1, $2)
+            RETURNING *
+            `,
+            [ publicElement, question_id ]
+          );
+          resultPublic.push(result)
+        }
+      }
+      return {resultTheme, resultPublic}
+  }
+
+  const associatedThemesAndPublics = async (questionnaireId) => {
       try {
         const queryTheme = `
         SELECT theme_id
@@ -212,6 +244,55 @@ const createThemePublicQuestionnaire = async ({theme, publicSelect, questionnair
 
       } catch (error) {
         console.error('Error updating theme activation:', error);
+        throw error;
+      }
+    };
+
+
+  const associatedThemesAndPublicsQuestion = async (questionId) => {
+      try {
+        const queryTheme = `
+        SELECT theme_id
+        FROM JoinThemesQuestions
+        WHERE question_id = $1
+        `;
+        const resultTheme = await executeQuery(numdiagPool, queryTheme, [questionId]);
+
+        const queryLabelTheme=`SELECT label FROM Themes WHERE id= $1`
+        const themeLabels = [];
+
+        for (const result of resultTheme) {
+          const label = await executeQuery(
+            numdiagPool,
+            queryLabelTheme,
+            [result.theme_id]
+          );
+          themeLabels.push({id: result.theme_id, label:label[0].label});
+        }
+
+        const queryPublic = `
+        SELECT public_id
+        FROM JoinPublicsQuestions
+        WHERE question_id = $1
+        `;
+        const resultPublic = await executeQuery(numdiagPool, queryPublic, [questionId]);
+
+        const queryLabelPublic=`SELECT label FROM Publics WHERE id= $1`
+        const publicLabels = [];
+
+        for (const result of resultPublic) {
+          const label = await executeQuery(
+            numdiagPool,
+            queryLabelPublic,
+            [result.public_id]
+          );
+          publicLabels.push({id: result.public_id, label: label[0].label});
+        }
+
+        return {themeLabels, publicLabels, questionId, success: true};
+
+      } catch (error) {
+        console.error('Error getting themes and publics for question:',questionId,' :', error);
         throw error;
       }
     };
@@ -266,4 +347,4 @@ const createThemePublicQuestionnaire = async ({theme, publicSelect, questionnair
       }
     };
 
-export { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics }
+export { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion }

@@ -15,7 +15,7 @@ import {
 import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
 import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode } from './session/session.js'
-import { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics } from './questionnaire/themePublic.js'
+import { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion } from './questionnaire/themePublic.js'
 
 const app = express()
 const port = 3008
@@ -446,6 +446,8 @@ app.post('/questions', async (req, res) => {
         tooltip,
         coeff,
         mandatory,
+        themes,
+        publics
     } = req.body;
 
     try {
@@ -459,12 +461,15 @@ app.post('/questions', async (req, res) => {
             coeff,
             mandatory,
         );
-
+        const themeAndPublic = await createThemePublicQuestion({question_id:result.question.id, theme:themes, publicSelect:publics})
+        console.log("Create question:", result)
+        console.log("Create themes and publics:", themeAndPublic)
         res.status(201).json({
             success: true,
             message: 'Question created successfully',
             data: result
         });
+
     } catch (error) {
         console.error('Error creating question:', error);
         res.status(500).json({ error: 'Failed to create question' });
@@ -1044,6 +1049,17 @@ app.get('/associatedThemesAndPublics/:questionnaireId', async (req,res) => {
   } catch (error) {
     console.error('Error finding themes and publics:', error)
     res.status(500).json({ error: 'Failed to find themes and publics for questionnaire' })
+  }
+})
+
+app.get('/associatedThemesAndPublicsQuestion/:questionId', async (req,res) => {
+  const { questionId } = req.params;
+  try {
+    const themesAndPublics = await associatedThemesAndPublicsQuestion(questionId);
+    res.status(200).json({themesAndPublics})
+  } catch (error) {
+    console.error('Error finding themes and publics for question:',questionId, ' :', error)
+    res.status(500).json({ error: 'Failed to find themes and publics for question' })
   }
 })
 

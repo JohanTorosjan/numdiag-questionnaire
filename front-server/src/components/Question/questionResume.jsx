@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PopUpEditQuestion from '../popups/editQuestion';
 import AnswersResume from '../../Answers/answersResume';
 import PopUpEditAnswerSlots from '../../Answers/editAnswerSlots';
@@ -13,6 +13,19 @@ const answerTypeMatch = {
   "libre": "Libre",
 }
 
+async function getPublicsAndThemes(questionId) {
+  try {
+      const response = await fetch(`http://localhost:3008/associatedThemesAndPublicsQuestion/${questionId}`);
+      if (response.ok) {
+          const data = await response.json();
+          return data;
+      }
+  } catch (error) {
+      console.error('Error fetching publics and themes for question:', error);
+      return [];
+  }
+}
+
 function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages, setQuestionnaire, questionnaireId }) {
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [isEditAnswerSlotsOpen, setIsEditAnswerSlotsOpen] = useState(false);
@@ -20,6 +33,8 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
     const [isAnswersOpen, setIsAnswersOpen] = useState(false);
     const [isCreateAnswersOpen, setIsCreateAnswersOpen] = useState(false);
     const [isDeleteQuestionOpen, setIsDeleteQuestionOpen] = useState(false);
+    const [themes, setThemes]= useState([])
+    const [publics, setPublics]= useState([false])
 
     const openCreateAnswers = () => {
         setIsCreateAnswersOpen(true);
@@ -36,6 +51,18 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
     const  handleCloseDeleteQuestionOpen =() =>{
         setIsDeleteQuestionOpen(false)
     }
+
+
+
+    useEffect(()=>{
+      const fetchThemesAndPublics = async () => {
+          const data = await getPublicsAndThemes(question.id);
+          setThemes(data.themesAndPublics.themeLabels)
+          setPublics(data.themesAndPublics.publicLabels)
+        };
+
+        fetchThemesAndPublics()
+    }, [question])
 
     const handleDeleteQuestion = async () => {
       try {
@@ -251,11 +278,13 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                       <span className="question-type-badge">{answerTypeDisplayed}</span>
                        <span className="question-type-badge">Page : {question.page}</span>
                        <span className="question-type-badge">Coeff : {question.coeff}</span>
-                        <span className="question-type-badge">
-                          {question.theme ? `Theme : ${question.theme}` : "Pas de thème"}
+                        <span className="">
+                          {themes.length === 0 ? "Pas de thème" :
+                          (<div className="flex flex-wrap w-full" key={themes[0].label}>{themes.map(theme=><p className="rounded px-2 py-1 mx-1 my-1 bg-blue-100 text-blue-400 text-nowrap text-sm" key={theme.label+theme.id}>{theme.label}</p>)}</div>)}
                         </span>
-                                    <span className="question-type-badge">
-                          {question.public_cible ? `Public cible : ${question.public_cible}` : "Pas de public"}
+                                    <span className="">
+                          {publics.length === 0  ? "Pas de public" :
+                          (<div className="flex flex-wrap w-full" key={publics[0].label}>{publics.map(publicSelect=><p className="rounded px-2 py-1 mx-1 my-1 bg-emerald-100 text-emerald-400 text-nowrap text-sm" key={publicSelect.label+publicSelect.id}>{publicSelect.label}</p>)}</div>)}
                         </span>
 
 
@@ -268,7 +297,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                     </svg>
                     Éditer
                 </button>
-                                <button onClick={handleDeleteClick} className="btn-edit-question">
+            <button onClick={handleDeleteClick} className="btn-edit-question">
          🗑️
 
                 </button>

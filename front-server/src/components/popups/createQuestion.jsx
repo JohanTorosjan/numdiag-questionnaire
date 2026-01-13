@@ -14,8 +14,8 @@ function PopUpCreateQuestion({ onSave, onClose, sectionNbPages, themesAndPublics
         questiontype: 'entier',
         tooltip: '',
     });
-    const [selectedThemes, setSelectedThemes]=useState([])
-    const [selectedPublics, setSelectedPublics]=useState([])
+    const [selectedThemesQuestion, setSelectedThemesQuestion]=useState([])
+    const [selectedPublicsQuestion, setSelectedPublicsQuestion]=useState([])
 
     // Listes fixes pour les select
     const questionTypes = [
@@ -36,8 +36,8 @@ function PopUpCreateQuestion({ onSave, onClose, sectionNbPages, themesAndPublics
       const themes = resultTheme.map(t => t.theme_id);
       const publics = resultPublic.map(p => p.public_id);
 
-      setSelectedThemes(themes);
-      setSelectedPublics(publics)
+      setSelectedThemesQuestion(themes);
+      setSelectedPublicsQuestion(publics)
     }, [themesAndPublicsFromQuestionnaire]);
 
 
@@ -68,7 +68,7 @@ function PopUpCreateQuestion({ onSave, onClose, sectionNbPages, themesAndPublics
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave(formData);
+        onSave(formData, selectedPublicsQuestion, selectedThemesQuestion);
     };
 
     const handleBackdropClick = (e) => {
@@ -76,6 +76,16 @@ function PopUpCreateQuestion({ onSave, onClose, sectionNbPages, themesAndPublics
             onClose();
         }
     };
+
+
+  const handleThemeChange = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+    setSelectedThemesQuestion(selectedOptions);
+  };
+  const handlePublicChange = (e) => {
+      const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+      setSelectedPublicsQuestion(selectedOptions);
+  };
 
     return ReactDOM.createPortal(
         <div className="popup-overlay" onClick={handleBackdropClick}>
@@ -179,8 +189,8 @@ function PopUpCreateQuestion({ onSave, onClose, sectionNbPages, themesAndPublics
                             <select
                                 id="theme"
                                 name="theme"
-                                value={selectedThemes}
-                                onChange={handleInputChange}
+                                value={selectedThemesQuestion}
+                                onChange={handleThemeChange}
                                 multiple
                                 size="1"
                                 className="text-blue-400!"
@@ -198,8 +208,8 @@ function PopUpCreateQuestion({ onSave, onClose, sectionNbPages, themesAndPublics
                             <select
                                 id="public_cible"
                                 name="public_cible"
-                                value={selectedPublics}
-                                onChange={handleInputChange}
+                                value={selectedPublicsQuestion}
+                                onChange={handlePublicChange}
                                 multiple
                                 size="1"
                                 className="text-emerald-400!"

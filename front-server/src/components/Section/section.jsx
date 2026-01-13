@@ -48,7 +48,7 @@ function Section({
   };
 
 
-  const handleSaveQuestion = async (newQuestion) =>{
+  const handleSaveQuestion = async (newQuestion, publics, themes) =>{
     console.log(newQuestion)
 
 
@@ -63,15 +63,16 @@ function Section({
         page: newQuestion.page,
         tooltip: newQuestion.tooltip,
         coeff: newQuestion.coeff,
-        theme: newQuestion.theme,
         mandatory: newQuestion.mandatory,
-        public_cible: newQuestion.public_cible
+        themes: themes,
+        publics: publics
     })
 });
 
 
   if(response.status==201){
     toast.showSuccess("Question créee")
+    console.log("Reponse back:",response)
      try {
         const responseQ = await fetch(`http://localhost:3008/questionnaire/${questionnaireId}`);
         if (!responseQ.ok) {
