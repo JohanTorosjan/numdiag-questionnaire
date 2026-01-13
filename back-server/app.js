@@ -15,7 +15,7 @@ import {
 import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
 import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode } from './session/session.js'
-import { getAllPublics, createPublic, getAllThemes, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics } from './questionnaire/themePublic.js'
+import { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics } from './questionnaire/themePublic.js'
 
 const app = express()
 const port = 3008
@@ -894,6 +894,21 @@ app.get('/publics',async (req,res) => {
         res.status(500).json({ error: 'Failed to get publics' })
     }
 })
+app.get('/activepublics',async (req,res) => {
+
+    try {
+      // console.log("ici tu es dans le back score")
+        const result = await getAllPublicsActive()
+        res.status(200).json({
+            success: true,
+            message: 'All active publics loaded',
+            data: result
+        })
+    } catch (error) {
+        console.error('Error getting active publics:', error)
+        res.status(500).json({ error: 'Failed to get active publics' })
+    }
+})
 
 app.post('/createPublic',async (req,res) => {
     const { label } = req.body;
@@ -923,6 +938,21 @@ app.get('/themes',async (req,res) => {
     } catch (error) {
         console.error('Error getting themes:', error)
         res.status(500).json({ error: 'Failed to get themes' })
+    }
+})
+app.get('/activethemes',async (req,res) => {
+
+    try {
+      // console.log("ici tu es dans le back score")
+        const result = await getAllThemesActive()
+        res.status(200).json({
+            success: true,
+            message: 'All active themes loaded',
+            data: result
+        })
+    } catch (error) {
+        console.error('Error getting active themes:', error)
+        res.status(500).json({ error: 'Failed to get active themes' })
     }
 })
 
@@ -1025,6 +1055,6 @@ app.post('/questionnaireThemesAndPublics/:questionnaireId', async (req,res) => {
     res.status(200).json({themesAndPublics})
   } catch (error) {
     console.error('Error finding themes and publics:', error)
-    res.status(500).json({ error: 'Failed to find themes and publics for questionnaire' })
+    res.status(500).json({ error: 'Failed to update themes and publics for questionnaire' })
   }
 })

@@ -9,7 +9,7 @@ import CreateSection from "../Section/createSection.jsx";
 import CreateReco from "../recommandations/createReco.jsx";
 import RecoQuestionnaire from "../recommandations/reco_questionnaire.jsx";
 import SideModal from "../recommandations/side_modal.jsx";
-import { getAllPublics, getAllThemes } from '../ThemePublic/themePublic.js';
+import { getAllActivePublics, getAllActiveThemes } from '../ThemePublic/themePublicFront.js';
 
 
 import "./Questionnaire.css"; // Import du CSS
@@ -131,6 +131,7 @@ function Questionnaire() {
   const [allThemes, setAllThemes] = useState([])
   const [theme, setTheme] = useState([]);
   const [publicSelect, setPublic] = useState([]);
+  const [buttonModifierThemes, setButtonModifierThemes]= useState("Modifier les thèmes et publics")
 
   useEffect(() => {
     async function fetchQuestionnaire() {
@@ -141,12 +142,12 @@ function Questionnaire() {
     }
 
     const fetchThemes = async () => {
-      const data = await getAllThemes();
+      const data = await getAllActiveThemes();
       setAllThemes(data.data);
     }
 
     const fetchPublics = async () => {
-      const data = await getAllPublics();
+      const data = await getAllActivePublics();
       setAllPublics(data.data);
     }
 
@@ -239,18 +240,34 @@ function Questionnaire() {
           questionnaire.tooltip,
           questionnaire.code
         );
-        const updateThemesAndPublics = await editQuestionnaireThemesAndPublics(
-          {questionnaire_id:questionnaire.id,theme, publicSelect}
-        )
+
         setButtonModifierQuest("Modifier");
-        const refreshed = await getAssociatedThemesAndPublics(questionnaire.id);
-        setAssociatedThemesAndPublics(refreshed);
+
         console.log("Questionnaire updated:", updateQuest);
-        console.log("Themes and publics updated:", updateThemesAndPublics)
         toast.showSuccess("Questionnaire mis à jour avec succès !");
       } catch (error) {
         console.error("Error updating questionnaire:", error);
         toast.showError("Erreur lors de la mise à jour du questionnaire");
+        // Optionally show user feedback about the error
+      }
+    }
+  }
+  async function toggleButtonModifierThemesAndPublics() {
+    if (buttonModifierThemes === "Modifier les thèmes et publics") {
+      setButtonModifierThemes("Valider");
+    } else {
+      try {
+        const updateThemesAndPublics = await editQuestionnaireThemesAndPublics(
+          {questionnaire_id:questionnaire.id,theme, publicSelect}
+        )
+        const refreshed = await getAssociatedThemesAndPublics(questionnaire.id);
+        setAssociatedThemesAndPublics(refreshed);
+        setButtonModifierThemes("Modifier les thèmes et publics")
+        console.log("Themes and publics updated for questionnaire:", questionnaire.id)
+        toast.showSuccess("Thème(s) et public(s) mis à jour avec succès !");
+      } catch (error) {
+        console.error("Error updating themes and publics:", error);
+        toast.showError("Erreur lors de la mise à jour des thèmes et publics");
         // Optionally show user feedback about the error
       }
     }
@@ -474,72 +491,9 @@ const handlePublicChange = (e) => {
       {/* Header du questionnaire */}
       <div className="questionnaire-header">
           {buttonModifierQuest === "Modifier" ? (
-            <div className="questionnaire-header-content grid grid-cols-[4fr_1fr] gap-x-2">
+        <div className="questionnaire-header-content">
             <QuestionnaireTitle questionnaire={questionnaire} />
-            <div className='w-full'>
-              <div className="w-full mt-6">
-              {associatedThemesAndPublics?.themesAndPublics?.themeLabels?.map( theme =>
-                <p key={theme} className="inline ml-1 bg-blue-100 text-blue-400 px-2 py-1 text-sm rounded">{theme}</p>
-              )}
-              </div>
-              <div className="w-full mt-2">
-              {associatedThemesAndPublics?.themesAndPublics?.publicLabels?.map( theme =>
-                <p key={theme} className="inline ml-1 bg-emerald-100 text-emerald-400 px-2 py-1 text-sm rounded">{theme}</p>
-              )}
-              </div>
-            </div>
-            </div>
-          ) : (
-            <div className="questionnaire-header-content grid grid-cols-[4fr_1fr] gap-x-4">
-            <QuestionnaireTitleForm
-              questionnaire={questionnaire}
-              onChange={handleInputChange}
-            />
-            <div>
-              <div className="form-group bg-blue-100 px-2 py-1 rounded">
-                <label htmlFor="theme_ids" className="text-blue-400!">Thèmes : </label>
-                <select
-                    id="theme_ids"
-                    name="theme_ids"
-                    value={theme}
-                    onChange={handleThemeChange}
-                    multiple
-                    size="1"
-                    className="text-blue-400!"
-                >
-                <option value="" className="px-2"></option>
-                {allThemes.map(theme => (
-                        <option key={theme.id} value={theme.id} className="px-2">
-                            {theme.label}
-                        </option>
-
-                    ))}
-                </select>
-            </div>
-
-            <div className="form-group bg-emerald-100 px-2 py-1 rounded">
-                <label htmlFor="public_ids" className="text-emerald-500!">Publics : </label>
-                <select
-                    id="public_ids"
-                    name="public_ids"
-                    value={publicSelect}
-                    onChange={handlePublicChange}
-                    multiple
-                    size="1"
-                    className="text-emerald-500! accent-emerald-500!"
-                >
-                <option value="" className="px-2"></option>
-                {allPublics.map(publicElement => (
-                        <option key={publicElement.id} value={publicElement.id} className="px-2 accent-emerald-500!">
-                            {publicElement.label}
-                        </option>
-                    ))}
-                </select>
-              </div>
-            </div>
-            </div>
-          )}
-        <div className="questionnaire-actions relative">
+            <div className="questionnaire-actions relative mt-6">
           <button
             type="button"
             className="btn-edit-quest"
@@ -586,7 +540,147 @@ const handlePublicChange = (e) => {
           >Télécharger
           </button>}
 
+          </div>
         </div>
+        ) : (
+          <div className="questionnaire-header-content">
+            <QuestionnaireTitleForm
+              questionnaire={questionnaire}
+              onChange={handleInputChange}
+            />
+            <div className="questionnaire-actions relative mt-6">
+            <button
+              type="button"
+              className="btn-edit-quest"
+              onClick={toggleButtonModifierQuest}
+            >
+              {buttonModifierQuest}
+            </button>
+            <button
+              type="button"
+              className="btn-edit-quest"
+              onClick={() => setIsModalOpen(true)}
+            >
+              Éditer les recommandations
+            </button>
+            <button
+              type="button"
+              className="btn-toggle-sections"
+              onClick={() => setButtonAffichageSection(!buttonAffichageSection)}
+            >
+              {buttonAffichageSection ? "Afficher les actifs" : "Tout afficher"}
+            </button>
+
+            {!questionnaire.ispublished ?
+            (<div className="flex absolute right-0 space-x-3">
+            <button
+              type="button"
+              className=" bg-orange-700 border border-orange-700 px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-orange-600 hover:border-orange-600"
+              onClick={publishQuest}
+            >
+              Publier
+            </button>
+            <button
+              type="button"
+              className=" bg-emerald-600 border border-emerald-600 px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-emerald-500 hover:border-emerald-500"
+              onClick={downloadJson}
+            >
+              Télécharger
+            </button>
+            </div>)
+            : (<button
+              type="button"
+              className="absolute right-0 bg-emerald-600 border border-emerald-600 px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-emerald-500 hover:border-emerald-500"
+              onClick={downloadJson}
+            >Télécharger
+            </button>)
+            }
+          </div>
+        </div>
+        )}
+
+        <hr className='w-4/5 text-zinc-300 mx-auto'/>
+          { (buttonModifierThemes === "Modifier les thèmes et publics") ? (
+          <div className='w-full flex space-x-4 mt-6 items-center'>
+              <div className="w-2/5">
+              <p className="ml-1 bg-blue-100 text-blue-400 px-2 py-1 text-sm rounded w-fit mb-2">Thèmes</p>
+              <div className="flex flex-wrap">
+              {associatedThemesAndPublics?.themesAndPublics?.themeLabels?.map( theme =>
+                <p key={theme} className="ml-1 bg-blue-100 text-blue-400 px-2 py-1 text-sm rounded text-nowrap mt-1">{theme}</p>
+              )}
+              </div>
+              </div>
+              <div className="w-2/5">
+              <p className="ml-1 bg-emerald-100 text-emerald-400 px-2 py-1 text-sm rounded w-fit mb-2">Publics</p>
+              <div className="flex flex-wrap">
+                {associatedThemesAndPublics?.themesAndPublics?.publicLabels?.map( theme =>
+                <p key={theme} className="inline ml-1 bg-emerald-100 text-emerald-400 px-2 py-1 text-sm rounded mt-1">{theme}</p>
+              )}
+              </div>
+              </div>
+
+              <button
+                type="button"
+                className="w-1/5 h-14 bg-blue-600 border px-1 py-1 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-blue-400"
+                onClick={toggleButtonModifierThemesAndPublics}
+              >{buttonModifierThemes}</button>
+
+            </div>)
+            :
+            (
+
+            <div className="w-full flex space-x-4 mt-6 items-center">
+              <div className="form-group bg-blue-100 px-2 py-1 rounded w-2/5 mt-4">
+                <label htmlFor="theme_ids" className="text-blue-400!">Thèmes : </label>
+                <select
+                    id="theme_ids"
+                    name="theme_ids"
+                    value={theme}
+                    onChange={handleThemeChange}
+                    multiple
+                    size="1"
+                    className="text-blue-500!"
+                >
+                <option value="" className="px-2"></option>
+                {allThemes.map(theme => (
+                        <option key={theme.id} value={theme.id} className="px-2">
+                            {theme.label}
+                        </option>
+
+                    ))}
+                </select>
+            </div>
+
+            <div className="form-group bg-emerald-100 px-2 py-1 rounded w-2/5 mt-4">
+                <label htmlFor="public_ids" className="text-emerald-500!">Publics : </label>
+                <select
+                    id="public_ids"
+                    name="public_ids"
+                    value={publicSelect}
+                    onChange={handlePublicChange}
+                    multiple
+                    size="1"
+                    className="text-emerald-500! accent-emerald-500!"
+                >
+                <option value="" className="px-2"></option>
+                {allPublics.map(publicElement => (
+                        <option key={publicElement.id} value={publicElement.id} className="px-2 accent-emerald-500!">
+                            {publicElement.label}
+                        </option>
+                    ))}
+                </select>
+              </div>
+
+            <button
+                type="button"
+                className="w-1/5 h-14 bg-blue-600 border px-1 py-1 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-blue-400"
+                onClick={toggleButtonModifierThemesAndPublics}
+                >{buttonModifierThemes}</button>
+
+            </div>
+            )
+          }
+
       </div>
 
       {/* Liste des sections */}
@@ -606,6 +700,9 @@ const handlePublicChange = (e) => {
                 onUpdateQuestion={updateQuestion}
                 setQuestionnaire={setQuestionnaire}
                 questionnaireId={id}
+                themesAndPublicsFromQuestionnaire={associatedThemesAndPublics}
+                allPublics={allPublics}
+                allThemes={allThemes}
               />
             </div>
           ) : (

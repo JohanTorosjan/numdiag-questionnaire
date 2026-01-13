@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './createQuestion.css';
 import { useToast } from '../../ToastSystem';
 import ReactDOM from "react-dom";
 
-function PopUpCreateQuestion({ onSave, onClose, sectionNbPages }) {
+function PopUpCreateQuestion({ onSave, onClose, sectionNbPages, themesAndPublicsFromQuestionnaire, allPublics, allThemes }) {
     const toast = useToast();
     const [formData, setFormData] = useState({
         coeff: 1,
@@ -12,10 +12,10 @@ function PopUpCreateQuestion({ onSave, onClose, sectionNbPages }) {
         page: 1,
         position: 1,
         questiontype: 'entier',
-        theme: null,
         tooltip: '',
-        public_cible: 'Tous'
     });
+    const [selectedThemes, setSelectedThemes]=useState([])
+    const [selectedPublics, setSelectedPublics]=useState([])
 
     // Listes fixes pour les select
     const questionTypes = [
@@ -25,20 +25,21 @@ function PopUpCreateQuestion({ onSave, onClose, sectionNbPages }) {
         { value: 'libre', label: 'Libre' },
     ];
 
-    const themes = [
-        { value: null, label: 'Aucun thème' },
-        { value: 'general', label: 'Général' },
-        { value: 'personnel', label: 'Personnel' },
-        { value: 'professionnel', label: 'Professionnel' },
-        { value: 'technique', label: 'Technique' }
-    ];
+    useEffect(() => {
+      if (!themesAndPublicsFromQuestionnaire?.themesAndPublics) return;
 
-    const publics = [
-        { value: 'Tous', label: 'Tous' },
-        { value: 'Jeune', label: 'Jeune' },
-        { value: 'Professionnel', label: 'Professionnel' },
-        { value: 'Entreprises', label: 'Entreprises' }
-    ];
+      const { resultTheme, themeLabels } =
+        themesAndPublicsFromQuestionnaire.themesAndPublics;
+      const { resultPublic, publicLabels } =
+        themesAndPublicsFromQuestionnaire.themesAndPublics;
+
+      const themes = resultTheme.map(t => t.theme_id);
+      const publics = resultPublic.map(p => p.public_id);
+
+      setSelectedThemes(themes);
+      setSelectedPublics(publics)
+    }, [themesAndPublicsFromQuestionnaire]);
+
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -159,41 +160,8 @@ function PopUpCreateQuestion({ onSave, onClose, sectionNbPages }) {
                                 ))}
                             </select>
                         </div>
-
-                        <div className="form-group">
-                            <label htmlFor="theme">Thème :</label>
-                            <select
-                                id="theme"
-                                name="theme"
-                                value={formData.theme || ''}
-                                onChange={handleInputChange}
-                            >
-                                {themes.map(theme => (
-                                    <option key={theme.value || 'null'} value={theme.value || ''}>
-                                        {theme.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="public_cible">Public :</label>
-                            <select
-                                id="public_cible"
-                                name="public_cible"
-                                value={formData.public_cible || ''}
-                                onChange={handleInputChange}
-                            >
-                                {publics.map(public_cible => (
-                                    <option key={public_cible.value || 'null'} value={public_cible.value || ''}>
-                                        {public_cible.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="form-group">
+                      </div>
+                      <div className="form-group">
                         <label htmlFor="tooltip">Aide/Tooltip :</label>
                         <input
                             type="text"
@@ -204,6 +172,48 @@ function PopUpCreateQuestion({ onSave, onClose, sectionNbPages }) {
                             placeholder="Texte d'aide pour l'utilisateur"
                         />
                     </div>
+
+                      <div className="flex space-x-3">
+                        <div className="form-group bg-blue-100 px-2 py-2 rounded">
+                            <label htmlFor="theme"  className="text-blue-400!">Thème :</label>
+                            <select
+                                id="theme"
+                                name="theme"
+                                value={selectedThemes}
+                                onChange={handleInputChange}
+                                multiple
+                                size="1"
+                                className="text-blue-400!"
+                            >
+                                {allThemes.map(theme => (
+                                    <option key={theme.id} value={theme.id} className="px-2">
+                                        {theme.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="form-group bg-emerald-100 px-2 py-2 rounded">
+                            <label htmlFor="public_cible" className="text-emerald-400!">Public :</label>
+                            <select
+                                id="public_cible"
+                                name="public_cible"
+                                value={selectedPublics}
+                                onChange={handleInputChange}
+                                multiple
+                                size="1"
+                                className="text-emerald-400!"
+                            >
+                                {allPublics.map(public_cible => (
+                                    <option key={public_cible.id} value={public_cible.id} className="px-2">
+                                        {public_cible.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+
 
                     <div className="form-group checkbox-group">
                         <label htmlFor="mandatory" className="checkbox-label">

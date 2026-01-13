@@ -3,6 +3,9 @@ import { numdiagPool, executeQuery } from '../database/client.js'
 function getAllPublics() {
     return executeQuery(numdiagPool, 'SELECT * FROM publics ORDER BY id')
 }
+function getAllPublicsActive() {
+    return executeQuery(numdiagPool, 'SELECT * FROM publics WHERE isactive ORDER BY id')
+}
 
 function createPublic(label = null) {
     const fields = [];
@@ -25,6 +28,9 @@ function createPublic(label = null) {
 
 function getAllThemes() {
     return executeQuery(numdiagPool, 'SELECT * FROM themes ORDER BY id')
+}
+function getAllThemesActive() {
+    return executeQuery(numdiagPool, 'SELECT * FROM themes WHERE isactive ORDER BY id')
 }
 
 function createTheme(label = null) {
@@ -252,12 +258,12 @@ const createThemePublicQuestionnaire = async ({theme, publicSelect, questionnair
           );
         }
 
-        return {result, success: true};
+        return {success: true};
 
       } catch (error) {
-        console.error('Error updating public label:', error);
+        console.error('Error updating theme and public for questionnaire ',questionnaireId,':', error);
         throw error;
       }
     };
 
-export { getAllPublics, createPublic, getAllThemes, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics }
+export { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics }

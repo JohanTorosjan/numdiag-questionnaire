@@ -5,7 +5,7 @@ import CreateQuestionnaire from "../Questionnaire/createQuestionnaire";
 import CreateThemePublic from "../ThemePublic/createThemePublic.jsx";
 import { useToast } from '../../ToastSystem';
 import DocumentTitle from '../hooks/documentTitle';
-import { getAllPublics, getAllThemes } from '../ThemePublic/themePublic.js';
+import { getAllPublics, getAllThemes } from '../ThemePublic/themePublicFront.js';
 
 async function getAllQuestionnairesResume() {
     try {

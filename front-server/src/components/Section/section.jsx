@@ -11,6 +11,9 @@ function Section({
   onUpdateQuestion,
   setQuestionnaire,
   questionnaireId,
+  themesAndPublicsFromQuestionnaire,
+  allPublics,
+  allThemes
 }) {
 
   const [isQuestionsOpen, setIsQuestionsOpen] = React.useState(false);
@@ -255,6 +258,9 @@ function Section({
                     onClose={closeCreateQuestion}
                     onSave={handleSaveQuestion}
                     sectionNbPages={section.nbpages}
+                    themesAndPublicsFromQuestionnaire={themesAndPublicsFromQuestionnaire}
+                    allPublics={allPublics}
+                    allThemes={allThemes}
                 />
             )}
 

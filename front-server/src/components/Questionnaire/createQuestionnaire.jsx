@@ -1,32 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../popups/editQuestion.css';
-
-
-async function getAllPublics() {
-    try {
-        const response = await fetch('http://localhost:3008/publics');
-        if (response.ok) {
-            const data = await response.json();
-            return data;
-        }
-    } catch (error) {
-        console.error('Error fetching publics:', error);
-        return [];
-    }
-}
-async function getAllThemes() {
-    try {
-        const response = await fetch('http://localhost:3008/themes');
-        if (response.ok) {
-            const data = await response.json();
-            return data;
-        }
-    } catch (error) {
-        console.error('Error fetching themes:', error);
-        return [];
-    }
-}
-
+import { getAllActivePublics, getAllActiveThemes } from '../ThemePublic/themePublicFront.js';
 
 function CreateQuestionnaire({ onSave, onClose }) {
     const [formData, setFormData] = useState({
@@ -47,12 +21,12 @@ function CreateQuestionnaire({ onSave, onClose }) {
 
     useEffect(() => {
       const fetchThemes = async () => {
-        const data = await getAllThemes();
+        const data = await getAllActiveThemes();
         setAllThemes(data.data);
       }
 
       const fetchPublics = async () => {
-        const data = await getAllPublics();
+        const data = await getAllActivePublics();
         setAllPublics(data.data);
       }
 
@@ -97,7 +71,7 @@ function CreateQuestionnaire({ onSave, onClose }) {
 
 
     return (
-      <div className="popup-overlay" onClick={handleBackdropClick}>
+      <div className="popup-overlay relative" onClick={handleBackdropClick}>
           <div className="popup-content">
               <div className="popup-header">
                   <h3>Nouveau Questionnaire</h3>
@@ -118,41 +92,42 @@ function CreateQuestionnaire({ onSave, onClose }) {
                       />
                   </div>
 
-                  <div className="form-row">
+                  <div className="">
                       <div className="form-group">
                           <label htmlFor="description">Description :</label>
-                          <input
-                              type="text"
+                          <textarea
                               id="description"
                               name="description"
                               value={formData.description}
                               onChange={handleInputChange}
+                              className="field-sizing-content w-full break-all"
                           />
                       </div>
-
-                      <div className="form-group">
+                      <div className="flex space-x-4">
+                      <div className="form-group w-1/2">
                           <label htmlFor="insight">Insight :</label>
-                          <input
-                              type="text"
+                          <textarea
                               id="insight"
                               name="insight"
                               value={formData.insight}
                               onChange={handleInputChange}
-                          />
+                              className="field-sizing-content w-full break-all"
+                              />
                       </div>
 
-                      <div className="form-group">
+                      <div className="form-group w-1/2">
                           <label htmlFor="tooltip">Tooltip :</label>
-                          <input
-                              type="text"
+                          <textarea
                               id="tooltip"
                               name="tooltip"
                               value={formData.tooltip}
                               onChange={handleInputChange}
-                          />
+                              className="field-sizing-content w-full text break-all"
+                              />
+                      </div>
                       </div>
 
-                      <div className="form-group">
+                      <div className="form-group block">
                           <label htmlFor="code">Code :</label>
                           <input
                               id="code"
@@ -168,8 +143,8 @@ function CreateQuestionnaire({ onSave, onClose }) {
                   </div>
 
                   <div className="form-row">
-                        <div className="form-group">
-                            <label htmlFor="theme_ids">Thèmes : </label>
+                        <div className="form-group bg-blue-100 px-2 py-1 rounded">
+                            <label htmlFor="theme_ids" className="text-blue-400!">Thèmes : </label>
                             <select
                                 id="theme_ids"
                                 name="theme_ids"
@@ -177,18 +152,19 @@ function CreateQuestionnaire({ onSave, onClose }) {
                                 onChange={handleThemeChange}
                                 multiple
                                 size="1"
+                                className="text-blue-500!"
                             >
-                            <option value=""></option>
+                            <option value="" className="px-2"></option>
                             {allThemes.map(theme => (
-                                    <option key={theme.id} value={theme.id}>
+                                    <option key={theme.id} value={theme.id} className="px-2">
                                         {theme.label}
                                     </option>
                                 ))}
                             </select>
                         </div>
 
-                        <div className="form-group">
-                            <label htmlFor="public_ids">Publics : </label>
+                        <div className="form-group bg-emerald-100 px-2 py-1 rounded">
+                            <label htmlFor="public_ids" className="text-emerald-400!">Publics : </label>
                             <select
                                 id="public_ids"
                                 name="public_ids"
@@ -196,10 +172,11 @@ function CreateQuestionnaire({ onSave, onClose }) {
                                 onChange={handlePublicChange}
                                 multiple
                                 size="1"
+                                className="text-emerald-500!"
                             >
-                            <option value=""></option>
+                            <option value="" className="px-2"></option>
                             {allPublics.map(publicElement => (
-                                    <option key={publicElement.id} value={publicElement.id}>
+                                    <option key={publicElement.id} value={publicElement.id} className="px-2">
                                         {publicElement.label}
                                     </option>
                                 ))}
