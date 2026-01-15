@@ -114,11 +114,11 @@ function Session(){
     if (questionnaire) {
       setIsLoading(false)
     } else {
-      () => {setTimeout(() => {
+      setTimeout(() => {
         setIsLoading(false);
-      }, 1000); }// Wait 1 second before showing error
+      }, 1000); // Wait 1 second before showing error
     }
-  }, [questionnaire])
+  }, [questionnaire_id])
 
 
 

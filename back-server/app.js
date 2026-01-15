@@ -189,9 +189,9 @@ app.put('/updateQuestionnaire/:questionnaireId', async (req, res) => {
 })
 
 app.post('/createQuestionnaire', async (req,res) => {
-  const { label, description, insight, tooltip, code } = req.body; // Get data from request body
+  const { label, description, insight, tooltip, code, default_question_type } = req.body; // Get data from request body
   try {
-    const questionnaireCreate = await createQuestionnaire(label, description, insight, tooltip, code)
+    const questionnaireCreate = await createQuestionnaire(label, description, insight, tooltip, code, default_question_type)
     res.status(200).json({success: true, questionnaire: questionnaireCreate[0]})
   } catch (error) {
     console.error('Error creating questionnaire:', error)

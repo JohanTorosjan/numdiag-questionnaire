@@ -134,7 +134,7 @@ function updateQuestionnaireInfo(idQuestionnaire, label = null, description = nu
     executeQuery(numdiagPool, `UPDATE Questionnaires SET ${fields.join(', ')} WHERE id = $${index} RETURNING *`, values)
   }
 
-  function createQuestionnaire(label = null, description = null, insight = null, tooltip = null, code = null) {
+  function createQuestionnaire(label = null, description = null, insight = null, tooltip = null, code = null, default_question_type= null) {
     const fields = [];
     const placeholders=[];
     const values = [];
@@ -164,6 +164,12 @@ function updateQuestionnaireInfo(idQuestionnaire, label = null, description = nu
       fields.push(`code`);
       placeholders.push(`$${index++}`);
       values.push(code);
+    }
+    
+    if (default_question_type !== null && default_question_type!=='') {
+      fields.push(`default_question_type`);
+      placeholders.push(`$${index++}`);
+      values.push(default_question_type);
     }
 
 

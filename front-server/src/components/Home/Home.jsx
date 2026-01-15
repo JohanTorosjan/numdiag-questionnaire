@@ -191,7 +191,6 @@ export default function Home() {
     const toggleButtonActive = async (id, currentStatus) => {
     try {
       const newStatus = !currentStatus;
-      console.log(newStatus);
       const updateQuest = await updateQuestionnaire(id, newStatus);
 
       setQuestionnaires(prev =>
@@ -217,9 +216,7 @@ export default function Home() {
   const handleSaveQuestionnaire = async ({formData, theme, publicSelect}) => {
     let questionnaire_id = undefined;
       try {
-          console.log('Appel API pour sauvegarder:', {
-              updatedData: formData
-          });
+
           setIsCreating(true)
           const response = await fetch(`http://localhost:3008/createQuestionnaire`, {
               method: 'POST',
@@ -254,7 +251,7 @@ export default function Home() {
       }
 
       try {
-        console.log("Sauvegarde des thèmes et publics associés", {theme, publicSelect})
+        ("Sauvegarde des thèmes et publics associés", {theme, publicSelect})
         setIsCreating(true)
 
           const response = await fetch(`http://localhost:3008/themePublicQuestionnaire`, {
@@ -272,7 +269,7 @@ export default function Home() {
           }
 
           const result = await response.json();
-          console.log(result)
+
 
           if (!result.success) {
             toast.showError('Erreur lors de la sauvegarde des thèmes et publics');
@@ -295,9 +292,7 @@ export default function Home() {
 ////////////////////////////////////////
   const handleSavePublic = async (newPublic) => {
       try {
-          console.log('Appel API pour sauvegarder un public:', {
-              updatedData: newPublic
-          });
+
           setIsCreating(true)
           const response = await fetch(`http://localhost:3008/createPublic`, {
               method: 'POST',
@@ -336,9 +331,7 @@ export default function Home() {
 ////////////////////////////////////////
   const handleSaveTheme = async (newTheme) => {
       try {
-          console.log('Appel API pour sauvegarder un public:', {
-              updatedData: newTheme
-          });
+
           setIsCreating(true)
           const response = await fetch(`http://localhost:3008/createTheme`, {
               method: 'POST',
@@ -363,7 +356,6 @@ export default function Home() {
             toast.showSuccess('Thème créé avec succès!');
           }
           const data = await getAllThemes();
-          console.log(data.data)
           setAllThemes(data.data);
           setIsThemeOpen(false);
       } catch (error) {

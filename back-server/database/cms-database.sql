@@ -13,6 +13,7 @@ CREATE TABLE Questionnaires (
   isactive BOOLEAN NOT NULL DEFAULT TRUE,
   scoremax INTEGER NOT NULL DEFAULT 100, -- plus pris en compte
   isPublished BOOLEAN NOT NULL DEFAULT FALSE,
+  default_question_type VARCHAR,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

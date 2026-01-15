@@ -9,6 +9,7 @@ function CreateQuestionnaire({ onSave, onClose }) {
         insight: '',
         tooltip: '',
         code: '',
+        default_question_type:''
     });
     const [theme, setTheme] = useState({
         theme_id: [],
@@ -18,6 +19,14 @@ function CreateQuestionnaire({ onSave, onClose }) {
     });
     const [allPublics, setAllPublics] = useState([])
     const [allThemes, setAllThemes] = useState([])
+
+    // Listes fixes pour les select
+    const questionTypes = [
+        { value: 'entier', label: 'Entier' },
+        { value: 'choix_simple', label: 'Choix simple' },
+        { value: 'choix_multiple', label: 'Choix multiple' },
+        { value: 'libre', label: 'Libre' },
+    ];
 
     useEffect(() => {
       const fetchThemes = async () => {
@@ -154,7 +163,6 @@ function CreateQuestionnaire({ onSave, onClose }) {
                                 size="1"
                                 className="text-blue-500!"
                             >
-                            <option value="" className="px-2"></option>
                             {allThemes.map(theme => (
                                     <option key={theme.id} value={theme.id} className="px-2">
                                         {theme.label}
@@ -174,7 +182,6 @@ function CreateQuestionnaire({ onSave, onClose }) {
                                 size="1"
                                 className="text-emerald-500!"
                             >
-                            <option value="" className="px-2"></option>
                             {allPublics.map(publicElement => (
                                     <option key={publicElement.id} value={publicElement.id} className="px-2">
                                         {publicElement.label}
@@ -182,9 +189,24 @@ function CreateQuestionnaire({ onSave, onClose }) {
                                 ))}
                             </select>
                         </div>
-
-
                     </div>
+                    <div className="form-group">
+                            <label htmlFor="questiontype">Type de question par défaut:</label>
+                            <select
+                                id="default_question_type"
+                                name="default_question_type"
+                                value={formData.default_question_type}
+                                onChange={handleInputChange}
+                                size="1"
+                            >
+                                <option value="">Non défini</option>
+                                {questionTypes.map(type => (
+                                    <option key={type.value} value={type.value}>
+                                        {type.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
 
 
 

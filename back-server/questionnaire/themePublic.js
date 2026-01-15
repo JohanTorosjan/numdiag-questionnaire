@@ -209,7 +209,7 @@ const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => 
         `;
         const resultTheme = await executeQuery(numdiagPool, queryTheme, [questionnaireId]);
 
-        const queryLabelTheme=`SELECT label FROM Themes WHERE id= $1`
+        const queryLabelTheme=`SELECT label FROM Themes WHERE id= $1 AND isactive`
         const themeLabels = [];
 
         for (const result of resultTheme) {
@@ -218,7 +218,9 @@ const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => 
             queryLabelTheme,
             [result.theme_id]
           );
-          themeLabels.push(label[0].label);
+          if (label.length != 0) {
+            themeLabels.push(label[0].label);
+          }
         }
 
         const queryPublic = `
@@ -228,7 +230,7 @@ const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => 
         `;
         const resultPublic = await executeQuery(numdiagPool, queryPublic, [questionnaireId]);
 
-        const queryLabelPublic=`SELECT label FROM Publics WHERE id= $1`
+        const queryLabelPublic=`SELECT label FROM Publics WHERE id= $1 AND isactive`
         const publicLabels = [];
 
         for (const result of resultPublic) {
@@ -237,7 +239,9 @@ const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => 
             queryLabelPublic,
             [result.public_id]
           );
-          publicLabels.push(label[0].label);
+          if (label.length != 0) {
+            publicLabels.push(label[0].label);
+          }
         }
 
         return {resultTheme, themeLabels, resultPublic, publicLabels, questionnaireId, success: true};
@@ -258,7 +262,7 @@ const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => 
         `;
         const resultTheme = await executeQuery(numdiagPool, queryTheme, [questionId]);
 
-        const queryLabelTheme=`SELECT label FROM Themes WHERE id= $1`
+        const queryLabelTheme=`SELECT label FROM Themes WHERE id= $1 AND isactive`
         const themeLabels = [];
 
         for (const result of resultTheme) {
@@ -267,7 +271,9 @@ const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => 
             queryLabelTheme,
             [result.theme_id]
           );
-          themeLabels.push({id: result.theme_id, label:label[0].label});
+          if (label.length != 0) {
+            themeLabels.push({id: result.theme_id, label:label[0].label});
+          }
         }
 
         const queryPublic = `
@@ -277,7 +283,7 @@ const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => 
         `;
         const resultPublic = await executeQuery(numdiagPool, queryPublic, [questionId]);
 
-        const queryLabelPublic=`SELECT label FROM Publics WHERE id= $1`
+        const queryLabelPublic=`SELECT label FROM Publics WHERE id= $1 AND isactive`
         const publicLabels = [];
 
         for (const result of resultPublic) {
@@ -286,7 +292,9 @@ const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => 
             queryLabelPublic,
             [result.public_id]
           );
-          publicLabels.push({id: result.public_id, label: label[0].label});
+          if (label.length != 0) {
+            publicLabels.push({id: result.public_id, label: label[0].label});
+          }
         }
 
         return {themeLabels, publicLabels, questionId, success: true};
