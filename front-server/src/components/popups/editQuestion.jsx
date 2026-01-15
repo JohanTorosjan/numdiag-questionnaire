@@ -187,7 +187,7 @@ function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages, selected
                       </div>
                       <div className="form-row">
                         <div className="form-group bg-blue-100 px-2 py-2 rounded">
-                            <label className="text-blue-400!" htmlFor="theme">Thème :</label>
+                            <label className="text-blue-400!" htmlFor="theme">Thème(s) :</label>
                             <select
                                 id="theme"
                                 name="theme"
@@ -206,7 +206,7 @@ function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages, selected
                         </div>
 
                          <div className="form-group bg-emerald-100 px-2 py-2 rounded">
-                            <label htmlFor="public_cible" className="text-emerald-400!">Public :</label>
+                            <label htmlFor="public_cible" className="text-emerald-400!">Public(s) :</label>
                             <select
                                 id="public_cible"
                                 name="public_cible"

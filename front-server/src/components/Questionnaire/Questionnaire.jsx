@@ -603,7 +603,7 @@ const handlePublicChange = (e) => {
           { (buttonModifierThemes === "Modifier les thèmes et publics") ? (
           <div className='w-full flex space-x-4 mt-6 items-center'>
               <div className="w-2/5">
-              <p className="ml-1 bg-blue-100 text-blue-400 px-2 py-1 text-sm rounded w-fit mb-2">Thèmes</p>
+              <p className="ml-1 text-blue-400 w-fit text-md border-b border-blue-100 mb-2">Thème(s)</p>
               <div className="flex flex-wrap">
               {associatedThemesAndPublics?.themesAndPublics?.themeLabels?.map( theme =>
                 <p key={theme} className="ml-1 bg-blue-100 text-blue-400 px-2 py-1 text-sm rounded text-nowrap mt-1">{theme}</p>
@@ -611,7 +611,7 @@ const handlePublicChange = (e) => {
               </div>
               </div>
               <div className="w-2/5">
-              <p className="ml-1 bg-emerald-100 text-emerald-400 px-2 py-1 text-sm rounded w-fit mb-2">Publics</p>
+              <p className="ml-1 text-emerald-400 text-md w-fit border-b border-emerald-100 mb-2">Public(s)</p>
               <div className="flex flex-wrap">
                 {associatedThemesAndPublics?.themesAndPublics?.publicLabels?.map( theme =>
                 <p key={theme} className="inline ml-1 bg-emerald-100 text-emerald-400 px-2 py-1 text-sm rounded mt-1">{theme}</p>
