@@ -242,6 +242,9 @@ function Section({
                   sectionNbPages={section.nbpages}
                   setQuestionnaire={setQuestionnaire}
                   questionnaireId={questionnaireId}
+                  themesAndPublicsFromQuestionnaire={themesAndPublicsFromQuestionnaire}
+                  allPublics={allPublics}
+                  allThemes={allThemes}
                 />
               ))}
         </div>

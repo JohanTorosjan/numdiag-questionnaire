@@ -28,9 +28,9 @@ function PopUpCreateQuestion({ onSave, onClose, sectionNbPages, themesAndPublics
     useEffect(() => {
       if (!themesAndPublicsFromQuestionnaire?.themesAndPublics) return;
 
-      const { resultTheme, themeLabels } =
+      const { resultTheme } =
         themesAndPublicsFromQuestionnaire.themesAndPublics;
-      const { resultPublic, publicLabels } =
+      const { resultPublic } =
         themesAndPublicsFromQuestionnaire.themesAndPublics;
 
       const themes = resultTheme.map(t => t.theme_id);

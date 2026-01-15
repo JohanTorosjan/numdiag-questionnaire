@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './editQuestion.css';
 import { useParams } from 'react-router-dom';
 import QuestionDependencies from '../Question/questionDependencies';
 import { useToast } from '../../ToastSystem';
 import ReactDOM from "react-dom";
 
-function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
+function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages, selectedThemes, selectedPublics, allPublics, allThemes }) {
   const toast = useToast();
     const [formData, setFormData] = useState({
         coeff: question?.coeff ?? 1,
@@ -14,11 +14,11 @@ function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
         page: question?.page || 1,
         position: question?.position || 1,
         questiontype: question?.questiontype || '',
-        theme: question?.theme || null,
         tooltip: question?.tooltip || '',
-        public_cible: question?.public_cible || '',
         dependencies : []
     });
+    const [selectedThemesQuestion, setSelectedThemesQuestion]=useState([])
+    const [selectedPublicsQuestion, setSelectedPublicsQuestion]=useState([])
 
     const { id } = useParams();
 
@@ -32,20 +32,17 @@ function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
 
     ];
 
-    const themes = [
-        { value: null, label: 'Aucun thème' },
-        { value: 'general', label: 'Général' },
-        { value: 'personnel', label: 'Personnel' },
-        { value: 'professionnel', label: 'Professionnel' },
-        { value: 'technique', label: 'Technique' }
-    ];
+    useEffect(() => {
+      const themes = selectedThemes.map(t => t.id);
+      const publics = selectedPublics.map(p => p.id);
+      setSelectedThemesQuestion(themes);
+      setSelectedPublicsQuestion(publics)
+    }, [selectedThemes, selectedPublics]);
 
-        const publics = [
-        { value: 'Tous', label: 'Tous' },
-        { value: 'Jeune', label: 'Jeune' },
-        { value: 'Professionnel', label: 'Professionnel' },
-        { value: 'Entreprises', label: 'Entreprises' }
-    ];
+    useEffect(()=>{
+      console.log("Selected themes:", selectedThemesQuestion)
+    },[selectedThemesQuestion])
+
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
 
@@ -75,7 +72,7 @@ function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave(formData);
+        onSave(formData, selectedPublicsQuestion, selectedThemesQuestion);
     };
 
     const handleBackdropClick = (e) => {
@@ -89,11 +86,19 @@ function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
         setFormData(prev => ({
             ...prev,
            dependencies: answerId
-        }));       
+        }));
     }
 
 
-    
+    const handleThemeChange = (e) => {
+      const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+      setSelectedThemesQuestion(selectedOptions);
+    };
+    const handlePublicChange = (e) => {
+        const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+        setSelectedPublicsQuestion(selectedOptions);
+    };
+
 
     return ReactDOM.createPortal(
         <div className="popup-overlay" onClick={handleBackdropClick}>
@@ -164,7 +169,7 @@ function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
                     <div className="form-row">
                         <div className="form-group">
                             <label htmlFor="questiontype">Type de question :</label>
-                            <p>Attention, la modification de ce champs entrainera la suppression de toutes les réponses</p>
+                            <p>Attention, la modification de ce champ entrainera la suppression de toutes les réponses</p>
                             <select
                                 id="questiontype"
                                 name="questiontype"
@@ -179,32 +184,40 @@ function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
                                 ))}
                             </select>
                         </div>
-
-                        <div className="form-group">
-                            <label htmlFor="theme">Thème :</label>
+                      </div>
+                      <div className="form-row">
+                        <div className="form-group bg-blue-100 px-2 py-2 rounded">
+                            <label className="text-blue-400!" htmlFor="theme">Thème :</label>
                             <select
                                 id="theme"
                                 name="theme"
-                                value={formData.theme || ''}
-                                onChange={handleInputChange}
+                                value={selectedThemesQuestion}
+                                onChange={handleThemeChange}
+                                multiple
+                                size="1"
+                                className="text-blue-400!"
                             >
-                                {themes.map(theme => (
-                                    <option key={theme.value || 'null'} value={theme.value || ''}>
+                                {allThemes.map(theme => (
+                                    <option key={theme.id} value={theme.id} className="px-2">
                                         {theme.label}
                                     </option>
                                 ))}
                             </select>
                         </div>
-                         <div className="form-group">
-                            <label htmlFor="public_cible">Public :</label>
+
+                         <div className="form-group bg-emerald-100 px-2 py-2 rounded">
+                            <label htmlFor="public_cible" className="text-emerald-400!">Public :</label>
                             <select
                                 id="public_cible"
                                 name="public_cible"
-                                value={formData.public_cible || ''}
-                                onChange={handleInputChange}
+                                value={selectedPublicsQuestion}
+                                onChange={handlePublicChange}
+                                multiple
+                                size="1"
+                                className="text-emerald-400!"
                             >
-                                {publics.map(public_cible => (
-                                    <option key={public_cible.value || 'null'} value={public_cible.value || ''}>
+                                {allPublics.map(public_cible => (
+                                    <option key={public_cible.id} value={public_cible.id} className="px-2">
                                         {public_cible.label}
                                     </option>
                                 ))}
@@ -212,7 +225,7 @@ function PopUpEditQuestion({ question, onSave, onClose, sectionNbPages }) {
                         </div>
                     </div>
 
-                    <div className="form-group">
+                    <div className="form-group ">
                         <label htmlFor="tooltip">Aide/Tooltip :</label>
                         <input
                             type="text"

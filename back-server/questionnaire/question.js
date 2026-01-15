@@ -139,7 +139,7 @@ function getAllReponsesByQuestion(idQuestion) {
 }
 
 
-async function updateQuestion(questionId,section_id,label,questiontype,tooltip,coeff,mandatory,dependencies){
+async function updateQuestion(questionId,section_id,label,questiontype,tooltip,coeff,mandatory,dependencies, themes, publics){
     try{
         await numdiagPool.query('BEGIN')
             // 1. Mise à jour de la question principale

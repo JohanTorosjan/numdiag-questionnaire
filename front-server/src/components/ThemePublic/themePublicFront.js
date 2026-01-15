@@ -47,4 +47,17 @@ async function getAllActiveThemes() {
     }
 }
 
-export {getAllPublics, getAllThemes, getAllActivePublics, getAllActiveThemes}
+async function getPublicsAndThemes(questionId) {
+  try {
+      const response = await fetch(`http://localhost:3008/associatedThemesAndPublicsQuestion/${questionId}`);
+      if (response.ok) {
+          const data = await response.json();
+          return data;
+      }
+  } catch (error) {
+      console.error('Error fetching publics and themes for question:', error);
+      return [];
+  }
+}
+
+export {getAllPublics, getAllThemes, getAllActivePublics, getAllActiveThemes, getPublicsAndThemes}

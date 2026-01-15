@@ -347,4 +347,53 @@ const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => 
       }
     };
 
-export { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion }
+    const updateAssociatedThemesAndPublicsQuestion = async ({questionId, themes, publics}) => {
+      try {
+        const deleteJoinedTheme =
+        `DELETE FROM JoinThemesQuestions WHERE question_id = $1`;
+        const resultDeleteTheme = await executeQuery(numdiagPool, deleteJoinedTheme, [questionId]);
+        const deleteJoinedPublic =
+        `DELETE FROM JoinPublicsQuestions WHERE question_id = $1`;
+        const resultDeletePublic = await executeQuery(numdiagPool, deleteJoinedPublic, [questionId]);
+
+
+        const queryPublic = `
+        INSERT INTO JoinPublicsQuestions  (
+          public_id, question_id
+          )
+          VALUES ($1, $2)
+          RETURNING *
+        `;
+
+        for (const aPublic of publics) {
+          const result = await executeQuery(
+            numdiagPool,
+            queryPublic,
+            [aPublic, questionId]
+          );
+        }
+        const queryTheme = `
+        INSERT INTO JoinThemesQuestions  (
+          theme_id, question_id
+          )
+          VALUES ($1, $2)
+          RETURNING *
+        `;
+
+        for (const aTheme of themes) {
+          const result = await executeQuery(
+            numdiagPool,
+            queryTheme,
+            [aTheme, questionId]
+          );
+        }
+
+        return {success: true};
+
+      } catch (error) {
+        console.error('Error updating theme and public for question ',questionId,':', error);
+        throw error;
+      }
+    };
+
+export { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion, updateAssociatedThemesAndPublicsQuestion }

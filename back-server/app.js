@@ -15,7 +15,7 @@ import {
 import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
 import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode } from './session/session.js'
-import { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion } from './questionnaire/themePublic.js'
+import { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion, updateAssociatedThemesAndPublicsQuestion } from './questionnaire/themePublic.js'
 
 const app = express()
 const port = 3008
@@ -153,18 +153,19 @@ app.put('/questions/:id', async (req, res) => {
       section_id,
       label,
       questiontype,
-      position,
-      page,
       tooltip,
       coeff,
       mandatory,
-      dependencies // Array de reponse_id : ['2_6', '3_4']
+      dependencies, // Array de reponse_id : ['2_6', '3_4']
+      themes,
+      publics
     } = req.body;
 
 
 
-    const updatedQuestion =  await updateQuestion(questionId,section_id,label,questiontype,tooltip,coeff,mandatory,dependencies)
-    res.status(200).json(updatedQuestion)
+    const updatedQuestion =  await updateQuestion(questionId,section_id,label,questiontype,tooltip,coeff,mandatory,dependencies, themes, publics)
+    const updatedThemesAndPublics = await updateAssociatedThemesAndPublicsQuestion({questionId, themes, publics})
+    res.status(200).json(updatedQuestion, updatedThemesAndPublics)
   } catch (error) {
     console.error('Error populating database:', error)
     res.status(500).json({ error: 'Failed to populate database' })

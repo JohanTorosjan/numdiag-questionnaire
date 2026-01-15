@@ -5,7 +5,8 @@ import PopUpEditAnswerSlots from '../../Answers/editAnswerSlots';
 import { useToast } from '../../ToastSystem';
 import './questionResume.css';
 import PopUpCreateAnswer from '../../Answers/createAnswers';
-import PopUpDelete from '../popups/deleteQuestion'
+import PopUpDelete from '../popups/deleteQuestion';
+import {getPublicsAndThemes} from '../ThemePublic/themePublicFront.js'
 const answerTypeMatch = {
   "choix_simple": "Choix simple",
   "entier": "Entier",
@@ -13,20 +14,7 @@ const answerTypeMatch = {
   "libre": "Libre",
 }
 
-async function getPublicsAndThemes(questionId) {
-  try {
-      const response = await fetch(`http://localhost:3008/associatedThemesAndPublicsQuestion/${questionId}`);
-      if (response.ok) {
-          const data = await response.json();
-          return data;
-      }
-  } catch (error) {
-      console.error('Error fetching publics and themes for question:', error);
-      return [];
-  }
-}
-
-function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages, setQuestionnaire, questionnaireId }) {
+function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages, setQuestionnaire, questionnaireId, themesAndPublicsFromQuestionnaire, allPublics, allThemes }) {
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [isEditAnswerSlotsOpen, setIsEditAnswerSlotsOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
@@ -164,7 +152,7 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
         setIsEditAnswerSlotsOpen(false);
     };
 
-    const handleSaveQuestion = async (updatedQuestion) => {
+    const handleSaveQuestion = async (updatedQuestion, publics, themes) => {
         try {
             setIsUpdating(true)
             if((question.position !== updatedQuestion.position) || (question.page !== updatedQuestion.page)){
@@ -202,7 +190,9 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                 },
                 body: JSON.stringify({
                     section_id: sectionId,
-                    ...updatedQuestion
+                    ...updatedQuestion,
+                    themes,
+                    publics
                 })
             });
 
@@ -273,19 +263,22 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                         {question.mandatory && <span className="mandatory-badge">*</span>}
                         <p className='question-tooltip-text'>{question.tooltip}  </p>
                     </h4>
-                    <div className="question-badge-info">
-
-                      <span className="question-type-badge">{answerTypeDisplayed}</span>
-                       <span className="question-type-badge">Page : {question.page}</span>
-                       <span className="question-type-badge">Coeff : {question.coeff}</span>
+                    <div className="flex justify-between items-start">
+                      <div className="space-x-1.5 w-1/3">
+                        <span className="question-type-badge text-nowrap">{answerTypeDisplayed}</span>
+                       <span className="question-type-badge text-nowrap">Page : {question.page}</span>
+                       <span className="question-type-badge text-nowrap">Coeff : {question.coeff}</span>
+                      </div>
+                      <div className="w-1/2 flex space-x-4">
                         <span className="">
-                          {themes.length === 0 ? "Pas de thème" :
+                          {themes.length === 0 ? <p className="rounded px-2 py-1 mx-1 my-1 bg-blue-100 text-blue-400 text-nowrap text-sm line-through">Pas de thème</p> :
                           (<div className="flex flex-wrap w-full" key={themes[0].label}>{themes.map(theme=><p className="rounded px-2 py-1 mx-1 my-1 bg-blue-100 text-blue-400 text-nowrap text-sm" key={theme.label+theme.id}>{theme.label}</p>)}</div>)}
                         </span>
                                     <span className="">
-                          {publics.length === 0  ? "Pas de public" :
+                          {publics.length === 0  ? <p className="rounded px-2 py-1 mx-1 my-1 bg-emerald-100 text-emerald-400 text-nowrap text-sm line-through">Pas de public</p> :
                           (<div className="flex flex-wrap w-full" key={publics[0].label}>{publics.map(publicSelect=><p className="rounded px-2 py-1 mx-1 my-1 bg-emerald-100 text-emerald-400 text-nowrap text-sm" key={publicSelect.label+publicSelect.id}>{publicSelect.label}</p>)}</div>)}
                         </span>
+                      </div>
 
 
                     </div>
@@ -370,6 +363,10 @@ function QuestionResume({ question, sectionId, onUpdateQuestion, sectionNbPages,
                     onSave={handleSaveQuestion}
                     onClose={handleClosePopup}
                     sectionNbPages={sectionNbPages}
+                    selectedThemes={themes}
+                    selectedPublics={publics}
+                    allPublics={allPublics}
+                    allThemes={allThemes}
                 />
             )}
             {isEditAnswerSlotsOpen && (
