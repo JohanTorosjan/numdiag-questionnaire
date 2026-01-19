@@ -22,6 +22,11 @@
     margin-bottom: 1.5rem;
 }
 
+.question-type {
+  background: #f5dafa;
+  color: #af38ca;
+}
+
 .questionnaire-actions {
     display: flex;
     gap: 1rem;

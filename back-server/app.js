@@ -178,9 +178,9 @@ app.listen(port, () => {
 
 app.put('/updateQuestionnaire/:questionnaireId', async (req, res) => {
   const { questionnaireId } = req.params;
-  const { label, description, insight, tooltip, code, isactive } = req.body; // Get data from request body
+  const { label, description, insight, tooltip, code, isactive, default_question_type } = req.body; // Get data from request body
   try {
-    const questionnaireUpdate = await updateQuestionnaireInfo(questionnaireId, label, description, insight, tooltip, code, isactive)
+    const questionnaireUpdate = await updateQuestionnaireInfo(questionnaireId, label, description, insight, tooltip, code, isactive, default_question_type)
     res.status(200).json({ message: 'Questionnaire Updated successfully' })
   } catch (error) {
     console.error('Error updating questionnaire infos:', error)

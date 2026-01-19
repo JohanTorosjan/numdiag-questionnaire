@@ -59,6 +59,11 @@
   text-align: center;
 }
 
+.question-type {
+  background: #f5dafa;
+  color: #af38ca;
+}
+
 /* Description */
 .question-description {
   margin: 0 0 1rem 0;

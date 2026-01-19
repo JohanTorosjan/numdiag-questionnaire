@@ -13,7 +13,8 @@ function Section({
   questionnaireId,
   themesAndPublicsFromQuestionnaire,
   allPublics,
-  allThemes
+  allThemes,
+  defaultQuestionType
 }) {
 
   const [isQuestionsOpen, setIsQuestionsOpen] = React.useState(false);
@@ -265,6 +266,7 @@ function Section({
                     themesAndPublicsFromQuestionnaire={themesAndPublicsFromQuestionnaire}
                     allPublics={allPublics}
                     allThemes={allThemes}
+                    defaultQuestionType={defaultQuestionType}
                 />
             )}
 

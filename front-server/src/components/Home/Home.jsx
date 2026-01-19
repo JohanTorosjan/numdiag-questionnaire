@@ -59,6 +59,17 @@ export default function Home() {
     const [editPublics, setEditPublics] = useState(false)
     const [themeLabel, setThemeLabel] = useState("");
     const [publicLabel, setPublicLabel] = useState("");
+    const [searchQuestions, setSearchQuestions] = useState(false)
+    const [searchThemes, setSearchThemes] = useState([])
+    const [searchPublics, setSearchPublics] = useState([])
+
+  // Listes fixes pour les select
+    const questionTypes = [
+        { value: 'entier', label: 'Entier' },
+        { value: 'choix_simple', label: 'Choix simple' },
+        { value: 'choix_multiple', label: 'Choix multiple' },
+        { value: 'libre', label: 'Libre' },
+    ];
 
     useEffect(() => {
         const fetchQuestionnaires = async () => {
@@ -292,7 +303,6 @@ export default function Home() {
 ////////////////////////////////////////
   const handleSavePublic = async (newPublic) => {
       try {
-
           setIsCreating(true)
           const response = await fetch(`http://localhost:3008/createPublic`, {
               method: 'POST',
@@ -391,6 +401,47 @@ export default function Home() {
     setPublicLabel(label);
   }
 
+  const searchClick = () => {
+    searchQuestions ? setSearchQuestions(false) : setSearchQuestions(true);
+  }
+
+  const handleSearchQuestion = async () => {
+    console.log('Search themes:', searchThemes)
+    console.log('Search Publics:', searchPublics)
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    // REPRENDRE ICI : créer route back qui cherche les questions ayant les thèmes et publics désirés
+    // se référer aux tbles de jointures et ressortir les questions, avec label, thèmes, publics, label du questionnaire associé
+    // try {
+    //   const response = await fetch(`http://localhost:3008/deactivatePublic/${idPublic}`, {
+    //   method: 'POST',
+    //   headers: {
+    //   'Content-Type': 'application/json',
+    //   },
+    //    body: JSON.stringify({publicState})
+    //   });
+    //   if (!response.ok) {
+    //       throw new Error("Erreur lors du toggle d'activation du public");
+    //   }
+    //   const data = await response.json();
+    //   console.log('Response from server:', data);
+    //   const newPublics = await getAllPublics();
+    //   setAllPublics(newPublics.data)
+    //   return data;
+    // } catch (error) {
+    //   console.error('Error toggling Public activation:', error);
+    //   return null;
+    // }
+  }
+
+  const handleSearchTheme = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+    setSearchThemes(selectedOptions);
+  };
+  const handleSearchPublic = (e) => {
+      const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+      setSearchPublics(selectedOptions);
+  };
+
 
 
 
@@ -416,12 +467,59 @@ export default function Home() {
               <h1>Bienvenue sur le CMS NumDiag</h1>
               <p>Voici la liste des thèmes et publics cibles :</p>
           </header>
-          <div className="w-full text-end">
+          <div className="w-full flex justify-end items-center">
+            <button onClick={searchClick} className="edit-button mr-8">
+               {searchQuestions ? '👓 Liste des thèmes et publics' : '🔎 Questions par thèmes et publics'}
+            </button>
             <button onClick={handleThemesClick} className="edit-button">
                 ✨ Revenir aux questionnaires
             </button>
           </div>
-
+          { (searchQuestions) ?
+          (<div>
+            <div className='w-4/5 mx-auto mt-10'>
+              <div className="form-row">
+                <div className="form-group">
+                    <label htmlFor="searchQuestionTheme" className='text-lg!'>Thème(s) :</label>
+                    <select
+                        id="searchQuestionTheme"
+                        name="searchQuestionTheme"
+                        value={searchThemes}
+                        onChange={handleSearchTheme}
+                        multiple
+                        size="1"
+                    >
+                        {allThemes.map(type => (
+                            <option key={type.value} value={type.id} className='px-3 py-2'>
+                                {type.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="searchQuestionPublic" className='text-lg!'>Public(s) :</label>
+                    <select
+                        id="searchQuestionPublic"
+                        name="searchQuestionPublic"
+                        value={searchPublics}
+                        onChange={handleSearchPublic}
+                        multiple
+                        size="1"
+                    >
+                        {allPublics.map(type => (
+                            <option key={type.value} value={type.id} className='px-3 py-2'>
+                                {type.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+              </div>
+              <button onClick={handleSearchQuestion} className="bg-white shadow-lg! hover:shadow-xl! hover:-translate-y-0.5 ease-in-out duration-100">Rechercher</button>
+            </div>
+          </div>)
+          :
+          (
+          <div>
           <div className="mt-20 grid grid-cols-2 border-r border-l divide-x divide-black">
             <div className="w-full mx-auto px-10 ">
               <h2 className="text-xl font-semibold">Liste des thèmes</h2>
@@ -504,7 +602,7 @@ export default function Home() {
             </div>
           </div>
 
-          {isThemeOpen ? (
+          {(isThemeOpen) ? (
             <CreateThemePublic
                 onSave={handleSaveTheme}
                 onClose={handleClosePopupThemePublic}
@@ -516,10 +614,16 @@ export default function Home() {
                 onClose={handleClosePopupThemePublic}
                 type={"public"}
             />
-          ) : <div className="hidden"></div>}
+          ) : <div className="hidden"></div>
+        }
         </div>
+        )
+      }
+      </div>
+
       )
     }
+
 
     return (
         <div className="home">
@@ -574,6 +678,7 @@ export default function Home() {
                 <CreateQuestionnaire
                     onSave={handleSaveQuestionnaire}
                     onClose={handleClosePopupQuestionnaire}
+                    questionTypes={questionTypes}
                 />
             )}
         </div>

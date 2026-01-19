@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../popups/editQuestion.css';
 import { getAllActivePublics, getAllActiveThemes } from '../ThemePublic/themePublicFront.js';
 
-function CreateQuestionnaire({ onSave, onClose }) {
+function CreateQuestionnaire({ onSave, onClose, questionTypes }) {
     const [formData, setFormData] = useState({
         label: '',
         description: '',
@@ -20,13 +20,7 @@ function CreateQuestionnaire({ onSave, onClose }) {
     const [allPublics, setAllPublics] = useState([])
     const [allThemes, setAllThemes] = useState([])
 
-    // Listes fixes pour les select
-    const questionTypes = [
-        { value: 'entier', label: 'Entier' },
-        { value: 'choix_simple', label: 'Choix simple' },
-        { value: 'choix_multiple', label: 'Choix multiple' },
-        { value: 'libre', label: 'Libre' },
-    ];
+
 
     useEffect(() => {
       const fetchThemes = async () => {
@@ -191,22 +185,23 @@ function CreateQuestionnaire({ onSave, onClose }) {
                         </div>
                     </div>
                     <div className="form-group">
-                            <label htmlFor="questiontype">Type de question par défaut:</label>
-                            <select
-                                id="default_question_type"
-                                name="default_question_type"
-                                value={formData.default_question_type}
-                                onChange={handleInputChange}
-                                size="1"
-                            >
-                                <option value="">Non défini</option>
-                                {questionTypes.map(type => (
-                                    <option key={type.value} value={type.value}>
-                                        {type.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        <label htmlFor="questiontype">Type de question par défaut:</label>
+                        <select
+                            id="default_question_type"
+                            name="default_question_type"
+                            value={formData.default_question_type}
+                            onChange={handleInputChange}
+                            size="1"
+                        >
+                            <option value="Non défini" id="default_question_type"
+                            name="default_question_type">Non défini</option>
+                            {questionTypes.map(type => (
+                                <option key={type.value} value={type.value}>
+                                    {type.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
 
 

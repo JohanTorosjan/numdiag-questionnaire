@@ -3,7 +3,7 @@ import './createQuestion.css';
 import { useToast } from '../../ToastSystem';
 import ReactDOM from "react-dom";
 
-function PopUpCreateQuestion({ onSave, onClose, sectionNbPages, themesAndPublicsFromQuestionnaire, allPublics, allThemes }) {
+function PopUpCreateQuestion({ onSave, onClose, sectionNbPages, themesAndPublicsFromQuestionnaire, allPublics, allThemes, defaultQuestionType }) {
     const toast = useToast();
     const [formData, setFormData] = useState({
         coeff: 1,
@@ -11,7 +11,7 @@ function PopUpCreateQuestion({ onSave, onClose, sectionNbPages, themesAndPublics
         mandatory: false,
         page: 1,
         position: 1,
-        questiontype: 'entier',
+        questiontype: defaultQuestionType==='Non défini'? 'choix_simple' : defaultQuestionType,
         tooltip: '',
     });
     const [selectedThemesQuestion, setSelectedThemesQuestion]=useState([])

@@ -37,7 +37,8 @@ async function updateQuestionnaire(
   description,
   insight,
   tooltip,
-  code
+  code,
+  default_question_type
 ) {
   try {
     const response = await fetch(
@@ -47,7 +48,7 @@ async function updateQuestionnaire(
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ label, description, insight, tooltip, code }), // Pass the updated questionnaire data
+        body: JSON.stringify({ label, description, insight, tooltip, code, default_question_type }), // Pass the updated questionnaire data
       }
     );
     if (!response.ok) {
@@ -131,7 +132,16 @@ function Questionnaire() {
   const [allThemes, setAllThemes] = useState([])
   const [theme, setTheme] = useState([]);
   const [publicSelect, setPublic] = useState([]);
-  const [buttonModifierThemes, setButtonModifierThemes]= useState("Modifier les thèmes et publics")
+  const [buttonModifierThemes, setButtonModifierThemes]= useState("Modifier les thèmes et publics");
+  const [defaultQuestionType, setDefaultQuestionType] = useState('');
+
+  // Listes fixes pour les select
+    const questionTypes = [
+        { value: 'entier', label: 'Entier' },
+        { value: 'choix_simple', label: 'Choix simple' },
+        { value: 'choix_multiple', label: 'Choix multiple' },
+        { value: 'libre', label: 'Libre' },
+    ];
 
   useEffect(() => {
     async function fetchQuestionnaire() {
@@ -166,6 +176,14 @@ function Questionnaire() {
         console.error("Error fetching associated themes and publics:", error);
       }
     }
+    let defaultQuestionDisplay=''
+    if (questionnaire.default_question_type && questionnaire.default_question_type != '') {
+      defaultQuestionDisplay=questionnaire.default_question_type.replace("_"," ");
+      defaultQuestionDisplay=defaultQuestionDisplay[0].toUpperCase()+defaultQuestionDisplay.slice(1);
+    } else {
+      defaultQuestionDisplay="Non défini"
+    }
+    setDefaultQuestionType(defaultQuestionDisplay)
     fetchAssociateThemesAndPublics();
   }, [questionnaire]);
 
@@ -238,7 +256,8 @@ function Questionnaire() {
           questionnaire.description,
           questionnaire.insight,
           questionnaire.tooltip,
-          questionnaire.code
+          questionnaire.code,
+          questionnaire.default_question_type
         );
 
         setButtonModifierQuest("Modifier");
@@ -492,7 +511,7 @@ const handlePublicChange = (e) => {
       <div className="questionnaire-header">
           {buttonModifierQuest === "Modifier" ? (
         <div className="questionnaire-header-content">
-            <QuestionnaireTitle questionnaire={questionnaire} />
+            <QuestionnaireTitle questionnaire={questionnaire} defaultQuestionType={defaultQuestionType} />
             <div className="questionnaire-actions relative mt-6">
           <button
             type="button"
@@ -547,6 +566,7 @@ const handlePublicChange = (e) => {
             <QuestionnaireTitleForm
               questionnaire={questionnaire}
               onChange={handleInputChange}
+              questionTypes={questionTypes}
             />
             <div className="questionnaire-actions relative mt-6">
             <button
@@ -703,6 +723,7 @@ const handlePublicChange = (e) => {
                 themesAndPublicsFromQuestionnaire={associatedThemesAndPublics}
                 allPublics={allPublics}
                 allThemes={allThemes}
+                defaultQuestionType={questionnaire.default_question_type}
               />
             </div>
           ) : (

@@ -96,7 +96,7 @@ function getAllQuestionnaireResume() {
     return executeQuery(numdiagPool, query);
 }
 
-function updateQuestionnaireInfo(idQuestionnaire, label = null, description = null, insight = null, tooltip=null, code=null, isactive=null) {
+function updateQuestionnaireInfo(idQuestionnaire, label = null, description = null, insight = null, tooltip=null, code=null, isactive=null, default_question_type=null) {
     const fields = []
     const values = []
     let index = 1
@@ -127,6 +127,13 @@ function updateQuestionnaireInfo(idQuestionnaire, label = null, description = nu
     if (isactive !== null) {
         fields.push(`isactive = $${index++}`)
         values.push(isactive)
+    }
+    if (default_question_type !== null && default_question_type !== "") {
+        fields.push(`default_question_type = $${index++}`)
+        values.push(default_question_type)
+    } else if (default_question_type === "") {
+        fields.push(`default_question_type = $${index++}`)
+        values.push(null)
     }
 
     values.push(idQuestionnaire);
@@ -165,13 +172,12 @@ function updateQuestionnaireInfo(idQuestionnaire, label = null, description = nu
       placeholders.push(`$${index++}`);
       values.push(code);
     }
-    
+
     if (default_question_type !== null && default_question_type!=='') {
       fields.push(`default_question_type`);
       placeholders.push(`$${index++}`);
       values.push(default_question_type);
     }
-
 
      return executeQuery(
         numdiagPool,
