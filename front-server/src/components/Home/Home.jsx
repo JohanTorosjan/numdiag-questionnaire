@@ -423,14 +423,13 @@ export default function Home() {
       headers: {
       'Content-Type': 'application/json',
       },
-       body: JSON.stringify(selectedThemes, selectedPublics)
+       body: JSON.stringify({selectedThemes, selectedPublics})
       });
       if (!response.ok) {
           throw new Error("Erreur lors de la recherche par public et/ou thèmes");
       }
       const data = await response.json();
-      console.log('Response from server:', data);
-      setResultSearch(data)
+      setResultSearch(data.questionsMerged)
     } catch (error) {
       console.error('Error searching questions by publics or themes:', error);
       return null;
@@ -445,10 +444,6 @@ export default function Home() {
       const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
       setSearchPublics(selectedOptions);
   };
-
-
-
-
 
     if (loading) {
         return (
@@ -520,6 +515,37 @@ export default function Home() {
               </div>
               <button onClick={handleSearchQuestion} className="bg-white shadow-lg! hover:shadow-xl! hover:-translate-y-0.5 ease-in-out duration-100">Rechercher</button>
             </div>
+            <div className="mt-10"></div>
+            { (resultSearch.length != 0) ? (
+              resultSearch.map(result => (
+                <div className="w-full shadow rounded-lg border border-gray-50 px-7 py-4 mt-2 bg-white">
+                  <div key={result.question_id} className="flex w-full justify-between">
+                    <p className="text-lg max-w-1/2">{result.label}</p>
+                    <div className="flex justify-between items-start w-1/2">
+                        <div className="w-1/5 pt-1">
+                          <span className="rounded px-2 py-1 mx-1 bg-[#f5dafa] text-[#af38ca] text-nowrap text-sm">{result.question_type}</span>
+                        </div>
+                        <div className="w-4/5 flex justify-between items-start">
+                            {result.themes.length === 0 ? <p className="rounded px-2 py-1 mx-1 my-1 bg-blue-100 text-blue-400 text-nowrap text-sm line-through">Pas de thème</p> :
+                            (<div className="flex flex-wrap w-full items-center" key={result.themes[0].label}>{result.themes.map(theme=><p className="rounded px-2 py-1 mx-1 my-1 bg-blue-100 text-blue-400 text-wrap text-sm" key={theme.theme_label+theme.theme_id}>{theme.theme_label}</p>)}</div>)}
+
+                            {result.publics.length === 0  ? <p className="rounded px-2 py-1 mx-1 my-1 bg-emerald-100 text-emerald-400 text-nowrap text-sm line-through">Pas de public</p> :
+                            (<div className="flex flex-wrap w-full items-center" key={result.publics[0].label}>{result.publics.map(publicSelect=><p className="rounded px-2 py-1 mx-1 my-1 bg-emerald-100 text-emerald-400 text-wrap text-sm" key={publicSelect.public_label+publicSelect.public_id}>{publicSelect.public_label}</p>)}</div>)}
+                        </div>
+                      </div>
+                  </div>
+                  <hr className='w-2/3 text-gray-200 my-5'/>
+                  <div className="flex w-full space-x-10 mt-5">
+                    <div>
+                      <p className='text-lg'>Questionnaire : {result.questionnaire_label}</p>
+                      <a href={`/questionnaire/${result.questionnaire_id}`} target='_blank'>Aller au questionnaire</a>
+                    </div>
+                    <p className='text-lg'>Section : {result.section_label}</p>
+                  </div>
+                </div>
+              ))
+            ):
+            <div className="hidden"></div>}
           </div>)
           :
           (

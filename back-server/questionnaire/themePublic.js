@@ -405,7 +405,9 @@ const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => 
     };
 
 
-    const searchQuestions = async ({searchThemes, searchPublics}) => {
+    const searchQuestions = async ({ selectedThemes, selectedPublics}) => {
+      console.log('Selected themes:', selectedThemes)
+
       try {
         const queryTheme = `
         SELECT question_id
@@ -415,12 +417,14 @@ const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => 
 
         const questionSearchTheme = [];
 
-        for (const search of searchThemes) {
+        for (const search of selectedThemes) {
+          console.log(search.theme_id)
           const question_ids = await executeQuery(
             numdiagPool,
             queryTheme,
             [search.theme_id]
           );
+
           for (const question_id of question_ids) {
               questionSearchTheme.push({
               question_id: question_id.question_id,
@@ -438,10 +442,10 @@ const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => 
 
         const questionSearchPublic = [];
 
-        for (const search of searchPublics) {
+        for (const search of selectedPublics) {
           const question_ids = await executeQuery(
             numdiagPool,
-            queryTheme,
+            queryPublic,
             [search.public_id]
           );
           for (const question_id of question_ids) {
@@ -486,17 +490,138 @@ const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => 
           });
         }
 
+        // on va chercher pour chaque question tous les thèmes et publics associés
+        const questionIds = [...mergedByQuestion.keys()];
+
+
+        console.log('questions ids:', questionIds)
+
+        for (const id of questionIds) {
+            const queryAllThemes = `
+            SELECT theme_id
+            FROM JoinThemesQuestions
+            WHERE question_id = $1
+            `;
+            const resultTheme = await executeQuery(numdiagPool, queryAllThemes, [id]);
+
+            const queryLabelTheme=`SELECT label FROM Themes WHERE id= $1 AND isactive`
+            const themeLabels = [];
+
+            for (const result of resultTheme) {
+              const label = await executeQuery(
+                numdiagPool,
+                queryLabelTheme,
+                [result.theme_id]
+              );
+              if (label.length != 0) {
+                themeLabels.push({theme_id: result.theme_id, theme_label:label[0].label});
+              }
+            }
+
+            const queryAllPublics = `
+            SELECT public_id
+            FROM JoinPublicsQuestions
+            WHERE question_id = $1
+            `;
+            const resultPublic = await executeQuery(numdiagPool, queryAllPublics, [id]);
+
+            const queryLabelPublic=`SELECT label FROM Publics WHERE id= $1 AND isactive`
+            const publicLabels = [];
+
+            for (const result of resultPublic) {
+              const label = await executeQuery(
+                numdiagPool,
+                queryLabelPublic,
+                [result.public_id]
+              );
+              if (label.length != 0) {
+                publicLabels.push({public_id: result.public_id, public_label: label[0].label});
+              }
+            }
+
+            const existing = mergedByQuestion.get(id);
+            mergedByQuestion.set(id, {
+              ...existing,
+              themes: themeLabels,
+              publics: publicLabels
+            });
+
+        }
+
+        // puis aller chercher le label de la question et son type
+
+        const questionQuery = `SELECT id, label, questiontype, section_id
+                          FROM questions
+                          WHERE id = ANY($1)`
+
+        const questionsInfo = await executeQuery(
+              numdiagPool,
+              questionQuery,
+              [questionIds]
+            );
+
+        for (const question of questionsInfo) {
+          const existing = mergedByQuestion.get(question.id);
+          mergedByQuestion.set(question.id, {
+            ...existing,
+            label: question.label,
+            question_type: question.questiontype,
+            section_id: question.section_id
+          });
+        }
+
+        // ensuite récupérer le label de la section associée,
+        const sectionIds = [];
+
+        for (const s of mergedByQuestion.values()) {
+          sectionIds.push(s.section_id);
+        }
+        const sectionQuery = `SELECT id, label, questionnaire_id
+        FROM sections
+        WHERE id = ANY($1)`
+
+        const sectionsInfo = await executeQuery(
+          numdiagPool,
+          sectionQuery,
+          [sectionIds]
+        );
+
+        for (const section of sectionsInfo) {
+          for (const question of mergedByQuestion.values()) {
+            if (question.section_id === section.id) {
+              question.section_label = section.label;
+              question.questionnaire_id = section.questionnaire_id;
+            }
+          }
+        }
+
+        // puis le label du questionnaire associé
+        const questionnaireIds = [];
+        for (const s of mergedByQuestion.values()) {
+          questionnaireIds.push(s.questionnaire_id);
+        }
+
+        const questionnairesQuery = `SELECT id, label, isactive, ispublished
+        FROM questionnaires WHERE id = ANY($1)`
+
+        const questionnairesInfo = await executeQuery(numdiagPool, questionnairesQuery, [questionnaireIds]);
+
+        for (const questionnaire of questionnairesInfo) {
+          for (const question of mergedByQuestion.values()) {
+            if (question.questionnaire_id === questionnaire.id) {
+              question.questionnaire_label = questionnaire.label;
+              question.questionnaire_isActive = questionnaire.isactive;
+              question.questionnaire_isPublished = questionnaire.ispublished;
+            }
+          }
+        }
+
         const questionsMerged = [...mergedByQuestion.values()];
 
-        // puis aller chercher le label de la question et son type,
-        // ensuite récupérer le label de la section associée,
-        // puis le label et l'id du questionnaire associé
-        // ensuite en front avec l'id du questionnaire associé : lien hypertexte pour aller direct au questionnaire associé
-
-        return {questionSearchTheme, questionSearchPublic, success: true};
+        return {questionsMerged, success: true};
 
       } catch (error) {
-        console.error('Error searching question by theme or public:',questionId,' :', error);
+        console.error('Error searching question by theme or public:', error);
         throw error;
       }
     };

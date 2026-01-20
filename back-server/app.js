@@ -1077,10 +1077,10 @@ app.post('/questionnaireThemesAndPublics/:questionnaireId', async (req,res) => {
 })
 
 app.post('/searchQuestions', async (req,res) => {
-        const {searchThemes, searchPublics} = req.body; // Get data from request body
+        const {selectedThemes, selectedPublics} = req.body; // Get data from request body
         try {
-          const foundQuestions = await searchQuestions({searchThemes, searchPublics})
-          res.status(200).json({success: true, questionsSearchResult: foundQuestions})
+          const foundQuestions = await searchQuestions({selectedThemes, selectedPublics})
+          res.status(200).json(foundQuestions)
         } catch (error) {
           console.error('Error searching questions:', error)
           res.status(500).json({ error: 'Failed to search questions' })

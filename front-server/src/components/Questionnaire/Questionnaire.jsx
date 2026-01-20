@@ -621,7 +621,7 @@ const handlePublicChange = (e) => {
 
         <hr className='w-4/5 text-zinc-300 mx-auto'/>
           { (buttonModifierThemes === "Modifier les thèmes et publics") ? (
-          <div className='w-full flex space-x-4 mt-6 items-center'>
+          <div className='w-full flex space-x-4 mt-6 items-start'>
               <div className="w-2/5">
               <p className="ml-1 text-blue-400 w-fit text-md border-b border-blue-100 mb-2">Thème(s)</p>
               <div className="flex flex-wrap">
@@ -641,7 +641,7 @@ const handlePublicChange = (e) => {
 
               <button
                 type="button"
-                className="w-1/5 h-14 bg-blue-600 border px-1 py-1 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-blue-400"
+                className="w-1/5 self-center h-14 bg-blue-600 border px-1 py-1 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-blue-400"
                 onClick={toggleButtonModifierThemesAndPublics}
               >{buttonModifierThemes}</button>
 
