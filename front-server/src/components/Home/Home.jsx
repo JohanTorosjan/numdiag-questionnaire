@@ -62,6 +62,7 @@ export default function Home() {
     const [searchQuestions, setSearchQuestions] = useState(false)
     const [searchThemes, setSearchThemes] = useState([])
     const [searchPublics, setSearchPublics] = useState([])
+    const [resultSearch, setResultSearch]= useState([])
 
   // Listes fixes pour les select
     const questionTypes = [
@@ -93,6 +94,10 @@ export default function Home() {
         fetchThemes();
         fetchPublics();
     }, []);
+
+    useEffect(() =>{
+      console.log('Result of Search:',resultSearch)
+    }, [resultSearch])
 
 
   async function updateTheme(idTheme, label) {
@@ -406,31 +411,30 @@ export default function Home() {
   }
 
   const handleSearchQuestion = async () => {
-    console.log('Search themes:', searchThemes)
-    console.log('Search Publics:', searchPublics)
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    // REPRENDRE ICI : créer route back qui cherche les questions ayant les thèmes et publics désirés
-    // se référer aux tbles de jointures et ressortir les questions, avec label, thèmes, publics, label du questionnaire associé
-    // try {
-    //   const response = await fetch(`http://localhost:3008/deactivatePublic/${idPublic}`, {
-    //   method: 'POST',
-    //   headers: {
-    //   'Content-Type': 'application/json',
-    //   },
-    //    body: JSON.stringify({publicState})
-    //   });
-    //   if (!response.ok) {
-    //       throw new Error("Erreur lors du toggle d'activation du public");
-    //   }
-    //   const data = await response.json();
-    //   console.log('Response from server:', data);
-    //   const newPublics = await getAllPublics();
-    //   setAllPublics(newPublics.data)
-    //   return data;
-    // } catch (error) {
-    //   console.error('Error toggling Public activation:', error);
-    //   return null;
-    // }
+
+    const selectedPublics = allPublics.filter(p => searchPublics.includes(String(p.id)))
+    .map(p => ({public_id: p.id, public_label: p.label }));
+    const selectedThemes = allThemes.filter(t => searchThemes.includes(String(t.id)))
+    .map(p => ({theme_id: p.id, theme_label: p.label }));
+
+    try {
+      const response = await fetch(`http://localhost:3008/searchQuestions`, {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json',
+      },
+       body: JSON.stringify({selectedThemes, selectedPublics})
+      });
+      if (!response.ok) {
+          throw new Error("Erreur lors de la recherche par public et/ou thèmes");
+      }
+      const data = await response.json();
+      console.log('Response from server:', data);
+      setResultSearch(data)
+    } catch (error) {
+      console.error('Error searching questions by publics or themes:', error);
+      return null;
+    }
   }
 
   const handleSearchTheme = (e) => {
@@ -476,7 +480,7 @@ export default function Home() {
             </button>
           </div>
           { (searchQuestions) ?
-          (<div>
+          (<div key="searchQuestionByThemePublic">
             <div className='w-4/5 mx-auto mt-10'>
               <div className="form-row">
                 <div className="form-group">
@@ -489,8 +493,8 @@ export default function Home() {
                         multiple
                         size="1"
                     >
-                        {allThemes.map(type => (
-                            <option key={type.value} value={type.id} className='px-3 py-2'>
+                        {allThemes.map((type, index) => (
+                            <option key={type.id} value={type.id} className='px-3 py-2'>
                                 {type.label}
                             </option>
                         ))}
@@ -506,8 +510,8 @@ export default function Home() {
                         multiple
                         size="1"
                     >
-                        {allPublics.map(type => (
-                            <option key={type.value} value={type.id} className='px-3 py-2'>
+                        {allPublics.map((type, index) => (
+                            <option key={type.id} value={type.id} className='px-3 py-2'>
                                 {type.label}
                             </option>
                         ))}
@@ -519,7 +523,7 @@ export default function Home() {
           </div>)
           :
           (
-          <div>
+          <div key="listeOfThemesPublics">
           <div className="mt-20 grid grid-cols-2 border-r border-l divide-x divide-black">
             <div className="w-full mx-auto px-10 ">
               <h2 className="text-xl font-semibold">Liste des thèmes</h2>

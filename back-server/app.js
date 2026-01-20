@@ -15,7 +15,7 @@ import {
 import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
 import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode } from './session/session.js'
-import { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion, updateAssociatedThemesAndPublicsQuestion } from './questionnaire/themePublic.js'
+import { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion, updateAssociatedThemesAndPublicsQuestion, searchQuestions } from './questionnaire/themePublic.js'
 
 const app = express()
 const port = 3008
@@ -208,214 +208,214 @@ app.put('/updateSection/:sectionId', async (req, res) => {
     console.log('section_id:', sectionId);
     // Get max position
     // const lastSectionResult = await executeQuery(
-    //   numdiagPool,
-    //   `SELECT MAX(position) FROM Sections WHERE questionnaire_id = $1`,
-    //   [questionnaireId]
-    // )
+      //   numdiagPool,
+      //   `SELECT MAX(position) FROM Sections WHERE questionnaire_id = $1`,
+      //   [questionnaireId]
+      // )
 
-    const sectionUpdate = await updateSection(
-      sectionId,
-      {label,
-      description,
-      tooltip,
-      nbpages,
-      isActive}
-    )
+      const sectionUpdate = await updateSection(
+        sectionId,
+        {label,
+          description,
+          tooltip,
+          nbpages,
+          isActive}
+        )
 
-    console.log('Section has been updated: ',sectionUpdate);
-    res.status(200).json({success: true})
-  }
-  catch (error) {
-    console.error('Error updating section infos:', error)
-    sectionUpdate.status(500).json({ error: 'Failed to update section' })
-  }
-})
+        console.log('Section has been updated: ',sectionUpdate);
+        res.status(200).json({success: true})
+      }
+      catch (error) {
+        console.error('Error updating section infos:', error)
+        sectionUpdate.status(500).json({ error: 'Failed to update section' })
+      }
+    })
 
-app.put('/questions/:questionId/position', async (req, res) => {
-  const { questionId } = req.params;
-  const { position: newPosition, page: newPage } = req.body;
+    app.put('/questions/:questionId/position', async (req, res) => {
+      const { questionId } = req.params;
+      const { position: newPosition, page: newPage } = req.body;
 
-  try{
-    const positionsUpdated = await updatePositions(questionId,newPosition,newPage)
-    res.status(200).json(positionsUpdated)
-  }
-  catch(err){
-    console.error('Error updating positions:', err)
-    res.status(500).json({ error: 'Failed to update positions' })
-  }
+      try{
+        const positionsUpdated = await updatePositions(questionId,newPosition,newPage)
+        res.status(200).json(positionsUpdated)
+      }
+      catch(err){
+        console.error('Error updating positions:', err)
+        res.status(500).json({ error: 'Failed to update positions' })
+      }
 
-});
+    });
 
-app.post('/createSection', async (req,res) => {
-  let { questionnaire_id, label, description, tooltip, nbPages } = req.body; // Get data from request body
-  try {
-    const SectionCreate = await createSection( questionnaire_id, label, description, tooltip, nbPages )
-    console.log('Section has been created: ',SectionCreate);
-    res.status(200).json({success: true})
-  } catch (error) {
-    console.error('Error creating section:', error)
-    res.status(500).json({ error: 'Failed to create section' })
-  }
-})
+    app.post('/createSection', async (req,res) => {
+      let { questionnaire_id, label, description, tooltip, nbPages } = req.body; // Get data from request body
+      try {
+        const SectionCreate = await createSection( questionnaire_id, label, description, tooltip, nbPages )
+        console.log('Section has been created: ',SectionCreate);
+        res.status(200).json({success: true})
+      } catch (error) {
+        console.error('Error creating section:', error)
+        res.status(500).json({ error: 'Failed to create section' })
+      }
+    })
 
 
-app.delete('/questions/:questionId/deleteReponses', async (req, res) => {
-    const { questionId } = req.params
+    app.delete('/questions/:questionId/deleteReponses', async (req, res) => {
+      const { questionId } = req.params
 
-    try {
+      try {
         const result = await deleteReponses(questionId)
         res.status(200).json({
-            success: true,
-            message: 'Reponses deleted successfully',
-            data: result
+          success: true,
+          message: 'Reponses deleted successfully',
+          data: result
         })
-    } catch (error) {
+      } catch (error) {
         console.error('Error deleting reponses:', error)
         res.status(500).json({ error: 'Failed to delete reponses' })
-    }
-})
+      }
+    })
 
 
-// Sauvegarder les tranches pour une question
-app.post('/questions/:questionId/tranches', async (req, res) => {
-    const { questionId } = req.params
-    const { tranches } = req.body
+    // Sauvegarder les tranches pour une question
+    app.post('/questions/:questionId/tranches', async (req, res) => {
+      const { questionId } = req.params
+      const { tranches } = req.body
 
-    try {
+      try {
         const result = await addReponsesTranches(questionId, tranches)
         res.status(200).json({
-            success: true,
-            message: 'Tranches saved successfully',
-            data: result
+          success: true,
+          message: 'Tranches saved successfully',
+          data: result
         })
-    } catch (error) {
+      } catch (error) {
         console.error('Error saving tranches:', error)
         res.status(500).json({ error: 'Failed to save tranches' })
-    }
-})
+      }
+    })
 
-// Récupérer les tranches d'une question
-app.get('/questions/:questionId/tranches', async (req, res) => {
-    const { questionId } = req.params
+    // Récupérer les tranches d'une question
+    app.get('/questions/:questionId/tranches', async (req, res) => {
+      const { questionId } = req.params
 
-    try {
+      try {
         const tranches = await getReponsesTranchesByQuestion(questionId)
         res.json(tranches)
-    } catch (error) {
+      } catch (error) {
         console.error('Error fetching tranches:', error)
         res.status(500).json({ error: 'Failed to fetch tranches' })
-    }
-})
+      }
+    })
 
-// Mettre à jour les tranches d'une question
-app.put('/questions/:questionId/tranches', async (req, res) => {
-    const { questionId } = req.params
-    const { tranches } = req.body
+    // Mettre à jour les tranches d'une question
+    app.put('/questions/:questionId/tranches', async (req, res) => {
+      const { questionId } = req.params
+      const { tranches } = req.body
 
-    try {
+      try {
         const result = await updateReponsesTranches(questionId, tranches)
         res.status(200).json({
-            success: true,
-            message: 'Tranches updated successfully',
-            data: result
+          success: true,
+          message: 'Tranches updated successfully',
+          data: result
         })
-    } catch (error) {
+      } catch (error) {
         console.error('Error updating tranches:', error)
         res.status(500).json({ error: 'Failed to update tranches' })
-    }
-})
+      }
+    })
 
-// Supprimer les tranches d'une question
-app.delete('/questions/:questionId/tranches', async (req, res) => {
-    const { questionId } = req.params
+    // Supprimer les tranches d'une question
+    app.delete('/questions/:questionId/tranches', async (req, res) => {
+      const { questionId } = req.params
 
-    try {
+      try {
         const result = await deleteReponsesTranches(questionId)
         res.status(200).json({
-            success: true,
-            message: 'Tranches deleted successfully',
-            data: result
+          success: true,
+          message: 'Tranches deleted successfully',
+          data: result
         })
-    } catch (error) {
+      } catch (error) {
         console.error('Error deleting tranches:', error)
         res.status(500).json({ error: 'Failed to delete tranches' })
-    }
-})
+      }
+    })
 
-app.put('/reponses/:reponseId', async (req, res) => {
-    const { reponseId } = req.params;
-    const { label, tooltip, plafond, recommandation, valeurScore } = req.body;
-    console.log(label, tooltip, plafond, recommandation, valeurScore )
-    try {
+    app.put('/reponses/:reponseId', async (req, res) => {
+      const { reponseId } = req.params;
+      const { label, tooltip, plafond, recommandation, valeurScore } = req.body;
+      console.log(label, tooltip, plafond, recommandation, valeurScore )
+      try {
 
         const result = await updateReponse(
-            reponseId,
-            label,
-            tooltip,
-            plafond,
-            recommandation,
-            valeurScore
+          reponseId,
+          label,
+          tooltip,
+          plafond,
+          recommandation,
+          valeurScore
         )
         res.status(200).json({
-            success: true,
-            message: 'Reponse updated successfully',
-            data: result[0]
+          success: true,
+          message: 'Reponse updated successfully',
+          data: result[0]
         })
-    } catch (error) {
+      } catch (error) {
         console.error('Error updating reponse:', error)
         res.status(500).json({ error: 'Failed to update reponse' })
-    }
-})
+      }
+    })
 
-/////////////////////////////
-// Recommandations
+    /////////////////////////////
+    // Recommandations
 
-app.post('/createreco', async (req,res) => {
-  let { recommandation, min, max, questionnaire_id } = req.body; // Get data from request body
-  try {
-    const RecoCreate = await createReco( questionnaire_id, recommandation, min, max )
-    console.log('Recommandation has been created: ',RecoCreate);
-    res.status(200).json({success: true})
-  } catch (error) {
-    console.error('Error creating recommandation:', error)
-    res.status(500).json({ error: 'Failed to create recommandation' })
-  }
-})
+    app.post('/createreco', async (req,res) => {
+      let { recommandation, min, max, questionnaire_id } = req.body; // Get data from request body
+      try {
+        const RecoCreate = await createReco( questionnaire_id, recommandation, min, max )
+        console.log('Recommandation has been created: ',RecoCreate);
+        res.status(200).json({success: true})
+      } catch (error) {
+        console.error('Error creating recommandation:', error)
+        res.status(500).json({ error: 'Failed to create recommandation' })
+      }
+    })
 
-app.get('/recommandations/:questionnaireId', async (req, res) => {
-  const { questionnaireId } = req.params
-  try {
-    const recommandations = await getAllReco(questionnaireId)
-    res.json({ recommandations })
-  } catch (error) {
-    console.error('Error fetching recommandations:', error)
-    res.status(500).json({ error: 'Internal server error' })
-  }
-})
+    app.get('/recommandations/:questionnaireId', async (req, res) => {
+      const { questionnaireId } = req.params
+      try {
+        const recommandations = await getAllReco(questionnaireId)
+        res.json({ recommandations })
+      } catch (error) {
+        console.error('Error fetching recommandations:', error)
+        res.status(500).json({ error: 'Internal server error' })
+      }
+    })
 
-app.put('/updatereco/:recoId', async (req, res) => {
-  const { recoId } = req.params;  // Fixed: was idSection, but route param is recoId
-  const { recommandation, min, max } = req.body;
+    app.put('/updatereco/:recoId', async (req, res) => {
+      const { recoId } = req.params;  // Fixed: was idSection, but route param is recoId
+      const { recommandation, min, max } = req.body;
 
-  try {
-    console.log('recommandation_id:', recoId);
-    // Get max position
-    // const lastSectionResult = await executeQuery(
-    //   numdiagPool,
-    //   `SELECT MAX(position) FROM Sections WHERE questionnaire_id = $1`,
-    //   [questionnaireId]
-    // )
+      try {
+        console.log('recommandation_id:', recoId);
+        // Get max position
+        // const lastSectionResult = await executeQuery(
+          //   numdiagPool,
+          //   `SELECT MAX(position) FROM Sections WHERE questionnaire_id = $1`,
+          //   [questionnaireId]
+          // )
 
-    const recoUpdate = await updateReco(recoId, { recommandation, min, max })
+          const recoUpdate = await updateReco(recoId, { recommandation, min, max })
 
-    console.log('recommandation has been updated: ',recoUpdate);
-    res.status(200).json({success: true})
-  }
-  catch (error) {
-    console.error('Error updating recommandation infos:', error)
-    recoUpdate.status(500).json({ error: 'Failed to update recommandation' })
-  }
-})
+          console.log('recommandation has been updated: ',recoUpdate);
+          res.status(200).json({success: true})
+        }
+        catch (error) {
+          console.error('Error updating recommandation infos:', error)
+          recoUpdate.status(500).json({ error: 'Failed to update recommandation' })
+        }
+      })
 
 
 app.delete('/deletereco/:recoId', async (req, res) => {
@@ -1075,3 +1075,14 @@ app.post('/questionnaireThemesAndPublics/:questionnaireId', async (req,res) => {
     res.status(500).json({ error: 'Failed to update themes and publics for questionnaire' })
   }
 })
+
+app.post('/searchQuestions', async (req,res) => {
+        const {searchThemes, searchPublics} = req.body; // Get data from request body
+        try {
+          const foundQuestions = await searchQuestions({searchThemes, searchPublics})
+          res.status(200).json({success: true, questionsSearchResult: foundQuestions})
+        } catch (error) {
+          console.error('Error searching questions:', error)
+          res.status(500).json({ error: 'Failed to search questions' })
+        }
+      })

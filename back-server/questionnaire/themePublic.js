@@ -404,4 +404,43 @@ const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => 
       }
     };
 
-export { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion, updateAssociatedThemesAndPublicsQuestion }
+
+    const searchQuestions = async ({searchThemes, searchPublics}) => {
+      try {
+        const queryTheme = `
+        SELECT question_id
+        FROM JoinThemesQuestions
+        WHERE theme_id = $1
+        `;
+
+        const questionSearchLabel = [];
+
+        for (const search of searchThemes) {
+          const question_id = await executeQuery(
+            numdiagPool,
+            queryTheme,
+            [search]
+          );    
+          if (question_id.length != 0) {
+            questionSearchLabel.push({id: result.question_id, theme_id:search});
+          }
+        }
+        const resultTheme = await executeQuery(numdiagPool, queryTheme, [questionId]);
+
+        const queryPublic = `
+        SELECT question_id
+        FROM JoinPublicsQuestions
+        WHERE public_id = $1
+        `;
+        const resultPublic = await executeQuery(numdiagPool, queryPublic, [questionId]);
+
+
+        return {resultTheme, resultPublic, success: true};
+
+      } catch (error) {
+        console.error('Error searching question by theme or public:',questionId,' :', error);
+        throw error;
+      }
+    };
+
+export { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion, updateAssociatedThemesAndPublicsQuestion, searchQuestions }
