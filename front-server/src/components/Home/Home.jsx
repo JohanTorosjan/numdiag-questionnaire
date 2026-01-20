@@ -478,7 +478,7 @@ export default function Home() {
           (<div key="searchQuestionByThemePublic">
             <div className='w-4/5 mx-auto mt-10'>
               <div className="flex justify-around">
-                <div className="form-group w-2/5">
+                <div className="form-group w-2/5 mb-0!">
                     <label htmlFor="searchQuestionTheme" className='text-lg!'>Thème(s) :</label>
                     <select
                         id="searchQuestionTheme"
@@ -495,7 +495,7 @@ export default function Home() {
                         ))}
                     </select>
                 </div>
-                <div className="form-group w-2/5">
+                <div className="form-group w-2/5 mb-0!">
                     <label htmlFor="searchQuestionPublic" className='text-lg!'>Public(s) :</label>
                     <select
                         id="searchQuestionPublic"
@@ -513,10 +513,11 @@ export default function Home() {
                         ))}
                     </select>
                 </div>
-                <button onClick={handleSearchQuestion} className="bg-white self-center w-fit h-12 px-4 py-2 shadow-lg! hover:shadow-xl! hover:-translate-y-0.5 ease-in-out duration-100">Rechercher</button>
+                <button onClick={handleSearchQuestion} className="bg-white self-end w-fit h-12 px-4 py-2 shadow-lg! hover:shadow-xl! hover:-translate-y-0.5 ease-in-out duration-100">Rechercher</button>
               </div>
             </div>
             <div className="mt-10"></div>
+            { (resultSearch.length === 0) ? <p className='text-xl pb-2'>Aucune question correspondante</p> : (resultSearch.length === 1) ? <p className='text-xl pb-2'>Une question correspondante</p> : <p className='text-xl pb-2'>{resultSearch.length} questions correspondantes</p>}
             { (resultSearch.length != 0) ? (
               resultSearch.map(result => (
                 <div key={result.question_id} className="w-full shadow rounded-lg border border-gray-50 px-7 py-4 mt-2 bg-white">
