@@ -504,7 +504,7 @@ export default function Home() {
                         onChange={handleSearchPublic}
                         multiple
                         size="1"
-                        
+
                     >
                         {allPublics.map((type, index) => (
                           <option key={type.id} value={type.id} className='px-3 py-2 text-wrap max-w-4/5'>
@@ -519,8 +519,8 @@ export default function Home() {
             <div className="mt-10"></div>
             { (resultSearch.length != 0) ? (
               resultSearch.map(result => (
-                <div className="w-full shadow rounded-lg border border-gray-50 px-7 py-4 mt-2 bg-white">
-                  <div key={result.question_id} className="flex w-full justify-between">
+                <div key={result.question_id} className="w-full shadow rounded-lg border border-gray-50 px-7 py-4 mt-2 bg-white">
+                  <div className="flex w-full justify-between">
                     <p className="text-lg max-w-1/2">{result.label}</p>
                     <div className="flex justify-between items-start w-1/2">
                         <div className="w-1/5 pt-1">
