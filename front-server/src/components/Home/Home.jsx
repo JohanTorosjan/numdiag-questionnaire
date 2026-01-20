@@ -477,8 +477,8 @@ export default function Home() {
           { (searchQuestions) ?
           (<div key="searchQuestionByThemePublic">
             <div className='w-4/5 mx-auto mt-10'>
-              <div className="form-row">
-                <div className="form-group">
+              <div className="flex justify-around">
+                <div className="form-group w-2/5">
                     <label htmlFor="searchQuestionTheme" className='text-lg!'>Thème(s) :</label>
                     <select
                         id="searchQuestionTheme"
@@ -489,13 +489,13 @@ export default function Home() {
                         size="1"
                     >
                         {allThemes.map((type, index) => (
-                            <option key={type.id} value={type.id} className='px-3 py-2'>
+                          <option key={type.id} value={type.id} className='px-3 py-2 text-wrap max-w-4/5'>
                                 {type.label}
                             </option>
                         ))}
                     </select>
                 </div>
-                <div className="form-group">
+                <div className="form-group w-2/5">
                     <label htmlFor="searchQuestionPublic" className='text-lg!'>Public(s) :</label>
                     <select
                         id="searchQuestionPublic"
@@ -504,16 +504,17 @@ export default function Home() {
                         onChange={handleSearchPublic}
                         multiple
                         size="1"
+                        
                     >
                         {allPublics.map((type, index) => (
-                            <option key={type.id} value={type.id} className='px-3 py-2'>
+                          <option key={type.id} value={type.id} className='px-3 py-2 text-wrap max-w-4/5'>
                                 {type.label}
                             </option>
                         ))}
                     </select>
                 </div>
+                <button onClick={handleSearchQuestion} className="bg-white self-center w-fit h-12 px-4 py-2 shadow-lg! hover:shadow-xl! hover:-translate-y-0.5 ease-in-out duration-100">Rechercher</button>
               </div>
-              <button onClick={handleSearchQuestion} className="bg-white shadow-lg! hover:shadow-xl! hover:-translate-y-0.5 ease-in-out duration-100">Rechercher</button>
             </div>
             <div className="mt-10"></div>
             { (resultSearch.length != 0) ? (
