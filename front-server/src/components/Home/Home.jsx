@@ -423,7 +423,7 @@ export default function Home() {
       headers: {
       'Content-Type': 'application/json',
       },
-       body: JSON.stringify({selectedThemes, selectedPublics})
+       body: JSON.stringify(selectedThemes, selectedPublics)
       });
       if (!response.ok) {
           throw new Error("Erreur lors de la recherche par public et/ou thèmes");

@@ -413,29 +413,87 @@ const createThemePublicQuestion = async ({theme, publicSelect, question_id}) => 
         WHERE theme_id = $1
         `;
 
-        const questionSearchLabel = [];
+        const questionSearchTheme = [];
 
         for (const search of searchThemes) {
-          const question_id = await executeQuery(
+          const question_ids = await executeQuery(
             numdiagPool,
             queryTheme,
-            [search]
-          );    
-          if (question_id.length != 0) {
-            questionSearchLabel.push({id: result.question_id, theme_id:search});
+            [search.theme_id]
+          );
+          for (const question_id of question_ids) {
+              questionSearchTheme.push({
+              question_id: question_id.question_id,
+              theme_id: search.theme_id,
+              theme_label: search.theme_label
+            });
           }
         }
-        const resultTheme = await executeQuery(numdiagPool, queryTheme, [questionId]);
 
         const queryPublic = `
         SELECT question_id
         FROM JoinPublicsQuestions
         WHERE public_id = $1
         `;
-        const resultPublic = await executeQuery(numdiagPool, queryPublic, [questionId]);
 
+        const questionSearchPublic = [];
 
-        return {resultTheme, resultPublic, success: true};
+        for (const search of searchPublics) {
+          const question_ids = await executeQuery(
+            numdiagPool,
+            queryTheme,
+            [search.public_id]
+          );
+          for (const question_id of question_ids) {
+            questionSearchPublic.push({
+            question_id: question_id.question_id,
+            public_id: search.public_id,
+            public_label: search.public_label
+          });
+  }
+        }
+
+        // on a id question, id et label du thème et du public associé
+        // il faudrait associer les deux arrays questionSearchTheme et questionSearchPublic ensemble pour supprimer les doublons
+        const mergedByQuestion = new Map();
+        for (const item of questionSearchTheme) {
+          if (!mergedByQuestion.has(item.question_id)) {
+            mergedByQuestion.set(item.question_id, {
+              question_id: item.question_id,
+              themes: [],
+              publics: []
+            });
+          }
+
+          mergedByQuestion.get(item.question_id).themes.push({
+            theme_id: item.theme_id,
+            theme_label: item.theme_label
+          });
+        }
+
+        for (const item of questionSearchPublic) {
+          if (!mergedByQuestion.has(item.question_id)) {
+            mergedByQuestion.set(item.question_id, {
+              question_id: item.question_id,
+              themes: [],
+              publics: []
+            });
+          }
+
+          mergedByQuestion.get(item.question_id).publics.push({
+            public_id: item.public_id,
+            public_label: item.public_label
+          });
+        }
+
+        const questionsMerged = [...mergedByQuestion.values()];
+
+        // puis aller chercher le label de la question et son type,
+        // ensuite récupérer le label de la section associée,
+        // puis le label et l'id du questionnaire associé
+        // ensuite en front avec l'id du questionnaire associé : lien hypertexte pour aller direct au questionnaire associé
+
+        return {questionSearchTheme, questionSearchPublic, success: true};
 
       } catch (error) {
         console.error('Error searching question by theme or public:',questionId,' :', error);
