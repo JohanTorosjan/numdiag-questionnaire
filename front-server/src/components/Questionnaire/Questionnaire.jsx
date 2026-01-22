@@ -9,6 +9,8 @@ import CreateSection from "../Section/createSection.jsx";
 import CreateReco from "../recommandations/createReco.jsx";
 import RecoQuestionnaire from "../recommandations/reco_questionnaire.jsx";
 import SideModal from "../recommandations/side_modal.jsx";
+import  SideModalLeft from "../recommandations/side_modal_left.jsx";
+import CreateNote from '../recommandations/createNote.jsx'
 import {
   getAllActivePublics,
   getAllActiveThemes,
@@ -140,9 +142,11 @@ function Questionnaire() {
   const [isCreateSectionPopupOpen, setIsCreateSectionPopupOpen] =
     useState(false);
   const [isCreateRecoPopupOpen, setCreateRecoPopupOpen] = useState(false);
+  const [isCreateNotePopupOpen, setCreateNotePopupOpen] = useState(false);
   const [buttonAffichageSection, setButtonAffichageSection] = useState(false);
   const toast = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalNotesOpen, setIsModalNotesOpen] = useState(false);
   const [associatedThemesAndPublics, setAssociatedThemesAndPublics] = useState(
     [],
   );
@@ -450,14 +454,20 @@ function Questionnaire() {
   const handleCreateRecoClick = () => {
     setCreateRecoPopupOpen(true);
   };
+  const handleCreateNoteClick = () => {
+    setCreateNotePopupOpen(true);
+  };
 
   const handleClosePopUpReco = () => {
     setCreateRecoPopupOpen(false);
   };
+  const handleClosePopUpNote = () => {
+    setCreateNotePopupOpen(false);
+  };
 
   const handleSaveReco = async (newReco, questionnaire_id = id) => {
     try {
-      // Ici tu feras ton appel API plus tard
+
       console.log("Appel API sauvegarde recommandation:", {
         updatedData: newReco,
         questionnaire_id: questionnaire_id,
@@ -506,6 +516,10 @@ function Questionnaire() {
       console.error("Erreur lors de la sauvegarde:", error);
     }
   };
+
+  const handleSaveNote = async (newNote, questionnaire_id = id) => {
+    console.log("coucou", newNote)
+  }
 
   const updateReco = (recoId, updatedReco) => {
     setRecommandations((prevRecommandations) =>
@@ -567,6 +581,13 @@ function Questionnaire() {
               <button
                 type="button"
                 className="btn-edit-quest"
+                onClick={() => setIsModalNotesOpen(true)}
+              >
+                Éditer les notes
+              </button>
+              <button
+                type="button"
+                className="btn-edit-quest"
                 onClick={() => setIsModalOpen(true)}
               >
                 Éditer les recommandations
@@ -587,14 +608,14 @@ function Questionnaire() {
                 <div className="flex absolute right-0 space-x-3">
                   <button
                     type="button"
-                    className=" bg-orange-700 border border-orange-700 px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-orange-600 hover:border-orange-600"
+                    className=" bg-lime-600 border  px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-lime-500"
                     onClick={publishQuest}
                   >
                     Publier
                   </button>
                   <button
                     type="button"
-                    className=" bg-orange-600 border border-orange-600 px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-orange-500 hover:border-orange-500"
+                    className=" bg-cyan-500 border px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-cyan-400"
                     onClick={downloadJson}
                   >
                     Télécharger
@@ -603,7 +624,7 @@ function Questionnaire() {
               ) : (
                 <button
                   type="button"
-                  className="absolute right-0 bg-orange-600 border border-orange-600 px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-orange-500 hover:border-orange-500"
+                  className="absolute right-0 bg-cyan-500 px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-cyan-400"
                   onClick={downloadJson}
                 >
                   Télécharger
@@ -626,37 +647,20 @@ function Questionnaire() {
               >
                 {buttonModifierQuest}
               </button>
-              <button
-                type="button"
-                className="btn-edit-quest"
-                onClick={() => setIsModalOpen(true)}
-              >
-                Éditer les recommandations
-              </button>
-              <button
-                type="button"
-                className="btn-toggle-sections"
-                onClick={() =>
-                  setButtonAffichageSection(!buttonAffichageSection)
-                }
-              >
-                {buttonAffichageSection
-                  ? "Afficher les actifs"
-                  : "Tout afficher"}
-              </button>
+
 
               {!questionnaire.ispublished ? (
                 <div className="flex absolute right-0 space-x-3">
                   <button
                     type="button"
-                    className=" bg-orange-700 border border-orange-700 px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-orange-600 hover:border-orange-600"
+                    className=" bg-lime-600  px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-lime-500"
                     onClick={publishQuest}
                   >
                     Publier
                   </button>
                   <button
                     type="button"
-                    className=" bg-orange-600 border border-orange-600 px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-orange-500 hover:border-orange-500"
+                    className=" bg-cyan-500 border px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-cyan-400"
                     onClick={downloadJson}
                   >
                     Télécharger
@@ -665,7 +669,7 @@ function Questionnaire() {
               ) : (
                 <button
                   type="button"
-                  className="absolute right-0 bg-orange-600 border border-orange-600 px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-orange-500 hover:border-orange-500"
+                  className="absolute right-0 bg-cyan-500 border px-3 py-2 rounded-xl text-white font-semibold text-[0.95rem] hover:-translate-y-0.5 ease-in duration-100 hover:shadow-lg hover:bg-cyan-400"
                   onClick={downloadJson}
                 >
                   Télécharger
@@ -830,15 +834,18 @@ function Questionnaire() {
         />
       )}
 
-      {/* Div pour les recommandations */}
-      {isModalOpen && (
-        <SideModal onClose={() => setIsModalOpen(false)}>
+      {/* Div pour les notes */}
+      {isModalNotesOpen && (
+        <SideModalLeft onClose={() => setIsModalNotesOpen(false)} handleCreateNoteClick={handleCreateNoteClick} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>
           <div className="sections-list">
+            <div className="w-fit">
+              <h3 className="text-xl">Notes</h3>
+              <hr className="w-2/3 text-gray-300"/>
+            </div>
             <div className="section">
               {/* Header de la section */}
               <div className="section-header">
                 <div className="section-content">
-                  <h3>Recommandations</h3>
                   <div className="sections-list">
                     {recommandations.map((recommandation) => (
                       <RecoQuestionnaire
@@ -852,14 +859,41 @@ function Questionnaire() {
                   </div>
                 </div>
               </div>
-              <div className="create-section-container">
-                <button
-                  onClick={handleCreateRecoClick}
-                  className="btn-create-section"
-                >
-                  <span className="btn-icon">+</span>
-                  Créer une recommandation
-                </button>
+
+            </div>
+          </div>
+        </SideModalLeft>
+      )}
+      {isCreateNotePopupOpen && isModalNotesOpen && (
+      <CreateNote onSave={handleSaveNote} onClose={handleClosePopUpNote} />
+      )}
+
+
+      {/* Div pour les recommandations */}
+      {isModalOpen && (
+        <SideModal onClose={() => setIsModalOpen(false)} handleCreateRecoClick={handleCreateRecoClick} isModalNotesOpen={isModalNotesOpen} setIsModalNotesOpen={setIsModalNotesOpen}>
+          <div className="sections-list">
+            <div className="w-fit mr-0 ml-auto">
+              <h3 className="text-xl">Recommandations</h3>
+              <hr className="w-2/3 text-gray-300 mr-O ml-auto"/>
+            </div>
+            <div className="section">
+              {/* Header de la section */}
+              <div className="section-header">
+                <div className="section-content">
+
+                  <div className="sections-list">
+                    {recommandations.map((recommandation) => (
+                      <RecoQuestionnaire
+                        key={`recommandation-${recommandation.id}`}
+                        recommandation={recommandation}
+                        onUpdateReco={updateReco}
+                        onDeleteReco={deleteReco}
+                        // questionnaireId={id}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

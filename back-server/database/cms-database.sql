@@ -176,10 +176,25 @@ CREATE TABLE JoinPublicsQuestionnaires (
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE,
     FOREIGN KEY (public_id) REFERENCES Publics(id) ON DELETE CASCADE
 );
+
 CREATE TABLE JoinPublicsQuestions (
     question_id INTEGER NOT NULL,
     public_id INTEGER NOT NULL,
     PRIMARY KEY (question_id, public_id),
     FOREIGN KEY (question_id) REFERENCES Questions(id) ON DELETE CASCADE,
     FOREIGN KEY (public_id) REFERENCES Publics(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Notes (
+    id SERIAL PRIMARY KEY,
+    lettre CHAR NOT NULL,
+    scoremax INTEGER NOT NULL,
+    scoremin INTEGER NOT NULL
+);
+
+CREATE TABLE NotesQuestionnaires (
+    questionnaire_id INTEGER NOT NULL,
+    note_id INTEGER NOT NULL,
+    FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE,
+    FOREIGN KEY (note_id) REFERENCES Notes(id) ON DELETE CASCADE
 );

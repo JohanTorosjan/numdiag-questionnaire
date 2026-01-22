@@ -180,24 +180,54 @@
   position: fixed;
   top: 0;
   right: 0;
-  width: 50%;
+  width: 45%;
   height: 100vh;
   background: #fff;
   box-shadow: -4px 0 10px rgba(0, 0, 0, 0.2);
   padding: 2rem;
-  padding-top: 100px;
+  padding-top: 90px;
   overflow-y: auto; /* <-- allows vertical scroll if content exceeds height */
   animation: slideIn 0.4s ease forwards;
 }
-.side-modal-backdrop {
+.side-modal-left {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: 45%;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.3); /* semi-transparent backdrop */
+  background: #fff;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+  padding: 2rem;
+  padding-top: 90px;
+  overflow-y: auto; /* <-- allows vertical scroll if content exceeds height */
+  animation: slideInLeft 0.4s ease backwards;
+}
+.side-modal-backdrop-left {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
   display: flex;
-  justify-content: flex-end; /* align modal to right */
+  justify-content: flex-start;
+  z-index: 999;
+}
+
+.short {
+  width: 55%;
+}
+.long {
+  width: 100vw;
+}
+
+.side-modal-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: flex-end;
   z-index: 999;
 }
 
@@ -210,13 +240,24 @@
     transform: translateX(0%);
   }
 }
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
 
 .close-btn {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: none;
-  border: none;
-  font-size: 2rem;
+  cursor: pointer;
+}
+.close-btn-left {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
   cursor: pointer;
 }
