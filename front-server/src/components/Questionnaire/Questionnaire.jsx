@@ -9,8 +9,9 @@ import CreateSection from "../Section/createSection.jsx";
 import CreateReco from "../recommandations/createReco.jsx";
 import RecoQuestionnaire from "../recommandations/reco_questionnaire.jsx";
 import SideModal from "../recommandations/side_modal.jsx";
-import  SideModalLeft from "../recommandations/side_modal_left.jsx";
-import CreateNote from '../recommandations/createNote.jsx'
+import SideModalLeft from "../recommandations/side_modal_left.jsx";
+import CreateScore from "../recommandations/createScore.jsx";
+
 import {
   getAllActivePublics,
   getAllActiveThemes,
@@ -142,11 +143,11 @@ function Questionnaire() {
   const [isCreateSectionPopupOpen, setIsCreateSectionPopupOpen] =
     useState(false);
   const [isCreateRecoPopupOpen, setCreateRecoPopupOpen] = useState(false);
-  const [isCreateNotePopupOpen, setCreateNotePopupOpen] = useState(false);
+  const [isCreateScorePopupOpen, setCreateScorePopupOpen] = useState(false);
   const [buttonAffichageSection, setButtonAffichageSection] = useState(false);
   const toast = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isModalNotesOpen, setIsModalNotesOpen] = useState(false);
+  const [isModalScoresOpen, setIsModalScoresOpen] = useState(false);
   const [associatedThemesAndPublics, setAssociatedThemesAndPublics] = useState(
     [],
   );
@@ -454,20 +455,19 @@ function Questionnaire() {
   const handleCreateRecoClick = () => {
     setCreateRecoPopupOpen(true);
   };
-  const handleCreateNoteClick = () => {
-    setCreateNotePopupOpen(true);
+  const handleCreateScoreClick = () => {
+    setCreateScorePopupOpen(true);
   };
 
   const handleClosePopUpReco = () => {
     setCreateRecoPopupOpen(false);
   };
-  const handleClosePopUpNote = () => {
-    setCreateNotePopupOpen(false);
+  const handleClosePopUpScore = () => {
+    setCreateScorePopupOpen(false);
   };
 
   const handleSaveReco = async (newReco, questionnaire_id = id) => {
     try {
-
       console.log("Appel API sauvegarde recommandation:", {
         updatedData: newReco,
         questionnaire_id: questionnaire_id,
@@ -477,8 +477,6 @@ function Questionnaire() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Ajoute l'auth si nécessaire
-          // 'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           ...newReco,
@@ -500,9 +498,8 @@ function Questionnaire() {
 
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      // Refresh the questionnaire data
-      const updatedReco = await getReco(id);
-      console.log("Updated recommandations:", updatedReco); // Add this for debugging
+      const updatedReco = await getReco(questionnaire_id);
+      console.log("Updated recommandations:", updatedReco);
 
       if (updatedReco) {
         setRecommandations(updatedReco.recommandations);
@@ -517,9 +514,53 @@ function Questionnaire() {
     }
   };
 
-  const handleSaveNote = async (newNote, questionnaire_id = id) => {
-    console.log("coucou", newNote)
-  }
+  const handleSaveScore = async (newScore, questionnaire_id = id) => {
+    try {
+      console.log("Appel API sauvegarde score:", {
+        updatedData: newScore,
+        questionnaire_id: questionnaire_id,
+      });
+
+      const response = await fetch(`http://localhost:3008/createscore`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...newScore,
+          questionnaire_id: questionnaire_id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Creation score, result:", result);
+      if (!result.success) {
+        throw new Error(
+          result.error || "Erreur lors de la sauvegarde du score",
+        );
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const updatedScores = await getScores(questionnaire_id);
+      console.log("Updated scores:", updatedScores);
+
+      if (updatedScores) {
+        setScores(updatedScores.scores);
+        toast.showSuccess("Score créé avec succès!");
+      } else {
+        toast.showError("Erreur lors de la création du score");
+        throw new Error("Failed to fetch updated scores");
+      }
+      setCreateRecoPopupOpen(false);
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde:", error);
+    }
+  };
 
   const updateReco = (recoId, updatedReco) => {
     setRecommandations((prevRecommandations) =>
@@ -581,9 +622,9 @@ function Questionnaire() {
               <button
                 type="button"
                 className="btn-edit-quest"
-                onClick={() => setIsModalNotesOpen(true)}
+                onClick={() => setIsModalScoresOpen(true)}
               >
-                Éditer les notes
+                Éditer les scores
               </button>
               <button
                 type="button"
@@ -647,7 +688,6 @@ function Questionnaire() {
               >
                 {buttonModifierQuest}
               </button>
-
 
               {!questionnaire.ispublished ? (
                 <div className="flex absolute right-0 space-x-3">
@@ -834,13 +874,18 @@ function Questionnaire() {
         />
       )}
 
-      {/* Div pour les notes */}
-      {isModalNotesOpen && (
-        <SideModalLeft onClose={() => setIsModalNotesOpen(false)} handleCreateNoteClick={handleCreateNoteClick} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>
+      {/* Div pour les scores */}
+      {isModalScoresOpen && (
+        <SideModalLeft
+          onClose={() => setIsModalScoresOpen(false)}
+          handleCreateScoreClick={handleCreateScoreClick}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+        >
           <div className="sections-list">
             <div className="w-fit">
-              <h3 className="text-xl">Notes</h3>
-              <hr className="w-2/3 text-gray-300"/>
+              <h3 className="text-xl">Scores</h3>
+              <hr className="w-2/3 text-gray-300" />
             </div>
             <div className="section">
               {/* Header de la section */}
@@ -859,29 +904,31 @@ function Questionnaire() {
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </SideModalLeft>
       )}
-      {isCreateNotePopupOpen && isModalNotesOpen && (
-      <CreateNote onSave={handleSaveNote} onClose={handleClosePopUpNote} />
+      {isCreateScorePopupOpen && isModalScoresOpen && (
+        <CreateScore onSave={handleSaveScore} onClose={handleClosePopUpScore} />
       )}
-
 
       {/* Div pour les recommandations */}
       {isModalOpen && (
-        <SideModal onClose={() => setIsModalOpen(false)} handleCreateRecoClick={handleCreateRecoClick} isModalNotesOpen={isModalNotesOpen} setIsModalNotesOpen={setIsModalNotesOpen}>
+        <SideModal
+          onClose={() => setIsModalOpen(false)}
+          handleCreateRecoClick={handleCreateRecoClick}
+          isModalScoresOpen={isModalScoresOpen}
+          setIsModalScoresOpen={setIsModalScoresOpen}
+        >
           <div className="sections-list">
             <div className="w-fit mr-0 ml-auto">
               <h3 className="text-xl">Recommandations</h3>
-              <hr className="w-2/3 text-gray-300 mr-O ml-auto"/>
+              <hr className="w-2/3 text-gray-300 mr-O ml-auto" />
             </div>
             <div className="section">
               {/* Header de la section */}
               <div className="section-header">
                 <div className="section-content">
-
                   <div className="sections-list">
                     {recommandations.map((recommandation) => (
                       <RecoQuestionnaire

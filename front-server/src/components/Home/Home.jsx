@@ -621,13 +621,13 @@ export default function Home() {
                 </div>
                 <button
                   onClick={handleSearchQuestion}
-                  className="bg-white self-end w-fit h-12 px-4 py-2 shadow-lg! hover:shadow-xl! hover:-translate-y-0.5 ease-in-out duration-100"
+                  className="bg-white self-end w-fit h-12 px-4 py-2 shadow! shadow-blue-300 border! border-slate-200! hover:shadow-lg! hover:-translate-y-0.5 hover:hsadow-blue-200! ease-in-out duration-100"
                 >
                   Rechercher
                 </button>
               </div>
             </div>
-            <div className="mt-10 flex">
+            <div className="mt-10 flex justify-between">
               {resultSearch.length === 0 ? (
                 <p className="text-xl pb-2">Aucune question correspondante</p>
               ) : resultSearch.length === 1 ? (
@@ -637,7 +637,7 @@ export default function Home() {
                   {resultSearch.length} questions correspondantes
                 </p>
               )}
-              <button onClick={() => exportCsv(resultSearch)}>
+              <button className="shadow! shadow-blue-300 border! border-slate-200! hover:shadow-lg! hover:shadow-blue-200 hover:-translate-y-0.5 ease-in-out duration-100" onClick={() => exportCsv(resultSearch)}>
                 Export csv
               </button>
             </div>

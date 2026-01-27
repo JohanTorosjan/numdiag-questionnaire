@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../popups/editQuestion.css';
-import { useParams } from 'react-router-dom';
 
 
 function CreateThemePublic({ onSave, onClose, type }) {
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+
     const [formData, setFormData] = useState({
         label: '',
     });
@@ -45,6 +51,7 @@ function CreateThemePublic({ onSave, onClose, type }) {
                   <div className="form-group">
                       <label htmlFor="label">Label du public</label>
                       <input
+                          ref={inputRef}
                           type="text"
                           id="label"
                           name="label"
@@ -52,12 +59,13 @@ function CreateThemePublic({ onSave, onClose, type }) {
                           onChange={handleInputChange}
                           placeholder="Public cible"
                           required
+
                       />
                   </div>
 
 
 
-                   
+
 
                   <div className="popup-actions">
                       <button type="button" onClick={onClose} className="cancel-button">

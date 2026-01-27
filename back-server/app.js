@@ -16,7 +16,7 @@ import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
 import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode } from './session/session.js'
 import { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion, updateAssociatedThemesAndPublicsQuestion, searchQuestions } from './questionnaire/themePublic.js'
-
+import { createScore } from './questionnaire/scores.js'
 const app = express()
 const port = 3008
 
@@ -908,3 +908,15 @@ app.post('/searchQuestions', async (req,res) => {
           res.status(500).json({ error: 'Failed to search questions' })
         }
       })
+
+app.post('/createscore', async (req,res) => {
+      let { score, min, max, questionnaire_id } = req.body; // Get data from request body
+      try {
+        const scoreCreated = await createScore( questionnaire_id, score, min, max )
+        console.log('Score has been created: ',RecoCreate);
+        res.status(200).json({success: true})
+      } catch (error) {
+        console.error('Error creating score:', error)
+        res.status(500).json({ error: 'Failed to create score' })
+      }
+    })

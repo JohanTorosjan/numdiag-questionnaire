@@ -94,7 +94,7 @@ INSERT INTO Reponses (id, question_id, label, position, tooltip, plafond, recomm
 (31, 12, 'Non', 2, 'o', -10, NULL, -10);
 
 -- Insert Tranches (mapped from tranche table)
--- Note: The original tranche referenced idQuestionReponse=4, which corresponds to our Question 5 (entier type)
+-- score: The original tranche referenced idQuestionReponse=4, which corresponds to our Question 5 (entier type)
 -- We'll map this to one of the responses for Question 5
 INSERT INTO Tranches (id, reponse_id, min, max, value) VALUES
 (1, 14, 0, 5, 1),

@@ -63,10 +63,10 @@ function CreateReco({ onSave, onClose }) {
             ></textarea>
           </div>
           <div className="form-group">
-            <label>
+            <p>
               Indiquez les scores entre lesquels apparaîtront la recommandation
               :
-            </label>
+            </p>
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="min">Valeur minimum</label>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../popups/editQuestion.css";
 import { useParams } from "react-router-dom";
 
-function CreateNote({ onSave, onClose }) {
+function CreateScore({ onSave, onClose }) {
   const [formData, setFormData] = useState({
     scoremin: 0,
     scoremax: 0,
@@ -35,7 +35,7 @@ function CreateNote({ onSave, onClose }) {
     <div className="popup-overlay" onClick={handleBackdropClick}>
       <div className="popup-content">
         <div className="popup-header">
-          <h3>Nouvelle note</h3>
+          <h3>Nouveau score</h3>
           <button onClick={onClose} className="close-button">
             ×
           </button>
@@ -52,14 +52,10 @@ function CreateNote({ onSave, onClose }) {
               onChange={handleInputChange}
               placeholder="Contenu"
               required
-          />
-
+            />
           </div>
           <div className="form-group">
-            <label>
-              Indiquez les scores entre lesquels apparaîtront la lettre
-              :
-            </label>
+            <p>Indiquez les scores entre lesquels apparaîtront la lettre :</p>
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="scoremin">Valeur minimum</label>
@@ -70,8 +66,10 @@ function CreateNote({ onSave, onClose }) {
                   value={formData.scoremin}
                   onChange={handleInputChange}
                   placeholder="Un entier"
-                  onKeyDown={(e) =>["e", "E", "+", "-", ".", ","].includes(e.key) && e.preventDefault() }
-
+                  onKeyDown={(e) =>
+                    ["e", "E", "+", "-", ".", ","].includes(e.key) &&
+                    e.preventDefault()
+                  }
                   required
                 />
               </div>
@@ -85,9 +83,11 @@ function CreateNote({ onSave, onClose }) {
                   value={formData.scoremax}
                   onChange={handleInputChange}
                   placeholder="Un entier"
-                  onKeyDown={(e) =>["e", "E", "+", "-", ".", ","].includes(e.key) && e.preventDefault() }
+                  onKeyDown={(e) =>
+                    ["e", "E", "+", "-", ".", ","].includes(e.key) &&
+                    e.preventDefault()
+                  }
                   min={formData.min}
-
                   required
                 />
               </div>
@@ -108,4 +108,4 @@ function CreateNote({ onSave, onClose }) {
   );
 }
 
-export default CreateNote;
+export default CreateScore;

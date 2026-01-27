@@ -185,16 +185,16 @@ CREATE TABLE JoinPublicsQuestions (
     FOREIGN KEY (public_id) REFERENCES Publics(id) ON DELETE CASCADE
 );
 
-CREATE TABLE Notes (
+CREATE TABLE Scores (
     id SERIAL PRIMARY KEY,
     lettre CHAR NOT NULL,
     scoremax INTEGER NOT NULL,
     scoremin INTEGER NOT NULL
 );
 
-CREATE TABLE NotesQuestionnaires (
+CREATE TABLE JoinScoresQuestionnaires (
     questionnaire_id INTEGER NOT NULL,
-    note_id INTEGER NOT NULL,
+    score_id INTEGER NOT NULL,
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE,
-    FOREIGN KEY (note_id) REFERENCES Notes(id) ON DELETE CASCADE
+    FOREIGN KEY (score_id) REFERENCES Scores(id) ON DELETE CASCADE
 );
