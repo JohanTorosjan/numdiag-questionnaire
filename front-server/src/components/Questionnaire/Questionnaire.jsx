@@ -93,6 +93,39 @@ async function getReco(idQuestionnaire) {
     return null;
   }
 }
+async function getScores(idQuestionnaire) {
+  try {
+    const response = await fetch(
+      `http://localhost:3008/scores/${idQuestionnaire}`,
+    );
+    if (!response.ok) {
+      throw new Error("Erreur lors du chargement des scores");
+    }
+    const data = await response.json();
+    console.log("scores : ", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching scores:", error);
+    return null;
+  }
+}
+
+
+
+async function getAllScores(questionnaire_id) {
+  try {
+    const response = await fetch(
+      `http://localhost:3008/scores/${questionnaire_id}`,
+    );
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    }
+  } catch (error) {
+    console.error("Error fetching scores:", error);
+    return [];
+  }
+}
 
 async function getAssociatedThemesAndPublics(questionnaire_id) {
   try {
@@ -159,6 +192,7 @@ function Questionnaire() {
     "Modifier les thèmes et publics",
   );
   const [defaultQuestionType, setDefaultQuestionType] = useState("");
+  const [scores, setScores]=useState([])
 
   // Listes fixes pour les select
   const questionTypes = [
@@ -221,6 +255,7 @@ function Questionnaire() {
     console.log(questionnaire);
   }, [questionnaire]);
 
+
   useEffect(() => {
     const themesQuest = [];
     const publicQuest = [];
@@ -240,6 +275,20 @@ function Questionnaire() {
       document.title = `${questionnaire.label}`;
     }
   }, [questionnaire]);
+
+  useEffect(() => {
+    if (!questionnaire?.id) return;
+    const getScores = async () => {
+      try {
+          const getScore = await getAllScores(questionnaire.id);
+          setScores(getScore)
+      } catch (error) {
+        console.error("Error fetching scores:", error);
+      }
+    }
+    getScores()
+  }, [questionnaire])
+
 
   const updateSection = (sectionId, updatedSection) => {
     setQuestionnaire((prevQuestionnaire) => ({
@@ -521,7 +570,7 @@ function Questionnaire() {
         questionnaire_id: questionnaire_id,
       });
 
-      const response = await fetch(`http://localhost:3008/createscore`, {
+      const response = await fetch(`http://localhost:3008/updatescore`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 
-import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase } from './database/client.js'
+import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagScores } from './database/client.js'
 import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion, publishQuestionnaire, exportJson } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection} from './questionnaire/section.js'
 import {updateQuestion,updatePositions,deleteReponses,createQuestion, deleteQuestion} from './questionnaire/question.js'
@@ -16,7 +16,7 @@ import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
 import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode } from './session/session.js'
 import { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion, updateAssociatedThemesAndPublicsQuestion, searchQuestions } from './questionnaire/themePublic.js'
-import { createScore } from './questionnaire/scores.js'
+import { updateScore, getAllScores, createScore } from './questionnaire/scores.js'
 const app = express()
 const port = 3008
 
@@ -119,6 +119,16 @@ app.post('/populateDatabase', async (req, res) => {
   } catch (error) {
     console.error('Error populating database:', error)
     res.status(500).json({ error: 'Failed to populate database' })
+  }
+})
+
+app.post('/populateScores', async (req, res) => {
+  try {
+    await populateNumdiagScores()
+    res.status(200).json({ message: 'Scores populated successfully' })
+  } catch (error) {
+    console.error('Error populating scores:', error)
+    res.status(500).json({ error: 'Failed to populate scores' })
   }
 })
 
@@ -909,14 +919,38 @@ app.post('/searchQuestions', async (req,res) => {
         }
       })
 
-app.post('/createscore', async (req,res) => {
+app.post('/updatescore', async (req,res) => {
       let { score, min, max, questionnaire_id } = req.body; // Get data from request body
       try {
-        const scoreCreated = await createScore( questionnaire_id, score, min, max )
-        console.log('Score has been created: ',RecoCreate);
-        res.status(200).json({success: true})
+        const scoreUpdated = await updateScore( questionnaire_id, score, min, max )
+        console.log('Score has been updated: ',scoreUpdated);
+        res.status(200).json({success: true, update: scoreUpdated})
       } catch (error) {
-        console.error('Error creating score:', error)
-        res.status(500).json({ error: 'Failed to create score' })
+        console.error('Error updating score:', error)
+        res.status(500).json({ error: 'Failed to update score' })
       }
     })
+
+app.get('/scores/:questionnaireId', async (req, res) => {
+  const { questionnaireId } = req.params
+  try {
+    const scores = await getAllScores(questionnaireId)
+    res.json({ scores })
+  } catch (error) {
+    console.error('Error fetching scores:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+app.get('/createscore/:questionnaireId', async (req,res) => {
+  const {questionnaireId} = req.params
+  console.log("coucou ici")
+  try {
+    const create = await createScore(questionnaireId);
+    console.log("created scores for questionnaire ", questionnaireId, ":", create)
+    res.status(200).json({success: true, create})
+  } catch (error) {
+    console.error('Error creating score:', error)
+    res.status(500).json({ error: 'Failed to create score' })
+  }
+})

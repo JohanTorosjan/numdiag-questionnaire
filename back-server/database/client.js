@@ -60,4 +60,16 @@ function populateNumdiagDatabase() {
         .catch(err => console.error('Error populating database:', err))
 }
 
-export { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagDatabase }
+async function populateNumdiagScores() {
+    connectToDatabase(numdiagPool)
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = path.dirname(__filename)
+    const sqlFilePath = path.resolve(__dirname, './init-scores.sql')
+    const sql = fs.readFileSync(sqlFilePath, 'utf8')
+
+    return numdiagPool.query(sql)
+        .then(() => console.log('Scores populated successfully'))
+        .catch(err => console.error('Error populating scores:', err))
+}
+
+export { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagScores }

@@ -47,6 +47,21 @@ async function updateQuestionnaire(idQuestionnaire, isactive) {
   }
 }
 
+async function createScore(questionnaire_id) {
+  try {
+    const response = await fetch(
+      `http://localhost:3008/createscore/${questionnaire_id}`,
+    );
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    }
+  } catch (error) {
+    console.error("Error creating scores:", error);
+    return [];
+  }
+}
+
 export default function Home() {
   DocumentTitle("Accueil – NumDiag CMS");
   const [questionnaires, setQuestionnaires] = useState([]);
@@ -317,6 +332,13 @@ export default function Home() {
       console.error("Erreur lors de la sauvegarde:", error);
     } finally {
       setIsCreating(false);
+    }
+
+    try {
+        const createScores = await createScore(questionnaire_id);
+    } catch (error) {
+          console.error("Error creating scores:", error);
+          toast.showError("Erreur lors de la création et sauvegarde des thèmes par défaut");
     }
   };
 
