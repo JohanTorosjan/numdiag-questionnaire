@@ -16,7 +16,7 @@ import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
 import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode } from './session/session.js'
 import { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion, updateAssociatedThemesAndPublicsQuestion, searchQuestions } from './questionnaire/themePublic.js'
-import { updateScore, getAllScores, createScore } from './questionnaire/scores.js'
+import { updateScore, getAllScores, createScore, deleteScore, defaultScores } from './questionnaire/scores.js'
 const app = express()
 const port = 3008
 
@@ -919,10 +919,12 @@ app.post('/searchQuestions', async (req,res) => {
         }
       })
 
-app.post('/updatescore', async (req,res) => {
-      let { score, min, max, questionnaire_id } = req.body; // Get data from request body
+app.post('/updatescore/:scoreId', async (req,res) => {
+  console.log('ici')
+      const { scoreId } = req.params;
+      const { lettre, scoremin, scoremax, } = req.body; // Get data from request body
       try {
-        const scoreUpdated = await updateScore( questionnaire_id, score, min, max )
+        const scoreUpdated = await updateScore( scoreId, lettre, scoremin, scoremax )
         console.log('Score has been updated: ',scoreUpdated);
         res.status(200).json({success: true, update: scoreUpdated})
       } catch (error) {
@@ -944,13 +946,29 @@ app.get('/scores/:questionnaireId', async (req, res) => {
 
 app.get('/createscore/:questionnaireId', async (req,res) => {
   const {questionnaireId} = req.params
-  console.log("coucou ici")
   try {
+    // const defaultScores = await defaultScores();
     const create = await createScore(questionnaireId);
     console.log("created scores for questionnaire ", questionnaireId, ":", create)
     res.status(200).json({success: true, create})
   } catch (error) {
     console.error('Error creating score:', error)
     res.status(500).json({ error: 'Failed to create score' })
+  }
+})
+
+app.delete('/deletescore/:scoreId', async (req, res) => {
+  const { scoreId } = req.params;
+  const defaultScores = await defaultScores();
+
+  try {
+    const scoreDeleted = await deleteScore(scoreId)
+    console.log(scoreDeleted)
+    console.log('score', scoreDeleted[0], ' has been deleted: ',scoreDeleted[1]);
+    res.status(200).json({success: true})
+  }
+  catch (error) {
+    console.error('Error deleting score:', error)
+    recoDelete.status(500).json({ error: 'Failed to delete score' })
   }
 })

@@ -8,6 +8,7 @@ import QuestionnaireTitleForm from "./questionnaireTitleForm";
 import CreateSection from "../Section/createSection.jsx";
 import CreateReco from "../recommandations/createReco.jsx";
 import RecoQuestionnaire from "../recommandations/reco_questionnaire.jsx";
+import ScoreQuestionnaire from "../recommandations/score_questionnaire.jsx";
 import SideModal from "../recommandations/side_modal.jsx";
 import SideModalLeft from "../recommandations/side_modal_left.jsx";
 import CreateScore from "../recommandations/createScore.jsx";
@@ -93,24 +94,6 @@ async function getReco(idQuestionnaire) {
     return null;
   }
 }
-async function getScores(idQuestionnaire) {
-  try {
-    const response = await fetch(
-      `http://localhost:3008/scores/${idQuestionnaire}`,
-    );
-    if (!response.ok) {
-      throw new Error("Erreur lors du chargement des scores");
-    }
-    const data = await response.json();
-    console.log("scores : ", data);
-    return data;
-  } catch (error) {
-    console.error("Error fetching scores:", error);
-    return null;
-  }
-}
-
-
 
 async function getAllScores(questionnaire_id) {
   try {
@@ -119,7 +102,7 @@ async function getAllScores(questionnaire_id) {
     );
     if (response.ok) {
       const data = await response.json();
-      return data;
+      return data
     }
   } catch (error) {
     console.error("Error fetching scores:", error);
@@ -281,13 +264,19 @@ function Questionnaire() {
     const getScores = async () => {
       try {
           const getScore = await getAllScores(questionnaire.id);
-          setScores(getScore)
+          setScores(getScore.scores)
       } catch (error) {
         console.error("Error fetching scores:", error);
       }
     }
     getScores()
   }, [questionnaire])
+
+  useEffect(() => {
+    console.log("scores:", scores)
+  }, [scores])
+
+
 
 
   const updateSection = (sectionId, updatedSection) => {
@@ -595,7 +584,7 @@ function Questionnaire() {
 
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      const updatedScores = await getScores(questionnaire_id);
+      const updatedScores = await getAllScores(questionnaire_id);
       console.log("Updated scores:", updatedScores);
 
       if (updatedScores) {
@@ -622,6 +611,19 @@ function Questionnaire() {
   const deleteReco = (recoId) => {
     setRecommandations((prevRecommandations) =>
       prevRecommandations.filter((reco) => reco.id !== recoId),
+    );
+  };
+  const updateScore= (scoreId, updatedScore) => {
+    setScores((prevScores) =>
+      prevScores.map((score) =>
+        score.id === scoreId ? { ...score, ...updatedScore } : score,
+      ),
+    );
+  };
+
+  const deleteScore = (scoreId) => {
+    setScores((prevScore) =>
+      prevScore.filter((score) => score.id !== scoreId),
     );
   };
 
@@ -930,6 +932,7 @@ function Questionnaire() {
           handleCreateScoreClick={handleCreateScoreClick}
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
+          scores={scores}
         >
           <div className="sections-list">
             <div className="w-fit">
@@ -941,12 +944,12 @@ function Questionnaire() {
               <div className="section-header">
                 <div className="section-content">
                   <div className="sections-list">
-                    {recommandations.map((recommandation) => (
-                      <RecoQuestionnaire
-                        key={`recommandation-${recommandation.id}`}
-                        recommandation={recommandation}
-                        onUpdateReco={updateReco}
-                        onDeleteReco={deleteReco}
+                    {scores.map((score) => (
+                      <ScoreQuestionnaire
+                        key={`score-${score.id}`}
+                        score={score}
+                        onUpdateScore={updateScore}
+                        onDeleteScore={deleteScore}
                         // questionnaireId={id}
                       />
                     ))}

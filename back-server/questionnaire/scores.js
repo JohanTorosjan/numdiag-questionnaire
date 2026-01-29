@@ -1,45 +1,55 @@
 import { numdiagPool, executeQuery } from '../database/client.js'
 
-  function updateScore(questionnaire_id, score= null, min= null, max = null) {
+  function updateScore(scoreId, lettre= null, scoremin= null, scoremax = null) {
+    console.log(scoremin)
     const fields = [];
-    const placeholders=[];
     const values = [];
     let index = 1;
 
-    if (score !== null && score!=='') {
-      fields.push(`lettre`);
-      placeholders.push(`$${index++}`);
-      values.push(score);
+    if (lettre !== null && lettre!=='') {
+      fields.push(`lettre = $${index++}`);
+      values.push(lettre);
     }
-    if (min !== null && min!=='') {
-      fields.push(`min`);
-      placeholders.push(`$${index++}`);
-      values.push(min);
+    if (scoremin !== null && scoremin!=='') {
+      fields.push(`scoremin = $${index++}`);
+      values.push(scoremin);
     }
 
-    if (max !== null && max!=='') {
-      fields.push(`max`);
-      placeholders.push(`$${index++}`);
-      values.push(max);
+    if (scoremax !== null && scoremax!=='') {
+      fields.push(`scoremax = $${index++}`);
+      values.push(scoremax);
     }
 
-    fields.push(`questionnaire_id`);
-    placeholders.push(`$${index++}`);
-    values.push(questionnaire_id);
+    values.push(scoreId);
 
-     return executeQuery(
-        numdiagPool,
-        `INSERT INTO Scores (${fields.join(', ')}) VALUES (${placeholders.join(', ')}) RETURNING *`,
-        values
-    );
-
+    return executeQuery(numdiagPool, `UPDATE Scores SET ${fields.join(', ')} WHERE id = $${index} RETURNING *`, values)
 
   }
 
   async function getAllScores(idQuestionnaire) {
-    const scores = await executeQuery(numdiagPool, 'SELECT score_id FROM JoinScoresQuestionnaires WHERE questionnaire_id = $1', [idQuestionnaire])
-    console.log("Scores:", scores)
+    const scoreIds = await executeQuery(numdiagPool, 'SELECT score_id FROM JoinScoresQuestionnaires WHERE questionnaire_id = $1', [idQuestionnaire]);
+    const scores=[];
+    for (const scoreId of scoreIds) {
+      const score = await executeQuery(numdiagPool,
+        'SELECT * FROM Scores WHERE id = $1',
+        [scoreId.score_id]
+      )
+      scores.push(score[0])
+    }
+    return scores;
+  }
 
+  async function defaultScores() {
+    const scoresQuery = `SELECT id, lettre, scoremax, scoremin
+                          FROM scores
+                          ORDER BY id ASC
+                          LIMIT 3;`
+
+    const defaultScores = await executeQuery(
+          numdiagPool,
+          scoresQuery
+        );
+    console.log(defaultScores)
   }
 
   async function createScore(idQuestionnaire) {
@@ -68,4 +78,11 @@ import { numdiagPool, executeQuery } from '../database/client.js'
     return {scores: selectDefault}
   }
 
-export {updateScore, getAllScores, createScore }
+  async function deleteScore(idScore) {
+    const deletedScore = await executeQuery(numdiagPool, 'DELETE FROM Scores WHERE id = $1', [idScore]);
+    console.log(deletedScore)
+    const deletedJoinScoreQuestionnaire = await executeQuery(numdiagPool, 'DELETE FROM JoinScoresQuestionnaires WHERE score_id = $1', [idScore])
+    return (deletedScore, deletedJoinScoreQuestionnaire)
+}
+
+export {updateScore, getAllScores, createScore, deleteScore, defaultScores }

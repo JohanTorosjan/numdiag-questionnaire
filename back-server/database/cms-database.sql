@@ -187,7 +187,7 @@ CREATE TABLE JoinPublicsQuestions (
 
 CREATE TABLE Scores (
     id SERIAL PRIMARY KEY,
-    lettre CHAR NOT NULL,
+    lettre TEXT NOT NULL,
     scoremax INTEGER NOT NULL,
     scoremin INTEGER NOT NULL
 );
@@ -198,3 +198,8 @@ CREATE TABLE JoinScoresQuestionnaires (
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE,
     FOREIGN KEY (score_id) REFERENCES Scores(id) ON DELETE CASCADE
 );
+
+INSERT INTO Scores (lettre, scoremax, scoremin) VALUES
+('A', 100, 67),
+('B', 66, 34),
+('C', 33, 0);
