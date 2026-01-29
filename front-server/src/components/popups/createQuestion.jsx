@@ -20,7 +20,7 @@ function PopUpCreateQuestion({
     page: 1,
     position: 1,
     questiontype:
-      defaultQuestionType === "Non défini"
+      defaultQuestionType === null
         ? "choix_simple"
         : defaultQuestionType,
     tooltip: "",
@@ -47,6 +47,7 @@ function PopUpCreateQuestion({
 
     setSelectedThemesQuestion(themes);
     setSelectedPublicsQuestion(publics);
+    console.log(defaultQuestionType)
   }, [themesAndPublicsFromQuestionnaire]);
 
   const handleInputChange = (e) => {

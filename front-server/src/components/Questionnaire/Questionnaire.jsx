@@ -248,7 +248,7 @@ function Questionnaire() {
         defaultQuestionDisplay[0].toUpperCase() +
         defaultQuestionDisplay.slice(1);
     } else {
-      defaultQuestionDisplay = "Non défini";
+      defaultQuestionDisplay = 'Choix simple';
     }
     setDefaultQuestionType(defaultQuestionDisplay);
     fetchAssociateThemesAndPublics();
