@@ -102,7 +102,7 @@ async function getAllScores(questionnaire_id) {
     );
     if (response.ok) {
       const data = await response.json();
-      return data
+      return data.scores
     }
   } catch (error) {
     console.error("Error fetching scores:", error);
@@ -264,7 +264,7 @@ function Questionnaire() {
     const getScores = async () => {
       try {
           const getScore = await getAllScores(questionnaire.id);
-          setScores(getScore.scores)
+          setScores(getScore)
       } catch (error) {
         console.error("Error fetching scores:", error);
       }
@@ -273,7 +273,7 @@ function Questionnaire() {
   }, [questionnaire])
 
   useEffect(() => {
-    console.log("scores:", scores)
+    console.log("scores updated:", scores)
   }, [scores])
 
 
@@ -623,7 +623,7 @@ function Questionnaire() {
 
   const deleteScore = (scoreId) => {
     setScores((prevScore) =>
-      prevScore.filter((score) => score.id !== scoreId),
+      prevScore.filter((score) => score.score_id !== scoreId),
     );
   };
 
@@ -932,7 +932,6 @@ function Questionnaire() {
           handleCreateScoreClick={handleCreateScoreClick}
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
-          scores={scores}
         >
           <div className="sections-list">
             <div className="w-fit">
@@ -946,7 +945,8 @@ function Questionnaire() {
                   <div className="sections-list">
                     {scores.map((score) => (
                       <ScoreQuestionnaire
-                        key={`score-${score.id}`}
+                        key={`score-${score.score_id}`}
+                        questionnaireId = {id}
                         score={score}
                         onUpdateScore={updateScore}
                         onDeleteScore={deleteScore}

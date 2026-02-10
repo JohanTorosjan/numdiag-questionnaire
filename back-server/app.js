@@ -922,9 +922,9 @@ app.post('/searchQuestions', async (req,res) => {
 app.post('/updatescore/:scoreId', async (req,res) => {
   console.log('ici')
       const { scoreId } = req.params;
-      const { lettre, scoremin, scoremax, } = req.body; // Get data from request body
+      const { questionnaireId, lettre, scoremin, scoremax, } = req.body; // Get data from request body
       try {
-        const scoreUpdated = await updateScore( scoreId, lettre, scoremin, scoremax )
+        const scoreUpdated = await updateScore({questionnaireId, scoreId, lettre, scoremin, scoremax} )
         console.log('Score has been updated: ',scoreUpdated);
         res.status(200).json({success: true, update: scoreUpdated})
       } catch (error) {
@@ -937,7 +937,6 @@ app.get('/scores/:questionnaireId', async (req, res) => {
   const { questionnaireId } = req.params
   try {
     const scores = await getAllScores(questionnaireId)
-    console.log(scores)
     res.json({ scores })
   } catch (error) {
     console.error('Error fetching scores:', error)
@@ -958,12 +957,12 @@ app.get('/createscore/:questionnaireId', async (req,res) => {
   }
 })
 
-app.delete('/deletescore/:scoreId', async (req, res) => {
-  const { scoreId } = req.params;
-  const defaultScores = await defaultScores();
-
+app.post('/deletescore/:scoreId', async (req, res) => {
+  const {scoreId} = req.params;
+  const { questionnaireId } = req.body;
+  console.log(questionnaireId)
   try {
-    const scoreDeleted = await deleteScore(scoreId)
+    const scoreDeleted = await deleteScore(scoreId, questionnaireId)
     console.log(scoreDeleted)
     console.log('score', scoreDeleted[0], ' has been deleted: ',scoreDeleted[1]);
     res.status(200).json({success: true})
