@@ -16,7 +16,7 @@ import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
 import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode } from './session/session.js'
 import { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion, updateAssociatedThemesAndPublicsQuestion, searchQuestions } from './questionnaire/themePublic.js'
-import { updateScore, getAllScores, createScore, deleteScore, defaultScores } from './questionnaire/scores.js'
+import { updateScore, getAllScores, createScore, deleteScore } from './questionnaire/scores.js'
 const app = express()
 const port = 3008
 
@@ -937,6 +937,7 @@ app.get('/scores/:questionnaireId', async (req, res) => {
   const { questionnaireId } = req.params
   try {
     const scores = await getAllScores(questionnaireId)
+    console.log(scores)
     res.json({ scores })
   } catch (error) {
     console.error('Error fetching scores:', error)

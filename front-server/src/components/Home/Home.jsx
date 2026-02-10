@@ -102,12 +102,12 @@ export default function Home() {
 
     const fetchThemes = async () => {
       const data = await getAllThemes();
-      setAllThemes(data.data);
+      if (data) setAllThemes(data.data);
     };
 
     const fetchPublics = async () => {
       const data = await getAllPublics();
-      setAllPublics(data.data);
+      if (data) setAllPublics(data.data);
     };
 
     fetchQuestionnaires();
