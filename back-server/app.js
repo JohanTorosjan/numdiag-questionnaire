@@ -16,7 +16,7 @@ import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
 import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode } from './session/session.js'
 import { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion, updateAssociatedThemesAndPublicsQuestion, searchQuestions } from './questionnaire/themePublic.js'
-import { updateScore, getAllScores, createScore, deleteScore } from './questionnaire/scores.js'
+import { updateScore, getAllScores, createScore, deleteScore, createNewScore } from './questionnaire/scores.js'
 const app = express()
 const port = 3008
 
@@ -950,6 +950,19 @@ app.get('/createscore/:questionnaireId', async (req,res) => {
     // const defaultScores = await defaultScores();
     const create = await createScore(questionnaireId);
     console.log("created scores for questionnaire ", questionnaireId, ":", create)
+    res.status(200).json({success: true, create})
+  } catch (error) {
+    console.error('Error creating score:', error)
+    res.status(500).json({ error: 'Failed to create score' })
+  }
+})
+
+app.post('/createnewscore', async (req,res) => {
+  const {newScore, questionnaire_id} = req.body
+  try {
+    // const defaultScores = await defaultScores();
+    const create = await createNewScore(newScore, questionnaire_id);
+    console.log("created scores for questionnaire ", questionnaire_id, ":", create)
     res.status(200).json({success: true, create})
   } catch (error) {
     console.error('Error creating score:', error)

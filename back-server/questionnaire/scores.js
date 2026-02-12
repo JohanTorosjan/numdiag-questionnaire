@@ -69,9 +69,47 @@ import { numdiagPool, executeQuery } from '../database/client.js'
     return {success: true}
   }
 
+  async function createNewScore(score, questionnaireId) {
+    console.log(score);
+    console.log(questionnaireId);
+    const fields = [];
+    const values = [];
+    let index = 1;
+    if (score.lettre !== null && score.lettre!=='') {
+      const result = await executeQuery(numdiagPool,`
+        INSERT INTO Scores (lettre)
+        VALUES ($1)
+        ON CONFLICT (lettre) DO UPDATE
+        SET lettre = EXCLUDED.lettre
+        RETURNING id;`, [score.lettre]);
+        const newScoreId = result[0].id;
+
+
+
+      if (score.scoremin !== null && score.scoremin!=='') {
+      fields.push(`scoremin`);
+      values.push(score.scoremin);
+      }
+
+      if (score.scoremax !== null && score.scoremax!=='') {
+        fields.push(`scoremax`);
+        values.push(score.scoremax);
+      }
+      fields.push('score_id')
+      values.push(newScoreId);
+      fields.push('questionnaire_id');
+      values.push(parseInt(questionnaireId));
+
+    return executeQuery(numdiagPool, `INSERT INTO JoinScoresQuestionnaires (${fields.join(', ')}) VALUES ($1, $2, $3, $4) RETURNING *`, values)
+
+    } else {
+      return {success: false}
+    }
+  }
+
   async function deleteScore(idScore, idQuestionnaire) {
     const deletedJoinScoreQuestionnaire = await executeQuery(numdiagPool, 'DELETE FROM JoinScoresQuestionnaires WHERE score_id = $1 AND questionnaire_id = $2', [idScore, idQuestionnaire])
     return (deletedJoinScoreQuestionnaire)
 }
 
-export {updateScore, getAllScores, createScore, deleteScore }
+export {updateScore, getAllScores, createScore, deleteScore, createNewScore }

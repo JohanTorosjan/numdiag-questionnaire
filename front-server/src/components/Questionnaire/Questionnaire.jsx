@@ -553,19 +553,20 @@ function Questionnaire() {
   };
 
   const handleSaveScore = async (newScore, questionnaire_id = id) => {
+    console.log(newScore)
     try {
       console.log("Appel API sauvegarde score:", {
         updatedData: newScore,
         questionnaire_id: questionnaire_id,
       });
 
-      const response = await fetch(`http://localhost:3008/updatescore`, {
+      const response = await fetch(`http://localhost:3008/createnewscore`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...newScore,
+          newScore,
           questionnaire_id: questionnaire_id,
         }),
       });
