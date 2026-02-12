@@ -49,6 +49,7 @@ async function updateQuestionnaire(idQuestionnaire, isactive) {
 
 async function createScore(questionnaire_id) {
   try {
+    
     const response = await fetch(
       `http://localhost:3008/createscore/${questionnaire_id}`,
     );

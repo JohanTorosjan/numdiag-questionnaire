@@ -920,7 +920,6 @@ app.post('/searchQuestions', async (req,res) => {
       })
 
 app.post('/updatescore/:scoreId', async (req,res) => {
-  console.log('ici')
       const { scoreId } = req.params;
       const { questionnaireId, lettre, scoremin, scoremax, } = req.body; // Get data from request body
       try {

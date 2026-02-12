@@ -176,6 +176,9 @@ function Questionnaire() {
   );
   const [defaultQuestionType, setDefaultQuestionType] = useState("");
   const [scores, setScores]=useState([])
+  const [scoresOk, setScoresOk]= useState(false)
+  const [scoresAlert, setScoresAlert] = useState([])
+  const [initialLoad, setInitialLoad] = useState(true);
 
   // Listes fixes pour les select
   const questionTypes = [
@@ -265,6 +268,7 @@ function Questionnaire() {
       try {
           const getScore = await getAllScores(questionnaire.id);
           setScores(getScore)
+          setInitialLoad(false);
       } catch (error) {
         console.error("Error fetching scores:", error);
       }
@@ -273,10 +277,80 @@ function Questionnaire() {
   }, [questionnaire])
 
   useEffect(() => {
-    console.log("scores updated:", scores)
-  }, [scores])
+    console.log("ici")
+    const resultScores = validateScores(scores);
+      console.log("Result scores:",resultScores)
+
+      if (resultScores.isValid) {
+          console.log('✓ Les scores sont valides');
+          if (!initialLoad) {
+            toast.showSuccess('Les scores forment un ensemble valide')
+          }
+          setScoresOk(true)
+          setScoresAlert([])
+        } else {
+          console.log('✗ Erreurs détectées:');
+          if (!initialLoad) {
+            toast.showError('Les scores ne sont pas valides')
+          }
+          setScoresOk(false)
+          setScoresAlert(resultScores.errors)
+          console.log(resultScores.errors)
+      }
+  }, [scores, initialLoad])
 
 
+  function validateScores(testScores) {
+    console.log("Test scores:", testScores)
+      const messages=[]
+      if (!testScores || testScores.length === 0) {
+        return {
+            isValid: false,
+            errors: ['Aucun score à valider']
+        };
+    }
+      // Trier les testScores par scoremin
+      const sorted = [...testScores].sort((a, b) => a.scoremin - b.scoremin);
+
+      // Vérifier que le premier score commence à 0
+      if (sorted[0].scoremin !== 0) {
+          messages.push(`Le premier score devrait commencer à 0, mais commence à ${sorted[0].scoremin}`);
+      }
+
+      // Vérifier que le dernier score finit à 100
+      if (sorted[sorted.length - 1].scoremax !== 100) {
+          messages.push(`Le dernier score devrait finir à 100, mais finit à ${sorted[sorted.length - 1].scoremax}`);
+      }
+
+      // Vérifier les trous et chevauchements
+      for (let i = 0; i < sorted.length - 1; i++) {
+          const current = sorted[i];
+          const next = sorted[i + 1];
+
+          // Vérifier les chevauchements
+          if (current.scoremax >= next.scoremin) {
+              messages.push(
+                  `Chevauchement entre "${current.lettre}" (${current.scoremin}-${current.scoremax}) ` +
+                  `et "${next.lettre}" (${next.scoremin}-${next.scoremax})`
+              );
+          }
+
+          // Vérifier les trous (il devrait y avoir exactement 1 de différence)
+          // Par exemple: score1 finit à 5, score2 devrait commencer à 6
+          if (current.scoremax + 1 < next.scoremin) {
+              messages.push(
+                  `Écart entre "${current.lettre}" (finit à ${current.scoremax}) ` +
+                  `et "${next.lettre}" (commence à ${next.scoremin}). ` +
+                  `Valeurs manquantes: ${current.scoremax + 1} à ${next.scoremin - 1}`
+              );
+          }
+      }
+
+      return {
+          isValid: messages.length === 0,
+          errors: messages
+      };
+    }
 
 
   const updateSection = (sectionId, updatedSection) => {
@@ -553,7 +627,6 @@ function Questionnaire() {
   };
 
   const handleSaveScore = async (newScore, questionnaire_id = id) => {
-    console.log(newScore)
     try {
       console.log("Appel API sauvegarde score:", {
         updatedData: newScore,
@@ -597,6 +670,7 @@ function Questionnaire() {
         throw new Error("Failed to fetch updated scores");
       }
       setCreateRecoPopupOpen(false);
+
     } catch (error) {
       console.error("Erreur lors de la sauvegarde:", error);
     }
@@ -615,18 +689,31 @@ function Questionnaire() {
       prevRecommandations.filter((reco) => reco.id !== recoId),
     );
   };
-  const updateScore= (scoreId, updatedScore) => {
-    setScores((prevScores) =>
-      prevScores.map((score) =>
-        score.id === scoreId ? { ...score, ...updatedScore } : score,
-      ),
-    );
+
+  const updateScore= async() => {
+    console.log("ici")
+    const updatedScores = await getAllScores(id);
+      console.log("Updated scores:", updatedScores);
+
+      if (updatedScores) {
+        setScores(updatedScores);
+        toast.showSuccess("Score créé avec succès!");
+        setCreateScorePopupOpen(false);
+      } else {
+        toast.showError("Erreur lors de la création du score");
+        throw new Error("Failed to fetch updated scores");
+      }
+    console.log("New scores:",updatedScores)
+
   };
 
   const deleteScore = (scoreId) => {
+    let newScores = []
     setScores((prevScore) =>
-      prevScore.filter((score) => score.score_id !== scoreId),
+      newScores = prevScore.filter((score) => score.score_id !== scoreId),
     );
+    console.log(scores)
+
   };
 
   const handleThemeChange = (e) => {
@@ -935,19 +1022,19 @@ function Questionnaire() {
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
         >
-          <div className="sections-list">
+          <div className={`sections-list`}>
             <div className="w-fit">
               <h3 className="text-xl">Scores</h3>
               <hr className="w-2/3 text-gray-300" />
             </div>
             <div className="section">
               {/* Header de la section */}
-              <div className="section-header">
+              <div className={`section-header ${scoresOk ? '': 'bg-red-500/50!'}`}>
                 <div className="section-content">
                   <div className="sections-list">
                     {scores.map((score) => (
                       <ScoreQuestionnaire
-                        key={`score-${score.score_id}`}
+                        key={`score-${score.score_id}-${score.scoremin}-${score.scoremax}`}
                         questionnaireId = {id}
                         score={score}
                         onUpdateScore={updateScore}

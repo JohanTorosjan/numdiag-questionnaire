@@ -195,6 +195,7 @@ CREATE TABLE JoinScoresQuestionnaires (
     score_id INTEGER NOT NULL,
     scoremax INTEGER NOT NULL,
     scoremin INTEGER NOT NULL,
+    PRIMARY KEY (questionnaire_id, score_id),
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE,
     FOREIGN KEY (score_id) REFERENCES Scores(id) ON DELETE CASCADE
 );

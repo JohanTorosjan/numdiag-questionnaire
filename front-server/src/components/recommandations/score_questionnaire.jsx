@@ -1,12 +1,14 @@
 import { useState } from "react";
 import ScoreUpdateForm from './scoreUpdateForm.jsx'
+import { useToast } from "../../ToastSystem";
 
 function ScoreQuestionnaire({questionnaireId, score, onUpdateScore, onDeleteScore}) {
   const [buttonUpdateScore, setButtonUpdateScore] = useState("Modifier");
-  const [isScore, setScore] = useState(score);
+  const [isScore, setScore] = useState(null);
+  const toast = useToast();
 
   async function updateScore(updates) {
-    console.log("Score id test:", score)
+    console.log('ici',score)
     try {
       const response = await fetch(`http://localhost:3008/updatescore/${score.score_id}`, {
         method: 'POST',
@@ -19,17 +21,21 @@ function ScoreQuestionnaire({questionnaireId, score, onUpdateScore, onDeleteScor
         throw new Error('Erreur lors de la mise à jour en db des infos de score');
       }
       const data = await response.json();
-      console.log('Mise à jour du score :', score.id);
-      onUpdateScore(score.score_id, updates);
-      return data;
+      if (data.success) {
+        onUpdateScore();
+        return data;
+      } else {
+        throw new Error(data.message || 'Update failed');
+      }
     } catch (error) {
       console.error('Error updating score:', error);
-      return null;
+      throw error;
     }
   }
 
   async function toggleButtonUpdateScore() {
     if (buttonUpdateScore === "Modifier") {
+      setScore({ ...score });
       setButtonUpdateScore("Valider");
     } else {
       try {
@@ -41,15 +47,19 @@ function ScoreQuestionnaire({questionnaireId, score, onUpdateScore, onDeleteScor
             scoremax: isScore.scoremax,
           }
         );
+        setScore(null);
         setButtonUpdateScore("Modifier");
-        console.log('Score updated:', updatedScore);
+        console.log('Score updated');
       } catch (error) {
         console.error('Error updating score:', error);
+        toast.showError("Les titres/lettres des scores doivent être différents")
+        setScore(null);
+        setButtonUpdateScore("Modifier");
       }
     }
   }
 
-   const handleInputScoreChange = async (e) => {
+   const handleInputScoreChange = (e) => {
     const { name, value } = e.target;
 
     setScore((prev) => ({
@@ -80,6 +90,8 @@ function ScoreQuestionnaire({questionnaireId, score, onUpdateScore, onDeleteScor
     }
   }
 
+  const displayScore = isScore || score;
+
 
   return (
     <div className="section" style={{padding: 10+'px'}}>
@@ -89,17 +101,17 @@ function ScoreQuestionnaire({questionnaireId, score, onUpdateScore, onDeleteScor
           <div className="section-metadata">
             <span className="metadata-item">
               <span className="metadata-label">Score minimum:</span>{" "}
-              {isScore.scoremin}
+              {displayScore.scoremin}
             </span>
             <span className="metadata-item">
               <span className="metadata-label">Score maximum:</span>{" "}
-              {isScore.scoremax}
+              {displayScore.scoremax}
             </span>
           </div>
-          <h3 className="section-title">{isScore.lettre}</h3>
+          <h3 className="section-title">{displayScore.lettre}</h3>
         </div>
          ) : (
-              <ScoreUpdateForm score={isScore} onChange={handleInputScoreChange} />
+              <ScoreUpdateForm score={displayScore} onChange={handleInputScoreChange} />
             )}
       </div>
       <div className="section-actions">

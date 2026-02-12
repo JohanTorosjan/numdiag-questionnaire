@@ -36,7 +36,7 @@ import { numdiagPool, executeQuery } from '../database/client.js'
   }
 
   async function getAllScores(idQuestionnaire) {
-    const scoreIds = await executeQuery(numdiagPool, 'SELECT score_id, scoremax, scoremin FROM JoinScoresQuestionnaires WHERE questionnaire_id = $1 ORDER BY scoremin;', [idQuestionnaire]);
+    const scoreIds = await executeQuery(numdiagPool, 'SELECT * FROM JoinScoresQuestionnaires WHERE questionnaire_id = $1 ORDER BY scoremin;', [idQuestionnaire]);
     const scores=[];
     for (const scoreId of scoreIds) {
       const score = await executeQuery(numdiagPool,
@@ -45,6 +45,7 @@ import { numdiagPool, executeQuery } from '../database/client.js'
       )
       scores.push({lettre: score[0].lettre, scoremin: scoreId.scoremin, scoremax: scoreId.scoremax, score_id: scoreId.score_id})
     }
+    console.log(scoreIds)
     return scores;
   }
 
@@ -61,6 +62,7 @@ import { numdiagPool, executeQuery } from '../database/client.js'
             score_id, questionnaire_id, scoremax, scoremin
             )
             VALUES ($1, $2, $3, $4)
+            ON CONFLICT (questionnaire_id, score_id) DO NOTHING
             RETURNING *
             `,
           [ score, idQuestionnaire, defaultMaxValues[index], defaultMinValues[index] ])
@@ -100,7 +102,7 @@ import { numdiagPool, executeQuery } from '../database/client.js'
       fields.push('questionnaire_id');
       values.push(parseInt(questionnaireId));
 
-    return executeQuery(numdiagPool, `INSERT INTO JoinScoresQuestionnaires (${fields.join(', ')}) VALUES ($1, $2, $3, $4) RETURNING *`, values)
+    return executeQuery(numdiagPool, `INSERT INTO JoinScoresQuestionnaires (${fields.join(', ')}) VALUES ($1, $2, $3, $4) ON CONFLICT (questionnaire_id, score_id) DO NOTHING RETURNING *`, values)
 
     } else {
       return {success: false}
