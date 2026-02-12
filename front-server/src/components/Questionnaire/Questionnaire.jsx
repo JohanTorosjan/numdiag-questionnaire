@@ -589,8 +589,9 @@ function Questionnaire() {
       console.log("Updated scores:", updatedScores);
 
       if (updatedScores) {
-        setScores(updatedScores.scores);
+        setScores(updatedScores);
         toast.showSuccess("Score créé avec succès!");
+        setCreateScorePopupOpen(false);
       } else {
         toast.showError("Erreur lors de la création du score");
         throw new Error("Failed to fetch updated scores");
