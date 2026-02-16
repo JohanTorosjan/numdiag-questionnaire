@@ -1031,6 +1031,13 @@ function Questionnaire() {
               {/* Header de la section */}
               <div className={`section-header ${scoresOk ? '': 'bg-red-500/50!'}`}>
                 <div className="section-content">
+                  {scoresOk ?
+                    <div className="invisible"></div>
+                    :
+                    scoresAlert.map((alert) =>
+                      <p className="my-1 text-red-950">⚠️ {alert}</p>
+                      )
+                  }
                   <div className="sections-list">
                     {scores.map((score) => (
                       <ScoreQuestionnaire
