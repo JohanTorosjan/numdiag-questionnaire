@@ -28,6 +28,31 @@ async function createSession(idQuestionnaire) {
   }
 }
 
+async function getInfos(idQuestionnaire, idSession) {
+  try {
+
+    const response = await fetch(`http://localhost:3008/sessionStorage`, {
+            method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  idQuestionnaire: idQuestionnaire,
+                  idSession: idSession
+                }),
+              });
+    if (!response.ok) {
+      throw new Error("Erreur lors de la récupération des infos de session");
+    }
+    const data = await response.json();
+    console.log("Session récupérée : ", data);
+    return data.data;
+  } catch (error) {
+    console.error("Error getting session:", error);
+    return null;
+  }
+}
+
 async function codeQuestionnaire(idQuestionnaire) {
   try {
     const response = await fetch(`http://localhost:3008/code/${idQuestionnaire}`);
@@ -59,34 +84,7 @@ function Session(){
 
 
   useEffect(() => {
-    let hasRun = false;
-
-    async function fetchCreateSession() {
-      if (hasRun) return;
-      hasRun = true;
-
-      try {
-        // ICI il va falloir gérer la création de session, aller d'abord regarder dans le local storage si il y a déjà une session_id.
-        // Si oui ne pas utiliser createSession, just fetach la session et le questionnaire associé
-        // if (localStorage.getItem("session_id")) {
-        //   const storedSession = localStorage.getItem("session_id");
-        //   const storedQuestionnaire = localStorage.getItem("questionnaire_id");
-        // } else {
-        const data = await createSession(questionnaire_id);
-        setQuestionnaire(data.questionnaire[0]);
-        setSession(data.session[0]);
-        const storedSession = sessionStorage.getItem("session_id");
-        const storedQuestionnaire = sessionStorage.getItem("questionnaire_id");
-        if (storedSession && storedQuestionnaire==data.questionnaire[0].id) {
-        setExistingSessionId(storedSession);
-      }
-        // }
-      } catch (error) {
-      console.error(error);
-      } // Wait 1 second before showing error
-
-    }
-        fetchCreateSession();
+      fetchCreateSession();
     }, [questionnaire_id]);
 
 
@@ -125,6 +123,38 @@ function Session(){
 
 
 
+  async function fetchCreateSession() {
+      if (existingSessionId) {
+        return;
+      }
+
+      try {
+
+        const storedSession = sessionStorage.getItem("session_id");
+        const storedQuestionnaire = sessionStorage.getItem("questionnaire_id");
+
+        if (storedSession && storedQuestionnaire) {
+          setExistingSessionId(true);
+          console.log("Stored Session", storedSession)
+          console.log("Stored Questionnaire", storedQuestionnaire)
+          const data = await getInfos(storedQuestionnaire, storedSession)
+          setQuestionnaire(data.questionnaire[0]);
+          setSession(data.session[0]);
+          return
+        }
+
+        const data = await createSession(questionnaire_id);
+        setQuestionnaire(data.questionnaire[0]);
+        setSession(data.session[0]);
+        sessionStorage.setItem('session_id',session.id)
+        sessionStorage.setItem('questionnaire_id',questionnaire.id)
+        // }
+      } catch (error) {
+      console.error(error);
+      } // Wait 1 second before showing error
+
+    }
+
   async function codeForSession({session_id, code, isUserSubmit = false}) {
     try {
       const response = await fetch(`http://localhost:3008/sessioncode/${session_id}`, {
@@ -155,24 +185,35 @@ function Session(){
     }
   }
 
-    const handleGoToQuestionnaireClick = async() =>{
+    const handleGoToQuestionnaireClick = async () =>{
+      try {
 
-        const response = await fetch(`http://127.0.0.1:3008/session/start/${session.id}`, {
+        const data = await createSession(questionnaire_id);
+        sessionStorage.clear();
+        setQuestionnaire(data.questionnaire[0]);
+        setSession(data.session[0]);
+        sessionStorage.setItem('session_id',data.session[0].id)
+        sessionStorage.setItem('questionnaire_id',data.questionnaire[0].id)
+
+
+
+      const response = await fetch(`http://127.0.0.1:3008/session/start/${data.session[0].id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
         }})
 
-        const data = await response.json()
-        if(data.success){
-            sessionStorage.setItem('session_id',session.id)
-            sessionStorage.setItem('questionnaire_id',questionnaire.id)
-            navigate(`/session/questionnaire/${session.id}`)
+        const data2 = await response.json()
+        console.log("data2", data2.success)
+        if (data2.success){
+            navigate(`/session/questionnaire/${data.session[0].id}`)
         }
-        else{
-            toast.showError('Erreur lors de la création du questionnaire');
-
+        else {
+            toast.showError("Erreur lors de l'ouverture du questionnaire");
         }
+      } catch (error) {
+      console.error(error);
+      }
     }
 
     const handleCodeSubmit = async () => {
@@ -215,7 +256,7 @@ function Session(){
         </div>
     )
   }
-  if (questionnaire.ispublished || questionnaire.isactive) {
+  if (questionnaire.ispublished && questionnaire.isactive) {
     if (!code) {
       return (
         <div className="background-new-visual px-5 w-full h-full flex flex-col items-center justify-center">
@@ -259,9 +300,9 @@ function Session(){
                   <div className="questionnaires-start-buttons self-center md:w-2/3 w-full mx-auto grid grid-cols-[3fr_1fr_3fr] md:grid-cols-[minmax(300px,3fr)_minmax(20px,1fr)_minmax(300px,3fr)]">
 
             <button
-              onClick={() => navigate(`/session/questionnaire/${existingSessionId}`)}
+              onClick={() => navigate(`/session/questionnaire/${session.id}`)}
               className="btn-go-to-questionnaire self-center justify-self-start px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit md:w-[210px]"
-            >{session.state} /
+            >
               Continuer le questionnaire précédent
             </button>
             <img src="/images/way.svg" className="h-9 w-9 mt-4 self-center md:self-start justify-self-center" alt="" />
@@ -278,7 +319,7 @@ function Session(){
           <div className="questionnaires-start-buttons self-center md:w-2/3 w-full mx-auto grid grid-cols-[3fr_1fr_3fr] md:grid-cols-[minmax(300px,3fr)_minmax(20px,1fr)_minmax(300px,3fr)]">
 
             <button
-              onClick={() => navigate(`/score/${existingSessionId}`)}
+              onClick={() => navigate(`/score/${session.id}`)}
               className="btn-go-to-questionnaire self-center justify-self-start px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit md:w-[210px]"
             >
               Accéder au score et aux recommandations

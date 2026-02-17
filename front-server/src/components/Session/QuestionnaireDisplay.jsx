@@ -6,7 +6,7 @@ import QuestionnaireDisplayer from "./QuestionnaireDisplayer.jsx";
 
 async function getSessionQuestionnaire(session_id){
     try{
-        const response = await fetch(`http://localhost:3008/session/questionnaire/${session_id}`);
+        const response = await fetch(`http://localhost:3008/sessionBack/questionnaire/${session_id}`);
         const data = await response.json()
         return data
     }
@@ -20,7 +20,7 @@ async function updateSession(session_id, sessionData){
     try{
 
         console.log(sessionData)
-        const response = await fetch(`http://localhost:3008/session/${session_id}`, {
+        const response = await fetch(`http://localhost:3008/sessionUpdate/${session_id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -56,9 +56,10 @@ function QuestionnaireDisplay(){
                 setIsLoading(false)
                 return;
             }
-            console.log(data.data.questionnaire.id)
-            if(localStorage.getItem('session_id')!= session_id){
-            navigate(`/session/${data.data.questionnaire.id}`)
+            console.log("Session",sessionStorage.getItem('session_id'))
+            console.log("What is",data.data.questionnaire.id)
+            if(sessionStorage.getItem('session_id')!= session_id){
+              navigate(`/session/${data.data.questionnaire.id}`)
             }
             setQuestionnaire(data.data.questionnaire);
             setSession(data.data.session);
@@ -71,7 +72,6 @@ function QuestionnaireDisplay(){
     // Gérer la mise à jour de la session
     const handleSessionUpdate = async (updatedSession) => {
         console.log(updatedSession)
-
         //
         setSession(updatedSession);
        // debugger

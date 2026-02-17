@@ -17,9 +17,9 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/session/questionnaire/:session_id" element={<QuestionnaireDisplay />} />
           <Route path="/questionnaire/:id" element={<Questionnaire />} />
           <Route path="/session/:questionnaire_id" element={<Session />} />
-          <Route path="/session/questionnaire/:session_id" element={<QuestionnaireDisplay />} />
           <Route path="/score/:session_id" element={<ScoreDisplay />} />
           <Route path="*" element={<NotFound />} /> {/* Route 404 */}
         </Routes>

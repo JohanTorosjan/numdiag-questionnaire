@@ -68,6 +68,32 @@ async function createSession(questionnaireId) {
     throw error;
   }
 }
+async function getQuestionnaireInfos(idQuestionnaire, idSession) {
+  try {
+
+    const questionnaireQuery = `
+            SELECT id, label, description, tooltip, insight, ispublished, isactive FROM Questionnaires WHERE id = $1
+        `;
+
+    const questionnaire = await executeQuery(numdiagPool, questionnaireQuery, [
+      idQuestionnaire,
+    ]);
+
+    const insertSessionQuery = `
+            SELECT * FROM Session WHERE id = $1
+        `;
+
+    const getSession = await executeQuery(numdiagPool, insertSessionQuery, [idSession,]);
+
+    return {
+      questionnaire: questionnaire,
+      session: getSession,
+    };
+  } catch (error) {
+    console.log("erreur:", error);
+    throw error;
+  }
+}
 
 async function launchSession(session_id) {
   try {
@@ -696,5 +722,6 @@ export {
   updateSession,
   getScore,
   trySessionCode,
-  getQuestionnaireCode
+  getQuestionnaireCode,
+  getQuestionnaireInfos
 };

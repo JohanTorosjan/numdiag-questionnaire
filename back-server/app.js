@@ -14,7 +14,7 @@ import {
 } from './questionnaire/reponsesTranches.js'
 import { createReco, getAllReco, updateReco, deleteReco } from './questionnaire/recommandation.js'
 import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/reponse.js'
-import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode } from './session/session.js'
+import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode, getQuestionnaireInfos } from './session/session.js'
 import { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion, updateAssociatedThemesAndPublicsQuestion, searchQuestions } from './questionnaire/themePublic.js'
 import { updateScore, getAllScores, createScore, deleteScore, createNewScore } from './questionnaire/scores.js'
 const app = express()
@@ -573,10 +573,26 @@ app.post('/session/:id_questionnaire',async (req,res) => {
     }
 })
 
+app.post('/sessionStorage',async (req,res) => {
+    const { idQuestionnaire, idSession } = req.body;
+    try {
+        const result = await getQuestionnaireInfos(idQuestionnaire, idSession)
+        res.status(200).json({
+            success: true,
+            message: 'Session saved successfully',
+            data: result
+        })
+    } catch (error) {
+        console.error('Error saving session:', error)
+        res.status(500).json({ error: 'Failed to save session' })
+    }
+})
+
 app.put('/session/start/:id_session',async (req,res) => {
     const { id_session } = req.params;
     try {
         const result = await launchSession(id_session)
+
         res.status(200).json({
             success: true,
             message: 'Session updated successfully',
@@ -588,8 +604,9 @@ app.put('/session/start/:id_session',async (req,res) => {
     }
 })
 
-app.get('/session/questionnaire/:id_session',async (req,res) => {
+app.get('/sessionBack/questionnaire/:id_session',async (req,res) => {
     const { id_session } = req.params;
+    console.log("on cale ici")
     try {
         const result = await getSessionQuestionnaire(id_session)
         res.status(200).json({
@@ -603,7 +620,7 @@ app.get('/session/questionnaire/:id_session',async (req,res) => {
     }
 })
 
-app.put('/session/:id_session', async (req, res) => {
+app.put('/sessionUpdate/:id_session', async (req, res) => {
     const { id_session } = req.params;
     const sessionData = req.body; // Récupérer les données du body
 
