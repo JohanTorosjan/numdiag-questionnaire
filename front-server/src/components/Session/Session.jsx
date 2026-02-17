@@ -59,8 +59,11 @@ function Session(){
 
 
   useEffect(() => {
+    let hasRun = false;
 
     async function fetchCreateSession() {
+      if (hasRun) return;
+      hasRun = true;
 
       try {
         // ICI il va falloir gérer la création de session, aller d'abord regarder dans le local storage si il y a déjà une session_id.
@@ -72,8 +75,8 @@ function Session(){
         const data = await createSession(questionnaire_id);
         setQuestionnaire(data.questionnaire[0]);
         setSession(data.session[0]);
-        const storedSession = localStorage.getItem("session_id");
-        const storedQuestionnaire = localStorage.getItem("questionnaire_id");
+        const storedSession = sessionStorage.getItem("session_id");
+        const storedQuestionnaire = sessionStorage.getItem("questionnaire_id");
         if (storedSession && storedQuestionnaire==data.questionnaire[0].id) {
         setExistingSessionId(storedSession);
       }
@@ -162,8 +165,8 @@ function Session(){
 
         const data = await response.json()
         if(data.success){
-            localStorage.setItem('session_id',session.id)
-            localStorage.setItem('questionnaire_id',questionnaire.id)
+            sessionStorage.setItem('session_id',session.id)
+            sessionStorage.setItem('questionnaire_id',questionnaire.id)
             navigate(`/session/questionnaire/${session.id}`)
         }
         else{
