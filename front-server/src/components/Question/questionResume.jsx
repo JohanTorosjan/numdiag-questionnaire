@@ -293,7 +293,7 @@ function QuestionResume({
             <p className="question-tooltip-text">{question.tooltip} </p>
           </h4>
           <div className="flex justify-between items-start">
-            <div className="space-x-1.5 w-1/3">
+            <div className="space-x-1.5 space-y-1 w-1/3">
               <span className="question-type-badge text-nowrap">
                 {answerTypeDisplayed}
               </span>
