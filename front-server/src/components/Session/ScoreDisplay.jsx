@@ -70,7 +70,6 @@ function ScoreDisplay() {
         <div className="w-full background-new-visual">
           <div className="max-w-4xl mx-auto pt-20 px-5 text-white">
 
-            <p>Hello session {session_id}</p>
             <h1 className="text-center mx-auto w-fit text-xl px-5 pb-1 rounded-3xl border-b border-calypso-600">Vous obtenez un score de {answers.scoreQuestionnaire}</h1>
 
             <div className="text-white mt-20">
