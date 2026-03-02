@@ -97,7 +97,9 @@ function QuestionnaireDisplay(){
     }
 
     return (
-        <div className="background-new-visual px-5 w-full h-full text-lg">
+        <div className="background-new-visual px-5 w-full h-full text-lg relative">
+          <img src="/images/NumDiag_new_logo.png" alt="logo de NumDiag" className="h-18 w-18 absolute top-3 left-3" />
+
             <QuestionnaireDisplayer
                 questionnaire={questionnaire}
                 session={session}

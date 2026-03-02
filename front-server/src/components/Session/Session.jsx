@@ -277,7 +277,8 @@ function Session(){
     } else {
         return (
           <div className="Session px-5 w-full h-full relative grid grid-rows-[auto_1fr_auto] pb-10 background-new-visual">
-
+            <img src="/images/NumDiag_new_logo.png" alt="logo de NumDiag" className="h-18 w-18 absolute top-3 left-3" />
+         
               <div className="questionnaires-infos mt-0 w-full py-10 mx-auto self-start">
                 <div className="md:w-2/3 w-full mx-auto border-b border-calypso-700 px-6 py-2 rounded-xl shadow-lg">
                   <h1 className="text-xl font-semibold tracking-wide">{questionnaire.label}</h1>

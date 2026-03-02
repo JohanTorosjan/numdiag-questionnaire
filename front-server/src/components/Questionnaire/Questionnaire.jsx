@@ -178,7 +178,7 @@ function Questionnaire() {
   const [scores, setScores]=useState([])
   const [scoresOk, setScoresOk]= useState(false)
   const [scoresAlert, setScoresAlert] = useState([])
-  const [initialLoad, setInitialLoad] = useState(true);
+  const [notInitialLoad, setInitialLoad] = useState(false);
 
   // Listes fixes pour les select
   const questionTypes = [
@@ -268,7 +268,6 @@ function Questionnaire() {
       try {
           const getScore = await getAllScores(questionnaire.id);
           setScores(getScore)
-          setInitialLoad(false);
       } catch (error) {
         console.error("Error fetching scores:", error);
       }
@@ -283,21 +282,27 @@ function Questionnaire() {
 
       if (resultScores.isValid) {
           console.log('✓ Les scores sont valides');
-          if (!initialLoad) {
-            toast.showSuccess('Les scores forment un ensemble valide')
-          }
           setScoresOk(true)
           setScoresAlert([])
         } else {
           console.log('✗ Erreurs détectées:');
-          if (!initialLoad) {
-            toast.showError('Les scores ne sont pas valides')
-          }
           setScoresOk(false)
           setScoresAlert(resultScores.errors)
           console.log(resultScores.errors)
       }
-  }, [scores, initialLoad])
+  }, [scores])
+
+  useEffect(() => {
+          if (notInitialLoad) {
+            if (scoresOk) {
+              toast.showSuccess('Les scores forment un ensemble valide')
+            } else {
+              toast.showError('Les scores ne sont pas valides')
+            }
+          }
+          setInitialLoad(true)
+
+  }, [scoresOk])
 
 
   function validateScores(testScores) {
