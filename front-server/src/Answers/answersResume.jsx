@@ -28,7 +28,7 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
 
   const handleDeleteAnswer = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:3008/reponse/${answer.id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/reponse/${answer.id}`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
         });
@@ -37,7 +37,7 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
           setIsDeleteAnswerOpen(false);
 
           try {
-            const responseQ = await fetch(`http://localhost:3008/questionnaire/${questionnaireId}`);
+            const responseQ = await fetch(`${import.meta.env.VITE_API_URL}/questionnaire/${questionnaireId}`);
             if (!responseQ.ok) {
               throw new Error('Erreur lors du chargement des sections');
             }
@@ -74,7 +74,7 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
     console.log(updatedAnswer)
     
     try {
-        const response = await fetch(`http://127.0.0.1:3008/reponses/${answer.id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/reponses/${answer.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
             console.log('Réponse mise à jour avec succès:', data.data)
             toast.showSuccess('Réponse sauvegardée')
 
-            const responseQ = await fetch(`http://localhost:3008/questionnaire/${questionnaireId}`);
+            const responseQ = await fetch(`${import.meta.env.VITE_API_URL}/questionnaire/${questionnaireId}`);
             if (!responseQ.ok) {
                 throw new Error('Erreur lors du chargement du questionnaire');
             }

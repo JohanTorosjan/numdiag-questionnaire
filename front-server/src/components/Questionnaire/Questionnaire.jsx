@@ -23,7 +23,7 @@ import "./Questionnaire.css"; // Import du CSS
 async function getQuestionnaire(idQuestionnaire) {
   try {
     const response = await fetch(
-      `http://localhost:3008/questionnaire/${idQuestionnaire}`,
+      `${import.meta.env.VITE_API_URL}/questionnaire/${idQuestionnaire}`,
     );
     if (!response.ok) {
       throw new Error("Erreur lors du chargement des sections");
@@ -48,7 +48,7 @@ async function updateQuestionnaire(
 ) {
   try {
     const response = await fetch(
-      `http://localhost:3008/updateQuestionnaire/${idQuestionnaire}`,
+      `${import.meta.env.VITE_API_URL}/updateQuestionnaire/${idQuestionnaire}`,
       {
         method: "PUT",
         headers: {
@@ -81,7 +81,7 @@ async function updateQuestionnaire(
 async function getReco(idQuestionnaire) {
   try {
     const response = await fetch(
-      `http://localhost:3008/recommandations/${idQuestionnaire}`,
+      `${import.meta.env.VITE_API_URL}/recommandations/${idQuestionnaire}`,
     );
     if (!response.ok) {
       throw new Error("Erreur lors du chargement des recommandations");
@@ -94,11 +94,29 @@ async function getReco(idQuestionnaire) {
     return null;
   }
 }
+async function getScores(idQuestionnaire) {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/scores/${idQuestionnaire}`,
+    );
+    if (!response.ok) {
+      throw new Error("Erreur lors du chargement des scores");
+    }
+    const data = await response.json();
+    console.log("scores : ", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching scores:", error);
+    return null;
+  }
+}
+
+
 
 async function getAllScores(questionnaire_id) {
   try {
     const response = await fetch(
-      `http://localhost:3008/scores/${questionnaire_id}`,
+      `${import.meta.env.VITE_API_URL}/scores/${questionnaire_id}`,
     );
     if (response.ok) {
       const data = await response.json();
@@ -113,7 +131,7 @@ async function getAllScores(questionnaire_id) {
 async function getAssociatedThemesAndPublics(questionnaire_id) {
   try {
     const response = await fetch(
-      `http://localhost:3008/associatedThemesAndPublics/${questionnaire_id}`,
+      `${import.meta.env.VITE_API_URL}/associatedThemesAndPublics/${questionnaire_id}`,
     );
     if (response.ok) {
       const data = await response.json();
@@ -132,7 +150,7 @@ async function editQuestionnaireThemesAndPublics({
 }) {
   try {
     const response = await fetch(
-      `http://localhost:3008/questionnaireThemesAndPublics/${questionnaire_id}`,
+      `${import.meta.env.VITE_API_URL}/questionnaireThemesAndPublics/${questionnaire_id}`,
       {
         method: "POST",
         headers: {
@@ -449,7 +467,7 @@ function Questionnaire() {
   async function publishQuest() {
     try {
       const response = await fetch(
-        `http://localhost:3008/publish/${questionnaire.id}`,
+        `${import.meta.env.VITE_API_URL}/publish/${questionnaire.id}`,
         {
           method: "PUT",
         },
@@ -474,7 +492,7 @@ function Questionnaire() {
   async function downloadJson() {
     try {
       const response = await fetch(
-        `http://localhost:3008/questionnaires/${questionnaire.id}/export`,
+        `${import.meta.env.VITE_API_URL}/questionnaires/${questionnaire.id}/export`,
       );
       const data = await response.json();
       console.log("Creating JSON:", data);
@@ -524,7 +542,7 @@ function Questionnaire() {
         questionnaire_id: questionnaire_id,
       });
       // setIsCreating(true)
-      const response = await fetch(`http://localhost:3008/createSection`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/createSection`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -590,7 +608,7 @@ function Questionnaire() {
         questionnaire_id: questionnaire_id,
       });
 
-      const response = await fetch(`http://localhost:3008/createreco`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/createreco`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -638,7 +656,7 @@ function Questionnaire() {
         questionnaire_id: questionnaire_id,
       });
 
-      const response = await fetch(`http://localhost:3008/createnewscore`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/createnewscore`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

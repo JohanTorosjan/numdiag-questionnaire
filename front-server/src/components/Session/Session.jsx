@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 async function createSession(idQuestionnaire) {
 
   try {
-    const response = await fetch(`http://localhost:3008/session/${idQuestionnaire}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/session/${idQuestionnaire}`, {
             method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ async function getInfos(idQuestionnaire, idSession) {
 
 async function codeQuestionnaire(idQuestionnaire) {
   try {
-    const response = await fetch(`http://localhost:3008/code/${idQuestionnaire}`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/code/${idQuestionnaire}`);
     if (!response.ok) {
       throw new Error("Erreur lors de la récupération du code du questionnaire");
     }
@@ -157,7 +157,7 @@ function Session(){
 
   async function codeForSession({session_id, code, isUserSubmit = false}) {
     try {
-      const response = await fetch(`http://localhost:3008/sessioncode/${session_id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/sessioncode/${session_id}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -197,7 +197,7 @@ function Session(){
 
 
 
-      const response = await fetch(`http://127.0.0.1:3008/session/start/${data.session[0].id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/session/start/${data.session[0].id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

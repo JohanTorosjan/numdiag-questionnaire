@@ -7,7 +7,7 @@ function RecoQuestionnaire({recommandation,onUpdateReco, onDeleteReco}) {
 
   async function updateReco(updates) {
     try {
-      const response = await fetch(`http://localhost:3008/updatereco/${recommandation.id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/updatereco/${recommandation.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ function RecoQuestionnaire({recommandation,onUpdateReco, onDeleteReco}) {
 
   async function deleteReco() {
     try {
-      const response = await fetch(`http://localhost:3008/deletereco/${recommandation.id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/deletereco/${recommandation.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

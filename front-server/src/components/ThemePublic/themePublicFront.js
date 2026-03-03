@@ -1,6 +1,6 @@
 async function getAllPublics() {
     try {
-        const response = await fetch('http://localhost:3008/publics');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/publics`);
         if (response.ok) {
             const data = await response.json();
             return data;
@@ -12,7 +12,7 @@ async function getAllPublics() {
 }
 async function getAllThemes() {
     try {
-        const response = await fetch('http://localhost:3008/themes');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/themes`);
         if (response.ok) {
             const data = await response.json();
             return data;
@@ -24,7 +24,7 @@ async function getAllThemes() {
 }
 async function getAllActivePublics() {
     try {
-        const response = await fetch('http://localhost:3008/activepublics');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/activepublics`);
         if (response.ok) {
             const data = await response.json();
             return data;
@@ -36,7 +36,7 @@ async function getAllActivePublics() {
 }
 async function getAllActiveThemes() {
     try {
-        const response = await fetch('http://localhost:3008/activethemes');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/activethemes`);
         if (response.ok) {
             const data = await response.json();
             return data;
@@ -49,7 +49,7 @@ async function getAllActiveThemes() {
 
 async function getPublicsAndThemes(questionId) {
   try {
-      const response = await fetch(`http://localhost:3008/associatedThemesAndPublicsQuestion/${questionId}`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/associatedThemesAndPublicsQuestion/${questionId}`);
       if (response.ok) {
           const data = await response.json();
           return data;
