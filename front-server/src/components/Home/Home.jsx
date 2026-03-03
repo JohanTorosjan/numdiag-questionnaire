@@ -12,7 +12,8 @@ import {
 
 async function getAllQuestionnairesResume() {
   try {
-    const response = await fetch("http://localhost:3008/questionnairesResume");
+    
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/questionnairesResume`);
     if (response.ok) {
       const data = await response.json();
       return data;
@@ -26,7 +27,7 @@ async function getAllQuestionnairesResume() {
 async function updateQuestionnaire(idQuestionnaire, isactive) {
   try {
     const response = await fetch(
-      `http://localhost:3008/updateQuestionnaire/${idQuestionnaire}`,
+      `${import.meta.env.VITE_API_URL}/updateQuestionnaire/${idQuestionnaire}`,
       {
         method: "PUT",
         headers: {
@@ -50,7 +51,7 @@ async function updateQuestionnaire(idQuestionnaire, isactive) {
 async function createScore(questionnaire_id) {
   try {
     const response = await fetch(
-      `http://localhost:3008/createscore/${questionnaire_id}`,
+      `${import.meta.env.VITE_API_URL}/createscore/${questionnaire_id}`,
     );
     if (response.ok) {
       const data = await response.json();
@@ -123,7 +124,7 @@ export default function Home() {
     if (label != "") {
       try {
         const response = await fetch(
-          `http://localhost:3008/updateTheme/${idTheme}`,
+          `${import.meta.env.VITE_API_URL}/updateTheme/${idTheme}`,
           {
             method: "PUT",
             headers: {
@@ -154,7 +155,7 @@ export default function Home() {
     if (label != "") {
       try {
         const response = await fetch(
-          `http://localhost:3008/updatePublic/${idPublic}`,
+          `${import.meta.env.VITE_API_URL}/updatePublic/${idPublic}`,
           {
             method: "PUT",
             headers: {
@@ -184,7 +185,7 @@ export default function Home() {
   async function deactivateTheme(idTheme, themeState) {
     try {
       const response = await fetch(
-        `http://localhost:3008/deactivateTheme/${idTheme}`,
+        `${import.meta.env.VITE_API_URL}/deactivateTheme/${idTheme}`,
         {
           method: "POST",
           headers: {
@@ -210,7 +211,7 @@ export default function Home() {
   async function deactivatePublic(idPublic, publicState) {
     try {
       const response = await fetch(
-        `http://localhost:3008/deactivatePublic/${idPublic}`,
+        `${import.meta.env.VITE_API_URL}/deactivatePublic/${idPublic}`,
         {
           method: "POST",
           headers: {
@@ -261,7 +262,7 @@ export default function Home() {
     try {
       setIsCreating(true);
       const response = await fetch(
-        `http://localhost:3008/createQuestionnaire`,
+        `${import.meta.env.VITE_API_URL}/createQuestionnaire`,
         {
           method: "POST",
           headers: {
@@ -299,7 +300,7 @@ export default function Home() {
       setIsCreating(true);
 
       const response = await fetch(
-        `http://localhost:3008/themePublicQuestionnaire`,
+        `${import.meta.env.VITE_API_URL}/themePublicQuestionnaire`,
         {
           method: "POST",
           headers: {
@@ -347,7 +348,7 @@ export default function Home() {
   const handleSavePublic = async (newPublic) => {
     try {
       setIsCreating(true);
-      const response = await fetch(`http://localhost:3008/createPublic`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/createPublic`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -386,7 +387,7 @@ export default function Home() {
   const handleSaveTheme = async (newTheme) => {
     try {
       setIsCreating(true);
-      const response = await fetch(`http://localhost:3008/createTheme`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/createTheme`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -456,7 +457,7 @@ export default function Home() {
       .map((p) => ({ theme_id: p.id, theme_label: p.label }));
 
     try {
-      const response = await fetch(`http://localhost:3008/searchQuestions`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/searchQuestions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

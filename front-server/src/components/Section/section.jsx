@@ -53,7 +53,7 @@ function Section({
     console.log(newQuestion)
 
 
-    const response = await fetch('http://localhost:3008/questions', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/questions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -75,7 +75,7 @@ function Section({
     toast.showSuccess("Question créee")
     console.log("Reponse back:",response)
      try {
-        const responseQ = await fetch(`http://localhost:3008/questionnaire/${questionnaireId}`);
+        const responseQ = await fetch(`${import.meta.env.VITE_API_URL}/questionnaire/${questionnaireId}`);
         if (!responseQ.ok) {
             throw new Error('Erreur lors du chargement des sections');
         }
@@ -97,7 +97,7 @@ function Section({
 
   async function updateSection(idSection, updates) {
     try {
-      const response = await fetch(`http://localhost:3008/updateSection/${idSection}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/updateSection/${idSection}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

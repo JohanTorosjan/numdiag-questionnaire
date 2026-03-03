@@ -6,7 +6,7 @@ import QuestionnaireDisplayer from "./QuestionnaireDisplayer.jsx";
 
 async function getSessionQuestionnaire(session_id){
     try{
-        const response = await fetch(`http://localhost:3008/session/questionnaire/${session_id}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/session/questionnaire/${session_id}`);
         const data = await response.json()
         return data
     }
@@ -20,7 +20,7 @@ async function updateSession(session_id, sessionData){
     try{
 
         console.log(sessionData)
-        const response = await fetch(`http://localhost:3008/session/${session_id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/session/${session_id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
