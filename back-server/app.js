@@ -23,12 +23,12 @@ const port = 3008
 app.use(express.json())
 
 var corsOptions = {
-  origin: 'http://127.0.0.1:8081',
+  origin: '*',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
   optionsSuccessStatus: 200
 }
+
 app.use(cors(corsOptions))
 
 app.use(express.json());
