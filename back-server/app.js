@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagScores } from './database/client.js'
-import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion, publishQuestionnaire, exportJson } from './questionnaire/questionnaire.js'
+import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion, publishQuestionnaire, exportJson, displaySponsor } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection} from './questionnaire/section.js'
 import {updateQuestion,updatePositions,deleteReponses,createQuestion, deleteQuestion} from './questionnaire/question.js'
 import {createSection, updateSection} from './questionnaire/section.js'
@@ -606,7 +606,6 @@ app.put('/session/start/:id_session',async (req,res) => {
 
 app.get('/sessionBack/questionnaire/:id_session',async (req,res) => {
     const { id_session } = req.params;
-    console.log("on cale ici")
     try {
         const result = await getSessionQuestionnaire(id_session)
         res.status(200).json({
@@ -999,5 +998,19 @@ app.post('/deletescore/:scoreId', async (req, res) => {
   catch (error) {
     console.error('Error deleting score:', error)
     recoDelete.status(500).json({ error: 'Failed to delete score' })
+  }
+})
+
+app.post('/displaysponsors/:questionnaireId', async (req,res) => {
+  console.log("coucou")
+  const {questionnaireId} = req.params;
+  const { sponsorsDisplay } = req.body;
+  try {
+    const toggleDisplay = await displaySponsor({questionnaireId, sponsorsDisplay})
+    res.status(200).json({success: true})
+  }
+  catch (error) {
+    console.error('Error toggling sponsor display:', error)
+    toggleDisplay.status(500).json({ error: 'Failed to toggle sponsor display' })
   }
 })

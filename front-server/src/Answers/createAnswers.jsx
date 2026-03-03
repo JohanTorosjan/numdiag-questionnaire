@@ -27,10 +27,16 @@ function PopUpCreateAnswer({ answerType, onClose, onSave }) {
             newValue = null;
         }
 
-        setFormData((prev) => ({
-            ...prev,
-            [name]: newValue,
-        }));
+        setFormData((prev) => {
+           const updated = { ...prev, [name]: newValue };
+
+        // If valeurScore increases past plafond, bump plafond up
+        if (name === 'valeurScore' && Number(updated.plafond) < Number(newValue)) {
+            updated.plafond = newValue;
+        }
+
+        return updated;
+    });
     };
 
     const handleSubmit = async (e) => {
@@ -97,6 +103,7 @@ function PopUpCreateAnswer({ answerType, onClose, onSave }) {
                                 name="plafond"
                                 value={formData.plafond}
                                 onChange={handleInputChange}
+                                min={formData.valeurScore}
                                 placeholder="0"
                             />
                         </div>

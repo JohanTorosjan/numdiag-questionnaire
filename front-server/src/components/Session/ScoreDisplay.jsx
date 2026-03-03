@@ -34,16 +34,17 @@ function ScoreDisplay() {
         if (!data.success) {
           toast.showError("Erreur lors du chargement");
           // setIsLoading(true);
-        return;
+          return;
         }
         if(sessionStorage.getItem('session_id')!= session_id){
           navigate(`/session/${data.data.questionnaire.id}`)
         }
-        const questionnaire = data.data.questionnaire;
-        setQuestionnaire(data.data.questionnaire[0])
+        console.log(data)
+        const questionnaire_const = data.data.questionnaire;
+        setQuestionnaire(data.data.questionnaire)
 
         if (questionnaire) {
-            document.title = `Your score - ${questionnaire.label}`;
+          document.title = `Your score - ${questionnaire_const.label}`;
         }
         setAnswers(data.data)
       }

@@ -516,6 +516,23 @@ const exportJson = async (id) => {
   }
 }
 
+async function displaySponsor({questionnaireId, sponsorsDisplay}) {
+    if (sponsorsDisplay) {
+      const display = await executeQuery(
+      numdiagPool,
+      "UPDATE questionnaires SET isFunded =  false WHERE id = $1;",
+      [questionnaireId]
+    );
+    } else {
+      const display = await executeQuery(
+      numdiagPool,
+      "UPDATE questionnaires SET isFunded = true WHERE id = $1;",
+      [questionnaireId]
+      );
+    }
+    return display;
+}
+
 
 
 
@@ -530,5 +547,6 @@ export {
     getAllQuestionsByQuestionnaire,
     getDependenciesForQuestion,
     publishQuestionnaire,
-    exportJson
+    exportJson,
+    displaySponsor
 }

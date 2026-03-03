@@ -433,6 +433,7 @@ async function getScore(session_id) {
   const questionnaireQuery = `
         SELECT
             id,
+            label,
             isfunded,
             clientlogo,
             scoremax,
@@ -446,7 +447,8 @@ async function getScore(session_id) {
     questionnaireQuery,
     [questionnaireId]
   );
-  const questionnaire = questionnaireResult[0];
+  const questionnaireInfos = questionnaireResult[0];
+
 
   // 3. Récupérer toutes les sections du questionnaire
   const sectionsQuery = `
@@ -462,6 +464,7 @@ async function getScore(session_id) {
   const sections = await executeQuery(numdiagPool, sectionsQuery, [
     questionnaireId,
   ]);
+
 
   // 4. Récupérer toutes les questions des sections
   const questionsQuery = `
@@ -480,6 +483,7 @@ async function getScore(session_id) {
   const questions = await executeQuery(numdiagPool, questionsQuery, [
     sectionIds,
   ]);
+
 
   // 5. Récupérer toutes les réponses des questions
   const reponsesQuery = `
@@ -517,7 +521,7 @@ async function getScore(session_id) {
   ]);
 
   // now need to compute score with session.answers array (questionIds; and reponse Ids in an array)
-  // take all the answer as a single element in answerFlat for future computaton
+  // take all the answer as a single element in answerFlat for future computation
   const grouped = {};
   const sectionScore = {};
   session.answers.forEach((answer) => {
@@ -540,6 +544,7 @@ async function getScore(session_id) {
     });
   });
 
+
   // scoremax = 100
   // score d'une question toujours sur 100
 
@@ -553,7 +558,7 @@ async function getScore(session_id) {
     grouped[section].forEach((qAndA) => {
       let value = 0;
       let recommandation;
-    if (qAndA.type === "entier") {
+      if (qAndA.type === "entier") {
         // on récupère la tranche de reponse
         let tranches = reponsesTranches.filter((tranche) => tranche.id === qAndA.answerId);
         // on ajuste le plafond si nécessaire, on récupère la valeur de la tranche et la reco
@@ -582,12 +587,13 @@ async function getScore(session_id) {
       // dans quel cas cette table est-elle utilisée ? à garder ?
     });
     grouped[section].plafond = plafond;
-    console.log("groupé:",grouped)
+
     const initialValue = 0;
     const sumValues = values.reduce(
       (accumulator, currentValue) => accumulator + currentValue,
       initialValue,
     );
+
     const sumCoeffs = coeffs.reduce(
       (accumulator, currentValue) => accumulator + currentValue,
       initialValue,
@@ -604,11 +610,11 @@ async function getScore(session_id) {
 
   // RecommandationsQuestionnaires recommandation -> nvelle query en fonction du score au questionnaire
   const recoQuestionnaireQuery = `
-      SELECT recommandation
-      FROM recommandationsquestionnaires
-      WHERE questionnaire_id = $1
-      AND $2 BETWEEN min AND max;
-    `;
+  SELECT recommandation
+  FROM recommandationsquestionnaires
+  WHERE questionnaire_id = $1
+  AND $2 BETWEEN min AND max;
+  `;
 
   const recoQuestionnaireResult = await executeQuery(
     numdiagPool,
@@ -622,9 +628,9 @@ async function getScore(session_id) {
   // update la session pour un state 'finished'
   // update le score
   const updateSessionQuery = `
-    UPDATE Session
-    SET state = $2, score = $3
-    WHERE id = $1 RETURNING *;
+  UPDATE Session
+  SET state = $2, score = $3
+  WHERE id = $1 RETURNING *;
   `;
 
   const updateSessionResult = await executeQuery(
@@ -633,11 +639,9 @@ async function getScore(session_id) {
     [session_id, 'finished', sectionScore.scoreQuestionnaire ]
   );
 
-  console.log("Ici:", updateSessionResult)
-
   return {
     sectionsInfos: sectionsInfos,
-    questionnaire: questionnaireResult,
+    questionnaire: questionnaireInfos,
     scoreQuestionnaire: scoreQuestionnaire,
     recommandationQuestionnaire: recommandationQuestionnaire
   };

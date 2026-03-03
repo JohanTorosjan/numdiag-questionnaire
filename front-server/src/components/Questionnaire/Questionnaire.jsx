@@ -179,6 +179,7 @@ function Questionnaire() {
   const [scoresOk, setScoresOk]= useState(false)
   const [scoresAlert, setScoresAlert] = useState([])
   const [notInitialLoad, setInitialLoad] = useState(false);
+  const [sponsorsDisplay, setSponsorsDisplay] = useState(false)
 
   // Listes fixes pour les select
   const questionTypes = [
@@ -736,6 +737,27 @@ function Questionnaire() {
     setPublic(selectedOptions);
   };
 
+  async function handleSponsorsDisplay() {
+    console.log("on arrive là")
+    if (!sponsorsDisplay) {
+      const response = await fetch(`http://localhost:3008/displaysponsors/${questionnaire.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sponsorsDisplay
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+    }
+    setSponsorsDisplay(!sponsorsDisplay)
+
+  }
+
   ////////////////////////////////
   // html component part
   // let i = 1
@@ -748,6 +770,7 @@ function Questionnaire() {
 
   return (
     <div className="questionnaire-container main-content">
+      {/* ////////////////////////////////////////////////// */}
       {/* Header du questionnaire */}
       <div className="questionnaire-header">
         {buttonModifierQuest === "Modifier" ? (
@@ -864,6 +887,8 @@ function Questionnaire() {
           </div>
         )}
 
+        {/* ////////////////////////////////////////////////// */}
+        {/* Thèmes et publics */}
         <hr className="w-4/5 text-zinc-300 mx-auto" />
         {buttonModifierThemes === "Modifier les thèmes et publics" ? (
           <div className="w-full flex space-x-4 mt-6 items-start">
@@ -969,6 +994,22 @@ function Questionnaire() {
             </button>
           </div>
         )}
+
+        {/* ////////////////////////////////////////////////// */}
+        {/* Sponsors et logo client */}
+        <hr className="w-4/5 text-zinc-300 mx-auto mt-7 mb-4" />
+        <div className="w-full flex justify-between items-center">
+          <div>
+            <input type="checkbox"
+              id="sponsorsCheck"
+              name="sponsorsCheck"
+              className='mr-2'
+              onClick={handleSponsorsDisplay}
+            />
+            <label htmlFor="sponsorsCheck">Afficher les sponsors</label>
+          </div>
+        </div>
+
       </div>
 
       {/* Liste des sections */}
