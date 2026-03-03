@@ -56,8 +56,6 @@ function QuestionnaireDisplay(){
                 setIsLoading(false)
                 return;
             }
-            console.log("Session",sessionStorage.getItem('session_id'))
-            console.log("What is",data.data.questionnaire.id)
             if(sessionStorage.getItem('session_id')!= session_id){
               navigate(`/session/${data.data.questionnaire.id}`)
             }
@@ -97,7 +95,7 @@ function QuestionnaireDisplay(){
     }
 
     return (
-        <div className="background-new-visual px-5 w-full h-full text-lg relative">
+        <div className="background-new-visual px-5 w-full text-lg relative">
           <img src="/images/NumDiag_new_logo.png" alt="logo de NumDiag" className="h-18 w-18 absolute top-3 left-3" />
 
             <QuestionnaireDisplayer
@@ -115,6 +113,18 @@ function QuestionnaireDisplay(){
                     </pre>
                 </div>
             )} */}
+
+          {questionnaire.isfunded ? (
+
+          <div className="absolute bottom-10 w-full left-0">
+            {questionnaire.isfunded}
+            <div className="flex w-full justify-center items-center">
+              <img src="/images/sponsors.png" alt="" className='rounded opacity-50'/>
+            </div>
+          </div>
+
+          ) : <div className="hidden"></div>}
+
         </div>
     )
 }

@@ -276,78 +276,82 @@ function Session(){
       )
     } else {
         return (
-          <div className="Session px-5 w-full h-full relative grid grid-rows-[auto_1fr_auto] pb-10 background-new-visual">
-            <img src="/images/NumDiag_new_logo.png" alt="logo de NumDiag" className="h-18 w-18 absolute top-3 left-3" />
-         
-              <div className="questionnaires-infos mt-0 w-full py-10 mx-auto self-start">
-                <div className="md:w-2/3 w-full mx-auto border-b border-calypso-700 px-6 py-2 rounded-xl shadow-lg">
-                  <h1 className="text-xl font-semibold tracking-wide">{questionnaire.label}</h1>
-                  <div className="w-fit">
-                    <hr className="text-calypso-500 mt-3 mb-2"/>
-                    <h2 className="text-lg text-justify">{questionnaire.description}</h2>
+            <div className="Session px-5 w-full h-full relative grid grid-rows-[2fr_2fr_0.5fr_0.5fr] pb-10 background-new-visual">
+              <img src="/images/NumDiag_new_logo.png" alt="logo de NumDiag" className="h-18 w-18 absolute top-3 left-3" />
+
+                <div className="questionnaires-infos mt-0 w-full py-10 mx-auto self-start">
+                  <div className="md:w-2/3 w-full mx-auto border-b border-calypso-700 px-6 py-2 rounded-xl shadow-lg">
+                    <h1 className="text-xl font-semibold tracking-wide">{questionnaire.label}</h1>
+                    <div className="w-fit">
+                      <hr className="text-calypso-500 mt-3 mb-2"/>
+                      <h2 className="text-lg text-justify">{questionnaire.description}</h2>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="questionnaires-infos w-full mx-auto self-start">
-                <div className="md:w-1/2 flex flex-nowrap gap-x-10 mx-auto w-full justify-center items-stretch px-3 py-2">
-                  <p className="text-lg font-light text-wrap max-w-1/2.2 text-justify">{questionnaire.tooltip}</p>
-                  <div className="w-0.5 bg-gray-300"></div>
-                  <p className="text-lg font-light text-wrap max-w-1/2.2 text-justify">{questionnaire.insight}</p>
+
+                <div className="questionnaires-infos w-full mx-auto self-start">
+                  <div className="md:w-1/2 flex flex-nowrap gap-x-10 mx-auto w-full justify-center items-stretch px-3 py-2">
+                    <p className="text-lg font-light text-wrap max-w-1/2.2 text-justify">{questionnaire.tooltip}</p>
+                    <div className="w-0.5 bg-gray-300"></div>
+                    <p className="text-lg font-light text-wrap max-w-1/2.2 text-justify">{questionnaire.insight}</p>
+                  </div>
                 </div>
-              </div>
 
 
-          {(existingSessionId && !session.score) ? (
-                  <div className="questionnaires-start-buttons self-center md:w-2/3 w-full mx-auto grid grid-cols-[3fr_1fr_3fr] md:grid-cols-[minmax(300px,3fr)_minmax(20px,1fr)_minmax(300px,3fr)]">
+              {(existingSessionId && !session.score) ? (
+                <div className="questionnaires-start-buttons self-center md:w-2/3 w-full mx-auto grid grid-cols-[3fr_1fr_3fr] md:grid-cols-[minmax(300px,3fr)_minmax(20px,1fr)_minmax(300px,3fr)]">
 
-            <button
-              onClick={() => navigate(`/session/questionnaire/${session.id}`)}
-              className="btn-go-to-questionnaire self-center justify-self-start px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit md:w-[210px]"
-            >
-              Continuer le questionnaire précédent
-            </button>
-            <img src="/images/way.svg" className="h-9 w-9 mt-4 self-center md:self-start justify-self-center" alt="" />
-            {/* ajouter une conditionnelle pour accéder au score si session.state = finished */}
-            <button
-              onClick={handleGoToQuestionnaireClick}
-              className="btn-go-to-questionnaire self-center justify-self-end px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit md:w-[210px] text-wrap"
-            >
-              Commencer un nouveau questionnaire
-            </button>
-            </div>
+                    <button
+                      onClick={() => navigate(`/session/questionnaire/${session.id}`)}
+                      className="btn-go-to-questionnaire self-center justify-self-start px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit md:w-[210px]"
+                    >
+                      Continuer le questionnaire précédent
+                    </button>
+                    <img src="/images/way.svg" className="h-9 w-9 mt-4 self-center md:self-start justify-self-center" alt="" />
+                    {/* ajouter une conditionnelle pour accéder au score si session.state = finished */}
+                    <button
+                      onClick={handleGoToQuestionnaireClick}
+                      className="btn-go-to-questionnaire self-center justify-self-end px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit md:w-[210px] text-wrap"
+                    >
+                      Commencer un nouveau questionnaire
+                    </button>
+                </div>
 
-          ) : (existingSessionId && session.state==='finished') ?
-          <div className="questionnaires-start-buttons self-center md:w-2/3 w-full mx-auto grid grid-cols-[3fr_1fr_3fr] md:grid-cols-[minmax(300px,3fr)_minmax(20px,1fr)_minmax(300px,3fr)]">
+              ) : (existingSessionId && session.state==='finished') ?
+                <div className="questionnaires-start-buttons self-center md:w-2/3 w-full mx-auto grid grid-cols-[3fr_1fr_3fr] md:grid-cols-[minmax(300px,3fr)_minmax(20px,1fr)_minmax(300px,3fr)]">
 
-            <button
-              onClick={() => navigate(`/score/${session.id}`)}
-              className="btn-go-to-questionnaire self-center justify-self-start px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit md:w-[210px]"
-            >
-              Accéder au score et aux recommandations
-            </button>
-            <img src="/images/way.svg" className="h-9 w-9 mt-4 self-center md:self-start justify-self-center" alt="" />
-            {/* ajouter une conditionnelle pour accéder au score si session.state = finished */}
-            <button
-              onClick={handleGoToQuestionnaireClick}
-              className="btn-go-to-questionnaire self-center justify-self-end px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit md:w-[210px] text-wrap"
-            >
-              Commencer un nouveau questionnaire
-            </button>
-            </div>
-            :
-            (
-                  <div className="questionnaires-start-buttons w-full flex flex-col justify-center flex-nowrap">
+                  <button
+                    onClick={() => navigate(`/score/${session.id}`)}
+                    className="btn-go-to-questionnaire self-center justify-self-start px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit md:w-[210px]"
+                  >
+                    Accéder au score et aux recommandations
+                  </button>
+                  <img src="/images/way.svg" className="h-9 w-9 mt-4 self-center md:self-start justify-self-center" alt="" />
+                  {/* ajouter une conditionnelle pour accéder au score si session.state = finished */}
+                  <button
+                    onClick={handleGoToQuestionnaireClick}
+                    className="btn-go-to-questionnaire self-center justify-self-end px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit md:w-[210px] text-wrap"
+                  >
+                    Commencer un nouveau questionnaire
+                  </button>
+                </div>
+            : (
+                <div className="questionnaires-start-buttons w-full flex flex-col justify-center flex-nowrap">
 
-            <button
-              onClick={handleGoToQuestionnaireClick}
-              className="btn-go-to-questionnaire px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit mx-auto"
-            >
-              Lancer le questionnaire
-            </button>
-              <img src="/images/rocket.svg" className="h-7 w-7 mt-4 self-center" alt="" />
-            </div>
-          )}
-
+                  <button
+                    onClick={handleGoToQuestionnaireClick}
+                    className="btn-go-to-questionnaire px-4 py-2 cursor-pointer bg-calypso-700 shadow-calypso-500 hover:-translate-y-0.5 hover:bg-calypso-600 border-t border-calypso-500 shadow rounded text-white w-fit mx-auto"
+                  >
+                    Lancer le questionnaire
+                  </button>
+                    <img src="/images/rocket.svg" className="h-7 w-7 mt-4 self-center" alt="" />
+                  </div>
+              )}
+              {questionnaire.isfunded ? (
+                <div className="flex w-full justify-center items-center mt-5">
+                  <img src="/images/sponsors.png" alt="" className='rounded opacity-50'/>
+                </div>
+              ) : <div className="hidden"></div>}
           </div>
           );
       }

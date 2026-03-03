@@ -8,6 +8,7 @@ function ScoreDisplay() {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({})
   const [recoSections, setRecoSections] = useState([]);
+  const [questionnaire, setQuestionnaire] = useState({})
 
   async function getScore(session_id){
     try{
@@ -21,8 +22,8 @@ function ScoreDisplay() {
     }
   }
 
-      useEffect(() => {
-        document.title = `Numdiag - Votre score`;
+    useEffect(() => {
+      document.title = `Numdiag - Votre score`;
     }, []);
 
 
@@ -35,11 +36,11 @@ function ScoreDisplay() {
           // setIsLoading(true);
         return;
         }
-        if(localStorage.getItem('session_id')!= session_id){
+        if(sessionStorage.getItem('session_id')!= session_id){
           navigate(`/session/${data.data.questionnaire.id}`)
         }
         const questionnaire = data.data.questionnaire;
-        console.log(data)
+        setQuestionnaire(data.data.questionnaire[0])
 
         if (questionnaire) {
             document.title = `Your score - ${questionnaire.label}`;
@@ -62,6 +63,7 @@ function ScoreDisplay() {
       }
 
       setRecoSections(newReco);
+      console.log("questionnaire", questionnaire.isfunded)
       console.log("recoSections:", recoSections);
     }, [answers]);
 
@@ -93,9 +95,16 @@ function ScoreDisplay() {
               <p key={i} className="text-end">{reco.reco}</p>
               )}
             </div>
-
-
           </div>
+
+          {questionnaire.isfunded ? (
+          <div className="absolute bottom-10 w-full left-0">
+            <div className="flex w-full justify-center items-center">
+              <img src="/images/sponsors.png" alt="" className='rounded opacity-50'/>
+            </div>
+          </div>
+
+          ) : <div className="hidden"></div>}
         </div>
     );
 }

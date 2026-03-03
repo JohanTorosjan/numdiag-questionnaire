@@ -227,7 +227,7 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
 
 
     return (
-      <div className="w-full h-full pt-8 pb-5 relative">
+      <div className="w-full pt-8 pb-5 relative">
           <div className="max-w-4xl mx-auto z-10 px-3 pb-10">
               {/* En-tête de la section */}
               <div className="mb-10 rounded-xl pl-5 pr-2 pt-3 pb-1 bg-transparent text-white border-b-3 border-t border-calypso-800">

@@ -52,7 +52,7 @@ async function createSession(questionnaireId) {
     ]);
 
     const questionnaireQuery = `
-            SELECT id, label, description, tooltip, insight, ispublished, isactive FROM Questionnaires WHERE id = $1
+            SELECT id, label, description, tooltip, insight, ispublished, isactive, isfunded, clientlogo FROM Questionnaires WHERE id = $1
         `;
 
     const questionnaire = await executeQuery(numdiagPool, questionnaireQuery, [
@@ -72,7 +72,7 @@ async function getQuestionnaireInfos(idQuestionnaire, idSession) {
   try {
 
     const questionnaireQuery = `
-            SELECT id, label, description, tooltip, insight, ispublished, isactive FROM Questionnaires WHERE id = $1
+            SELECT id, label, description, tooltip, insight, ispublished, isactive, isfunded, clientlogo FROM Questionnaires WHERE id = $1
         `;
 
     const questionnaire = await executeQuery(numdiagPool, questionnaireQuery, [
@@ -145,6 +145,8 @@ async function getSessionQuestionnaire(session_id) {
             isactive,
             scoremax,
             isPublished,
+            isfunded,
+            clientlogo,
             created_at
         FROM Questionnaires
         WHERE id = $1
@@ -431,6 +433,8 @@ async function getScore(session_id) {
   const questionnaireQuery = `
         SELECT
             id,
+            isfunded,
+            clientlogo,
             scoremax,
             created_at
         FROM Questionnaires
@@ -632,9 +636,10 @@ async function getScore(session_id) {
   console.log("Ici:", updateSessionResult)
 
   return {
-    sectionsInfos,
-    scoreQuestionnaire,
-    recommandationQuestionnaire
+    sectionsInfos: sectionsInfos,
+    questionnaire: questionnaireResult,
+    scoreQuestionnaire: scoreQuestionnaire,
+    recommandationQuestionnaire: recommandationQuestionnaire
   };
 
 }
