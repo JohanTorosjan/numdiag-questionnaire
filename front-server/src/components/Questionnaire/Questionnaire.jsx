@@ -756,8 +756,6 @@ function Questionnaire() {
   };
 
   async function handleSponsorsDisplay() {
-    console.log("on arrive là")
-    if (!sponsorsDisplay) {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/displaysponsors/${questionnaire.id}`, {
         method: "POST",
         headers: {
@@ -771,7 +769,7 @@ function Questionnaire() {
       if (!response.ok) {
         throw new Error(`Erreur HTTP: ${response.status}`);
       }
-    }
+    
     setSponsorsDisplay(!sponsorsDisplay)
 
   }
@@ -1022,7 +1020,7 @@ function Questionnaire() {
               id="sponsorsCheck"
               name="sponsorsCheck"
               className='mr-2'
-              onClick={handleSponsorsDisplay}
+              onChange={handleSponsorsDisplay}
             />
             <label htmlFor="sponsorsCheck">Afficher les sponsors</label>
           </div>

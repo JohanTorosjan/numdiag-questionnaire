@@ -997,20 +997,20 @@ app.post('/deletescore/:scoreId', async (req, res) => {
   }
   catch (error) {
     console.error('Error deleting score:', error)
-    recoDelete.status(500).json({ error: 'Failed to delete score' })
+    scoreDeleted.status(500).json({ error: 'Failed to delete score' })
   }
 })
 
 app.post('/displaysponsors/:questionnaireId', async (req,res) => {
-  console.log("coucou")
   const {questionnaireId} = req.params;
   const { sponsorsDisplay } = req.body;
+  console.log("coucou")
   try {
     const toggleDisplay = await displaySponsor({questionnaireId, sponsorsDisplay})
     res.status(200).json({success: true})
   }
   catch (error) {
     console.error('Error toggling sponsor display:', error)
-    toggleDisplay.status(500).json({ error: 'Failed to toggle sponsor display' })
+    res.status(500).json({ error: 'Failed to toggle sponsor display' })
   }
 })

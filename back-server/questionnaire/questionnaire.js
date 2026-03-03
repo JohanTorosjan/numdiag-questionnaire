@@ -518,6 +518,7 @@ const exportJson = async (id) => {
 
 async function displaySponsor({questionnaireId, sponsorsDisplay}) {
     if (sponsorsDisplay) {
+      console.log("ici")
       const display = await executeQuery(
       numdiagPool,
       "UPDATE questionnaires SET isFunded =  false WHERE id = $1;",
@@ -530,7 +531,7 @@ async function displaySponsor({questionnaireId, sponsorsDisplay}) {
       [questionnaireId]
       );
     }
-    return display;
+    return true;
 }
 
 
