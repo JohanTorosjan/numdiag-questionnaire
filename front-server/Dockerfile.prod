@@ -1,0 +1,16 @@
+FROM node:alpine AS build
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install && npm install --save-dev @types/node
+
+COPY . .
+
+# Build pour la production
+RUN npm run build
+
+EXPOSE 8081
+
+# Servir avec preview
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0"]
