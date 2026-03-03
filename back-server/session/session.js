@@ -68,7 +68,6 @@ async function createSession(questionnaireId) {
     throw error;
   }
 }
-
 async function getQuestionnaireInfos(idQuestionnaire, idSession) {
   try {
 
