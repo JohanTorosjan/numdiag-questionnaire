@@ -24,7 +24,7 @@ services:
       - ./front-server:/app
       - /app/node_modules
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
     networks:
       - cms-network
 
