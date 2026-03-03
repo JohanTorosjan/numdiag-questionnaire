@@ -10,7 +10,7 @@ function ScoreQuestionnaire({questionnaireId, score, onUpdateScore, onDeleteScor
   async function updateScore(updates) {
     console.log('ici',score)
     try {
-      const response = await fetch(`http://localhost:3008/updatescore/${score.score_id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/updatescore/${score.score_id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ function ScoreQuestionnaire({questionnaireId, score, onUpdateScore, onDeleteScor
 
   async function deleteScore() {
     try {
-      const response = await fetch(`http://localhost:3008/deletescore/${score.score_id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/deletescore/${score.score_id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

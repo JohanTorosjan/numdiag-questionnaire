@@ -31,7 +31,7 @@ async function createSession(idQuestionnaire) {
 async function getInfos(idQuestionnaire, idSession) {
   try {
 
-    const response = await fetch(`http://localhost:3008/sessionStorage`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/sessionStorage`, {
             method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
