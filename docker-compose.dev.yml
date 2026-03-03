@@ -8,7 +8,7 @@ services:
       - ./back-server:/app
       - /app/node_modules
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
     depends_on:
       - cmsdatabase
       - toherodb
@@ -18,13 +18,12 @@ services:
   frontend:
     build:
       context: ./front-server
+      dockerfile: Dockerfile.dev  # ← Utilise Dockerfile.dev
     ports:
       - "8081:8081"
     volumes:
       - ./front-server:/app
       - /app/node_modules
-    environment:
-      - NODE_ENV=production
     networks:
       - cms-network
 
@@ -49,7 +48,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: toherocmsdb
-      # POSTGRES_ROLE: postgres
     ports:
       - "5437:5432"
     volumes:

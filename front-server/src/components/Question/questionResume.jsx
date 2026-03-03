@@ -62,8 +62,9 @@ function QuestionResume({
 
   const handleDeleteQuestion = async () => {
     try {
+      debugger
       const response = await fetch(
-        `http://127.0.0.1:3008/questions/${question.id}`,
+        `${import.meta.env.VITE_API_URL}/questions/${question.id}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -75,7 +76,7 @@ function QuestionResume({
 
         try {
           const responseQ = await fetch(
-            `http://localhost:3008/questionnaire/${questionnaireId}`,
+            `${import.meta.env.VITE_API_URL}/questionnaire/${questionnaireId}`,
           );
           if (!responseQ.ok) {
             throw new Error("Erreur lors du chargement des sections");
@@ -100,7 +101,7 @@ function QuestionResume({
 
   const handleSaveAnswers = async (newAnswers) => {
     console.log(newAnswers);
-    const response = await fetch("http://localhost:3008/reponses", {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/reponses`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -118,7 +119,7 @@ function QuestionResume({
     if (response.status == 201) {
       try {
         const responseQ = await fetch(
-          `http://localhost:3008/questionnaire/${questionnaireId}`,
+          `${import.meta.env.VITE_API_URL}/questionnaire/${questionnaireId}`,
         );
         if (!responseQ.ok) {
           throw new Error("Erreur lors du chargement des sections");
@@ -170,7 +171,7 @@ function QuestionResume({
         question.page !== updatedQuestion.page
       ) {
         const updatePositionResponse = await fetch(
-          `http://localhost:3008/questions/${question.id}/position`,
+          `${import.meta.env.VITE_API_URL}/questions/${question.id}/position`,
           {
             method: "PUT",
             headers: {
@@ -191,7 +192,7 @@ function QuestionResume({
 
       if (question.questiontype !== updatedQuestion.questiontype) {
         const deletingResponse = await fetch(
-          `http://localhost:3008/questions/${question.id}/deleteReponses`,
+          `${import.meta.env.VITE_API_URL}/questions/${question.id}/deleteReponses`,
           {
             method: "DELETE",
             headers: {
@@ -203,7 +204,7 @@ function QuestionResume({
       }
 
       const response = await fetch(
-        `http://localhost:3008/questions/${question.id}`,
+        `${import.meta.env.VITE_API_URL}/questions/${question.id}`,
         {
           method: "PUT",
           headers: {
@@ -232,7 +233,7 @@ function QuestionResume({
 
       try {
         const response = await fetch(
-          `http://localhost:3008/questionnaire/${questionnaireId}`,
+          `${import.meta.env.VITE_API_URL}/questionnaire/${questionnaireId}`,
         );
         if (!response.ok) {
           throw new Error("Erreur lors du chargement des sections");
@@ -259,7 +260,7 @@ function QuestionResume({
       console.log("aaa");
       console.log(updatedSlots);
       const response = await fetch(
-        `http://127.0.0.1:3008/questions/${question.id}/tranches`,
+        `${import.meta.env.VITE_API_URL}/questions/${question.id}/tranches`,
         {
           method: "PUT",
           headers: {

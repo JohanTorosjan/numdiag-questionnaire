@@ -14,7 +14,7 @@ function QuestionDependencies({ questionnaire, question,onUpdate }) {
             
             // Simulation d'un délai d'API
 
-            const response = await fetch(`http://localhost:3008/questions/${questionnaireId}`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/questions/${questionnaireId}`);
             if (!response.ok) {
                 throw new Error('Erreur lors du chargement des questions');
             }
@@ -33,7 +33,7 @@ function QuestionDependencies({ questionnaire, question,onUpdate }) {
     };
 
     const fetchExistingDependencies = async () =>{
-        const response = await fetch(`http://localhost:3008/questions/dependencies/${question.id}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/questions/dependencies/${question.id}`);
         const data = await response.json()
         console.log("Dépendances initiales :",data)
         setSelectedDependencies(data)

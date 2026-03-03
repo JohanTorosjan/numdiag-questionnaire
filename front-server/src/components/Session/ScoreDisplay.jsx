@@ -12,7 +12,7 @@ function ScoreDisplay() {
 
   async function getScore(session_id){
     try{
-        const response = await fetch(`http://localhost:3008/score/${session_id}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/score/${session_id}`);
         const data = await response.json()
         return data
     }

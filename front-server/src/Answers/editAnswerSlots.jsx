@@ -5,7 +5,7 @@ import ReactDOM from "react-dom";
 
 async function getTranches(questionId){
     try {
-        const response = await fetch(`http://localhost:3008/questions/${questionId}/tranches`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/questions/${questionId}/tranches`);
         if (!response.ok) {
             throw new Error('Erreur lors du chargement des tranches');
         }
