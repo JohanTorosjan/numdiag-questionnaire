@@ -758,7 +758,7 @@ function Questionnaire() {
   async function handleSponsorsDisplay() {
     console.log("on arrive là")
     if (!sponsorsDisplay) {
-      const response = await fetch(`http://localhost:3008/displaysponsors/${questionnaire.id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/displaysponsors/${questionnaire.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
