@@ -22,4 +22,4 @@ git checkout mars-deployed
 git merge <branch>
 git push o.. mars-deployed
 
-./deployed.sh
+sur vm: ./deployed.sh
