@@ -62,7 +62,7 @@ function QuestionResume({
 
   const handleDeleteQuestion = async () => {
     try {
-      debugger
+      // debugger
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/questions/${question.id}`,
         {

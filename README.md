@@ -17,3 +17,9 @@ compose in prod :
 docker-compose -f docker-compose.prod.yml up -d
 
 03-03-26 : Branch deployed = mars-deployed
+
+git checkout mars-deployed
+git merge <branch>
+git push o.. mars-deployed
+
+./deployed.sh
