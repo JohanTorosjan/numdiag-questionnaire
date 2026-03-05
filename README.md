@@ -16,6 +16,9 @@ docker-compose -f docker-compose.dev.yml logs -f : pour les logs
 compose in prod :
 docker-compose -f docker-compose.prod.yml up -d
 
+ATTENTION : nouvelles dépendences impliquent un docker-compose down (-v? pour les nodemodules volumes?):
+docker-compose -f <docker-compose.dev.yml / docker-compose.prod.yml>  build --no-cache && docker-compose -f <docker-compose.dev.yml / docker-compose.prod.yml> up
+
 03-03-26 : Branch deployed = mars-deployed
 
 git checkout mars-deployed

@@ -302,7 +302,6 @@ function Questionnaire() {
   }, [questionnaire])
 
   useEffect(() => {
-    console.log("ici")
     const resultScores = validateScores(scores);
       console.log("Result scores:",resultScores)
 
@@ -722,7 +721,6 @@ function Questionnaire() {
   };
 
   const updateScore= async() => {
-    console.log("ici")
     const updatedScores = await getAllScores(id);
       console.log("Updated scores:", updatedScores);
 
@@ -789,12 +787,11 @@ function Questionnaire() {
   const handleClientLogo = async (e) => {
     e.preventDefault();
     if (!file) return;
-    console.log(file)
     const formData = new FormData();
-    formData.append("logo", file);
+    formData.append("image", file);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}clientlogo/${questionnaire.id}`, { method: "POST", body: formData });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/clientlogo/${questionnaire.id}`, { method: "POST", body: formData });
       setStatusClientLogo(res.ok ? "success" : "error");
     } catch {
       setStatusClientLogo("error");
@@ -1074,7 +1071,7 @@ function Questionnaire() {
             <button type="submit" disabled={!file} className={`mr-0 ml-auto block mt-3 rounded w-fit px-3 py-1  ${file? "bg-blue-500 text-white" : "bg-gray-300 text-gray-200"}`}>
               Enregistrer l'image
             </button>
-            {statusClientLogo ? <p className="text-blue-400 text-end">✔️ image enregistrée</p> : <p className="text-red-400 text-end">❌ image non enregistrée, veilleur recommencer</p>}
+            {!file  ? '' : statusClientLogo ? <p className="text-blue-400 text-end mt-1">✔️ image enregistrée</p> : <p className="text-red-400 text-end mt-1">❌ image non enregistrée, veilleur recommencer</p>}
           </form>
         </div>
         </div>

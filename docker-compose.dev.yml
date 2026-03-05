@@ -7,6 +7,8 @@ services:
     volumes:
       - ./back-server:/app
       - /app/node_modules
+    env_file:
+      - ./front-server/.env.development
     environment:
       - NODE_ENV=development
     depends_on:

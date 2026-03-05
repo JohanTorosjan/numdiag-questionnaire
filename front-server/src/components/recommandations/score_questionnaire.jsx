@@ -8,7 +8,6 @@ function ScoreQuestionnaire({questionnaireId, score, onUpdateScore, onDeleteScor
   const toast = useToast();
 
   async function updateScore(updates) {
-    console.log('ici',score)
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/updatescore/${score.score_id}`, {
         method: 'POST',

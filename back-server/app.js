@@ -1,13 +1,14 @@
-import express from 'express'
-import cors from 'cors'
+import express from 'express';
+import cors from 'cors';
 import multer from 'multer';
+import 'dotenv/config';
 import { v2 as cloudinary } from 'cloudinary';
 
-// cloudinary.config({
-//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-//   api_key: process.env.CLOUDINARY_API_KEY,
-//   api_secret: process.env.CLOUDINARY_API_SECRET,
-// });
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagScores } from './database/client.js'
@@ -657,7 +658,6 @@ app.put('/sessionUpdate/:id_session', async (req, res) => {
 app.get('/score/:id_session',async (req,res) => {
     const { id_session } = req.params;
     try {
-      // console.log("ici tu es dans le back score")
         const result = await getScore(id_session)
         res.status(200).json({
             success: true,
@@ -746,7 +746,6 @@ app.get("/questionnaires/:id/export", async (req, res) => {
 app.get('/publics',async (req,res) => {
 
     try {
-      // console.log("ici tu es dans le back score")
         const result = await getAllPublics()
         res.status(200).json({
             success: true,
@@ -761,7 +760,6 @@ app.get('/publics',async (req,res) => {
 app.get('/activepublics',async (req,res) => {
 
     try {
-      // console.log("ici tu es dans le back score")
         const result = await getAllPublicsActive()
         res.status(200).json({
             success: true,
@@ -792,7 +790,6 @@ app.post('/createPublic',async (req,res) => {
 app.get('/themes',async (req,res) => {
 
     try {
-      // console.log("ici tu es dans le back score")
         const result = await getAllThemes()
         res.status(200).json({
             success: true,
@@ -807,7 +804,6 @@ app.get('/themes',async (req,res) => {
 app.get('/activethemes',async (req,res) => {
 
     try {
-      // console.log("ici tu es dans le back score")
         const result = await getAllThemesActive()
         res.status(200).json({
             success: true,
@@ -1028,26 +1024,29 @@ app.post('/displaysponsors/:questionnaireId', async (req,res) => {
 // client logo
 
 const upload = multer({ storage: multer.memoryStorage() });
-app.post('/clientlogo', upload.single('image'), async (req,res) => {
+app.post('/clientlogo/:questionnaireId', upload.single('image'), async (req,res) => {
   const {questionnaireId} = req.params;
+  let url =''
   try {
     const result = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream({ folder: 'your-folder' },
         (error, result) => error ? reject(error) : resolve(result)
       ).end(req.file.buffer);
     });
-    const url = result.secure_url;
+    url = result.secure_url;
+    req.file.buffer = null; // release the buffer from memory
   }
   catch (error) {
     console.error('Error uploading file to cloudinary:', error)
-    res.status(500).json({ error: 'Failed to upload file to cloudinary' })
+    return res.status(500).json({ error: 'Failed to upload file to cloudinary' })
   }
   try {
+    console.log("ici")
     const insertUrl = await clientLogo({url, questionnaireId})
   }
   catch (error) {
     console.error('Failed to insert url of client logo in DB')
-    res.status(500).json({ error: 'Failed to to insert url of client logo in DB' })
+    return res.status(500).json({ error: 'Failed to to insert url of client logo in DB' })
   }
   res.status(200).json({success: "File sent to cloudinary and url in db"})
 })

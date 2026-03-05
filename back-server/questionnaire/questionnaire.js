@@ -538,6 +538,7 @@ async function displaySponsor({questionnaireId, sponsorsDisplay}) {
 }
 
 async function clientLogo({url, questionnaireId}) {
+  console.log('ici')
   try {
     const display = await executeQuery(
         numdiagPool,
