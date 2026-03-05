@@ -198,6 +198,8 @@ function Questionnaire() {
   const [scoresAlert, setScoresAlert] = useState([])
   const [notInitialLoad, setInitialLoad] = useState(false);
   const [sponsorsDisplay, setSponsorsDisplay] = useState(false)
+  const [file, setFile] = useState(null);
+  const [statusClientLogo, setStatusClientLogo] = useState(null);
 
   // Listes fixes pour les select
   const questionTypes = [
@@ -764,7 +766,7 @@ function Questionnaire() {
   };
 
   //  //////////////////////////////////////////////////////////
-  // Sponsors part
+  // Sponsors and client logo part
 
   async function handleSponsorsDisplay() {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/displaysponsors/${questionnaire.id}`, {
@@ -783,6 +785,21 @@ function Questionnaire() {
 
     setSponsorsDisplay(!sponsorsDisplay)
   }
+
+  const handleClientLogo = async (e) => {
+    e.preventDefault();
+    if (!file) return;
+    console.log(file)
+    const formData = new FormData();
+    formData.append("logo", file);
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}clientlogo/${questionnaire.id}`, { method: "POST", body: formData });
+      setStatusClientLogo(res.ok ? "success" : "error");
+    } catch {
+      setStatusClientLogo("error");
+    }
+  };
 
 
 
@@ -1026,8 +1043,8 @@ function Questionnaire() {
         {/* ////////////////////////////////////////////////// */}
         {/* Sponsors et logo client */}
         <hr className="w-4/5 text-zinc-300 mx-auto mt-7 mb-4" />
-        <div className="w-full flex justify-between items-center">
-          <div>
+        <div className="w-full flex justify-between items-start">
+          <div className="w-1/2">
             <input type="checkbox"
               id="sponsorsCheck"
               name="sponsorsCheck"
@@ -1037,10 +1054,35 @@ function Questionnaire() {
             />
             <label htmlFor="sponsorsCheck">Afficher les sponsors</label>
           </div>
+          <div className="w-1/2">
+          <form onSubmit={handleClientLogo}
+                >
+              <input
+                id="file-upload"
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFile(e.target.files[0])}
+                className="hidden"
+              />
+              <label
+                htmlFor="file-upload"
+                className="mr-0 ml-auto rounded block px-3 py-1 w-fit bg-blue-400 text-white shadow hover:-translate-y-0.5 hover:shadow-lg hover:bg-blue-400/80 easein)out duration-150"
+              >
+                Importer un logo client
+              </label>
+              <p className={`${file? "text-black text-end" : "hidden"}`}>{file ? file.name : ''}</p>
+            <button type="submit" disabled={!file} className={`mr-0 ml-auto block mt-3 rounded w-fit px-3 py-1  ${file? "bg-blue-500 text-white" : "bg-gray-300 text-gray-200"}`}>
+              Enregistrer l'image
+            </button>
+            {statusClientLogo ? <p className="text-blue-400 text-end">✔️ image enregistrée</p> : <p className="text-red-400 text-end">❌ image non enregistrée, veilleur recommencer</p>}
+          </form>
         </div>
+        </div>
+
 
       </div>
 
+      {/* //////////////////////////////////////////////////////// */}
       {/* Liste des sections */}
       <div className="sections-list">
         {questionnaire.sections?.map((section) =>

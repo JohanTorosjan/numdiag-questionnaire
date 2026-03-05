@@ -1,8 +1,17 @@
 import express from 'express'
 import cors from 'cors'
+import multer from 'multer';
+import { v2 as cloudinary } from 'cloudinary';
+
+// cloudinary.config({
+//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+//   api_key: process.env.CLOUDINARY_API_KEY,
+//   api_secret: process.env.CLOUDINARY_API_SECRET,
+// });
+
 
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagScores } from './database/client.js'
-import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion, publishQuestionnaire, exportJson, displaySponsor } from './questionnaire/questionnaire.js'
+import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion, publishQuestionnaire, exportJson, displaySponsor, clientLogo } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection} from './questionnaire/section.js'
 import {updateQuestion,updatePositions,deleteReponses,createQuestion, deleteQuestion} from './questionnaire/question.js'
 import {createSection, updateSection} from './questionnaire/section.js'
@@ -17,6 +26,7 @@ import { updateReponse,createReponse,deleteSingleReponse} from './questionnaire/
 import { createSession,launchSession,getSessionQuestionnaire,updateSession, getScore, trySessionCode, getQuestionnaireCode, getQuestionnaireInfos } from './session/session.js'
 import { getAllPublics,getAllPublicsActive, createPublic, getAllThemes,getAllThemesActive, createTheme, updateTheme, activationTheme, updatePublic, activationPublic, createThemePublicQuestionnaire, associatedThemesAndPublics, updateAssociatedThemesAndPublics, createThemePublicQuestion, associatedThemesAndPublicsQuestion, updateAssociatedThemesAndPublicsQuestion, searchQuestions } from './questionnaire/themePublic.js'
 import { updateScore, getAllScores, createScore, deleteScore, createNewScore } from './questionnaire/scores.js'
+
 const app = express()
 const port = 3008
 
@@ -1013,4 +1023,31 @@ app.post('/displaysponsors/:questionnaireId', async (req,res) => {
     console.error('Error toggling sponsor display:', error)
     res.status(500).json({ error: 'Failed to toggle sponsor display' })
   }
+})
+
+// client logo
+
+const upload = multer({ storage: multer.memoryStorage() });
+app.post('/clientlogo', upload.single('image'), async (req,res) => {
+  const {questionnaireId} = req.params;
+  try {
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream({ folder: 'your-folder' },
+        (error, result) => error ? reject(error) : resolve(result)
+      ).end(req.file.buffer);
+    });
+    const url = result.secure_url;
+  }
+  catch (error) {
+    console.error('Error uploading file to cloudinary:', error)
+    res.status(500).json({ error: 'Failed to upload file to cloudinary' })
+  }
+  try {
+    const insertUrl = await clientLogo({url, questionnaireId})
+  }
+  catch (error) {
+    console.error('Failed to insert url of client logo in DB')
+    res.status(500).json({ error: 'Failed to to insert url of client logo in DB' })
+  }
+  res.status(200).json({success: "File sent to cloudinary and url in db"})
 })

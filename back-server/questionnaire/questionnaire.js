@@ -509,29 +509,44 @@ const exportJson = async (id) => {
     return audit;
   } catch (error) {
     console.error("Erreur lors de l'export du questionnaire:", error);
-    res.status(500).json({
-      error: "Erreur lors de l'export du questionnaire",
-      details: error.message
-    });
   }
 }
 
 async function displaySponsor({questionnaireId, sponsorsDisplay}) {
     if (sponsorsDisplay) {
       console.log("ici")
-      const display = await executeQuery(
-      numdiagPool,
-      "UPDATE questionnaires SET isFunded =  false WHERE id = $1;",
-      [questionnaireId]
-    );
+      try {
+        const display = await executeQuery(
+        numdiagPool,
+        "UPDATE questionnaires SET isFunded =  false WHERE id = $1;",
+        [questionnaireId]
+        );
+      } catch (error) {
+        console.error("Erreur lors du changement d'état d'affichage des sponsors:", error);
+      }
     } else {
-      const display = await executeQuery(
-      numdiagPool,
-      "UPDATE questionnaires SET isFunded = true WHERE id = $1;",
-      [questionnaireId]
-      );
+      try {
+        const display = await executeQuery(
+        numdiagPool,
+        "UPDATE questionnaires SET isFunded = true WHERE id = $1;",
+        [questionnaireId]
+        );
+      } catch (error) {
+        console.error("Erreur lors du changement d'état d'affichage des sponsors:", error);
+      }
     }
-    return true;
+}
+
+async function clientLogo({url, questionnaireId}) {
+  try {
+    const display = await executeQuery(
+        numdiagPool,
+        "UPDATE questionnaires SET clientlogo = $1 WHERE id = $2;",
+        [url, questionnaireId]
+        );
+  } catch (error) {
+        console.error("Erreur lors de l'insertion de l'url logo client:", error);
+  }
 }
 
 
@@ -549,5 +564,6 @@ export {
     getDependenciesForQuestion,
     publishQuestionnaire,
     exportJson,
-    displaySponsor
+    displaySponsor,
+    clientLogo
 }

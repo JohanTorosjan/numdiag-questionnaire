@@ -14,7 +14,7 @@ CREATE TABLE Questionnaires (
   scoremax INTEGER NOT NULL DEFAULT 100, -- plus pris en compte
   isPublished BOOLEAN NOT NULL DEFAULT FALSE,
   isfunded BOOLEAN NOT NULL DEFAULT FALSE,
-  clientlogo BOOLEAN NOT NULL DEFAULT FALSE,
+  clientlogo VARCHAR,
   default_question_type VARCHAR,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

@@ -18,7 +18,7 @@ import { numdiagPool, executeQuery } from '../database/client.js'
       fields.push(`score_id = $${index++}`);
       values.push(newScoreId);
     }
-
+    
     if (scoremin !== null && scoremin!=='') {
       fields.push(`scoremin = $${index++}`);
       values.push(scoremin);

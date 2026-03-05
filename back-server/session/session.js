@@ -657,7 +657,7 @@ async function getScore(session_id) {
     scoreIdResult[0].score_id,
   ]);
 
-  const lettre= lettreResult[0];
+  const lettre= lettreResult[0].lettre;
 
   return {
     sectionsInfos: sectionsInfos,
@@ -665,7 +665,7 @@ async function getScore(session_id) {
     scoreQuestionnaire: scoreQuestionnaire,
     recommandationQuestionnaire: recommandationQuestionnaire,
     lettre: lettre
-  };
+};
 
 }
 

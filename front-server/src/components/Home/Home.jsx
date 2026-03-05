@@ -12,7 +12,7 @@ import {
 
 async function getAllQuestionnairesResume() {
   try {
-    
+
     const response = await fetch(`${import.meta.env.VITE_API_URL}/questionnairesResume`);
     if (response.ok) {
       const data = await response.json();
@@ -50,7 +50,7 @@ async function updateQuestionnaire(idQuestionnaire, isactive) {
 
 async function createScore(questionnaire_id) {
   try {
-    
+
     const response = await fetch(
       `${import.meta.env.VITE_API_URL}/createscore/${questionnaire_id}`,
     );
