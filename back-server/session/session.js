@@ -639,11 +639,32 @@ async function getScore(session_id) {
     [session_id, 'finished', sectionScore.scoreQuestionnaire ]
   );
 
+  const scoreIdQuery = `
+        SELECT
+            score_id
+        FROM JoinScoresQuestionnaires
+        WHERE questionnaire_id = $1
+        AND $2 <= scoremax AND $2 >= scoremin
+    `;
+
+  const scoreIdResult = await executeQuery(numdiagPool, scoreIdQuery, [
+    questionnaireInfos.id, sectionScore.scoreQuestionnaire
+  ]);
+
+  const lettreQuery = `
+  SELECT lettre from Scores WHERE id = $1`;
+  const lettreResult = await executeQuery(numdiagPool, lettreQuery, [
+    scoreIdResult[0].score_id,
+  ]);
+
+  const lettre= lettreResult[0];
+
   return {
     sectionsInfos: sectionsInfos,
     questionnaire: questionnaireInfos,
     scoreQuestionnaire: scoreQuestionnaire,
-    recommandationQuestionnaire: recommandationQuestionnaire
+    recommandationQuestionnaire: recommandationQuestionnaire,
+    lettre: lettre
   };
 
 }

@@ -240,6 +240,7 @@ function Questionnaire() {
         console.error("Error fetching associated themes and publics:", error);
       }
     };
+
     let defaultQuestionDisplay = "";
     if (
       questionnaire.default_question_type &&
@@ -256,6 +257,10 @@ function Questionnaire() {
       defaultQuestionDisplay = 'Choix simple';
     }
     setDefaultQuestionType(defaultQuestionDisplay);
+
+    if (questionnaire.isfunded) {
+      setSponsorsDisplay(true)
+    }
     fetchAssociateThemesAndPublics();
     console.log(questionnaire);
   }, [questionnaire]);
@@ -586,7 +591,7 @@ function Questionnaire() {
   };
 
   //////////////////////////////////////////
-  // Recommandation part
+  // Score and Recommandation part
 
   const handleCreateRecoClick = () => {
     setCreateRecoPopupOpen(true);
@@ -740,6 +745,9 @@ function Questionnaire() {
 
   };
 
+  //  /////////////////////////////////////
+  // Thèmes et publics
+
   const handleThemeChange = (e) => {
     const selectedOptions = Array.from(
       e.target.selectedOptions,
@@ -755,6 +763,9 @@ function Questionnaire() {
     setPublic(selectedOptions);
   };
 
+  //  //////////////////////////////////////////////////////////
+  // Sponsors part
+
   async function handleSponsorsDisplay() {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/displaysponsors/${questionnaire.id}`, {
         method: "POST",
@@ -769,10 +780,11 @@ function Questionnaire() {
       if (!response.ok) {
         throw new Error(`Erreur HTTP: ${response.status}`);
       }
-    
-    setSponsorsDisplay(!sponsorsDisplay)
 
+    setSponsorsDisplay(!sponsorsDisplay)
   }
+
+
 
   ////////////////////////////////
   // html component part
@@ -1021,6 +1033,7 @@ function Questionnaire() {
               name="sponsorsCheck"
               className='mr-2'
               onChange={handleSponsorsDisplay}
+              checked={sponsorsDisplay}
             />
             <label htmlFor="sponsorsCheck">Afficher les sponsors</label>
           </div>

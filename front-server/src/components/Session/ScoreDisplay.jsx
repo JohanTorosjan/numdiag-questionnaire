@@ -9,8 +9,9 @@ function ScoreDisplay() {
   const [answers, setAnswers] = useState({})
   const [recoSections, setRecoSections] = useState([]);
   const [questionnaire, setQuestionnaire] = useState({})
+  const [lettre, setLettre] = useState('')
 
-  async function getScore(session_id){
+  async function getScoreAndReco(session_id){
     try{
         const response = await fetch(`${import.meta.env.VITE_API_URL}/score/${session_id}`);
         const data = await response.json()
@@ -22,15 +23,10 @@ function ScoreDisplay() {
     }
   }
 
-    useEffect(() => {
-      document.title = `Numdiag - Votre score`;
-    }, []);
-
 
   useEffect(() => {
-
       async function fetchData() {
-        const data = await getScore(session_id);
+        const data = await getScoreAndReco(session_id);
         if (!data.success) {
           toast.showError("Erreur lors du chargement");
           // setIsLoading(true);
@@ -39,22 +35,23 @@ function ScoreDisplay() {
         if(sessionStorage.getItem('session_id')!= session_id){
           navigate(`/session/${data.data.questionnaire.id}`)
         }
-        console.log(data)
         const questionnaire_const = data.data.questionnaire;
-        setQuestionnaire(data.data.questionnaire)
-
+        setQuestionnaire(data.data.questionnaire);
+        setLettre(data.data.lettre);
         if (questionnaire) {
-          document.title = `Your score - ${questionnaire_const.label}`;
+          document.title = `Votre score - ${questionnaire_const.label}`;
+        } else {
+          document.title = `NumDiag - Erreur dans le calcul de votre score`;
         }
         setAnswers(data.data)
       }
+
       fetchData()
     }, [session_id]);
 
     useEffect(() => {
-      console.log("Updated answers =", answers);
-
       const newReco = [];
+      console.log("lettre", lettre)
 
       for (let sectionId in answers.sectionsInfos) {
         const section = answers.sectionsInfos[sectionId];
@@ -64,8 +61,6 @@ function ScoreDisplay() {
       }
 
       setRecoSections(newReco);
-      console.log("questionnaire", questionnaire.isfunded)
-      console.log("recoSections:", recoSections);
     }, [answers]);
 
 
