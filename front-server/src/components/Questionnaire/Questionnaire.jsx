@@ -29,7 +29,6 @@ async function getQuestionnaire(idQuestionnaire) {
       throw new Error("Erreur lors du chargement des sections");
     }
     const data = await response.json();
-    console.log("Questionnaire : ", data);
     return data;
   } catch (error) {
     console.error("Error fetching questionnaire:", error);
@@ -87,7 +86,6 @@ async function getReco(idQuestionnaire) {
       throw new Error("Erreur lors du chargement des recommandations");
     }
     const data = await response.json();
-    console.log("Recommandations : ", data);
     return data;
   } catch (error) {
     console.error("Error fetching recommandations:", error);
@@ -103,7 +101,6 @@ async function getScores(idQuestionnaire) {
       throw new Error("Erreur lors du chargement des scores");
     }
     const data = await response.json();
-    console.log("scores : ", data);
     return data;
   } catch (error) {
     console.error("Error fetching scores:", error);
@@ -264,7 +261,7 @@ function Questionnaire() {
       setSponsorsDisplay(true)
     }
     fetchAssociateThemesAndPublics();
-    console.log(questionnaire);
+
   }, [questionnaire]);
 
 
@@ -303,7 +300,7 @@ function Questionnaire() {
 
   useEffect(() => {
     const resultScores = validateScores(scores);
-      console.log("Result scores:",resultScores)
+
 
       if (resultScores.isValid) {
           console.log('✓ Les scores sont valides');
@@ -331,7 +328,7 @@ function Questionnaire() {
 
 
   function validateScores(testScores) {
-    console.log("Test scores:", testScores)
+
       const messages=[]
       if (!testScores || testScores.length === 0) {
         return {
@@ -741,7 +738,6 @@ function Questionnaire() {
     setScores((prevScore) =>
       newScores = prevScore.filter((score) => score.score_id !== scoreId),
     );
-    console.log(scores)
 
   };
 
@@ -1067,7 +1063,12 @@ function Questionnaire() {
               >
                 Importer un logo client
               </label>
-              <p className={`${file? "text-black text-end" : "hidden"}`}>{file ? file.name : ''}</p>
+              {file ?
+              <p className="text-black text-end">{file.name}</p> :
+              questionnaire.logoname ?
+              <p className="text-black text-end">{questionnaire.logoname}</p> :
+              <div className="hidden"></div>
+              }
             <button type="submit" disabled={!file} className={`mr-0 ml-auto block mt-3 rounded w-fit px-3 py-1  ${file? "bg-blue-500 text-white" : "bg-gray-300 text-gray-200"}`}>
               Enregistrer l'image
             </button>

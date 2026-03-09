@@ -43,7 +43,7 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
             }
 
             const data = await responseQ.json();
-            console.log('Questionnaire :', data);
+
             toast.showSuccess("Reponse supprimée");
 
            setQuestionnaire(data)
@@ -71,8 +71,6 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
   const onSaveAnswer = async (updatedAnswer) => {
     console.log("updated")
 
-    console.log(updatedAnswer)
-    
     try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/reponses/${answer.id}`, {
             method: 'PUT',
@@ -88,11 +86,11 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
                 valeurScore: updatedAnswer.valeurScore
             })
         })
-        
+
         const data = await response.json()
-        
+
         if (data.success) {
-            console.log('Réponse mise à jour avec succès:', data.data)
+            console.log('Réponse mise à jour avec succès:')
             toast.showSuccess('Réponse sauvegardée')
 
             const responseQ = await fetch(`${import.meta.env.VITE_API_URL}/questionnaire/${questionnaireId}`);
@@ -112,14 +110,14 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
   }
 
   return (
-    <div className="answer-resume">   
+    <div className="answer-resume">
       <div className="answer-content">
         <div className="answer-main">
-          <p className="answer-label">{answer.label}</p> 
+          <p className="answer-label">{answer.label}</p>
                                   <p className='question-tooltip-text'>{answer.tooltip}  </p>
 
         </div>
-        
+
         <div className="answer-metadata">
           {answer.valeurscore !== undefined && answer.valeurscore !== null && (
             <span className="answer-score">Score: {answer.valeurscore}</span>

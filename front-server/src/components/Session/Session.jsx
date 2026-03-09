@@ -20,7 +20,6 @@ async function createSession(idQuestionnaire) {
       throw new Error("Erreur lors de la création des sessions");
     }
     const data = await response.json();
-    console.log("Session : ", data);
     return data.data;
   } catch (error) {
     console.error("Error creating session:", error);
@@ -45,7 +44,6 @@ async function getInfos(idQuestionnaire, idSession) {
       throw new Error("Erreur lors de la récupération des infos de session");
     }
     const data = await response.json();
-    console.log("Session récupérée : ", data);
     return data.data;
   } catch (error) {
     console.error("Error getting session:", error);
@@ -60,7 +58,6 @@ async function codeQuestionnaire(idQuestionnaire) {
       throw new Error("Erreur lors de la récupération du code du questionnaire");
     }
     const data = await response.json();
-    console.log("Code :", data);
     return data.data
   } catch (error) {
     console.error("Error getting questionnaire code:", error);
@@ -90,12 +87,10 @@ function Session(){
 
     useEffect(() => {
     async function fetchCodeQuestionnaire() {
-      console.log("Questionnaire:", questionnaire)
+
     if (questionnaire) {
         document.title = `Numdiag - ${questionnaire.label}`;
         const data = await codeQuestionnaire(questionnaire.id);
-        console.log("Code for React state:", data)
-        console.log("Session:", session)
 
         if (data) {
             const testCode = await codeForSession({session_id: session.id,
@@ -135,8 +130,6 @@ function Session(){
 
         if (storedSession && storedQuestionnaire) {
           setExistingSessionId(true);
-          console.log("Stored Session", storedSession)
-          console.log("Stored Questionnaire", storedQuestionnaire)
           const data = await getInfos(storedQuestionnaire, storedSession)
           setQuestionnaire(data.questionnaire[0]);
           setSession(data.session[0]);
@@ -170,7 +163,6 @@ function Session(){
         throw new Error("Erreur lors du traitement du code");
       }
       const data = await response.json();
-      console.log("Code validation : ", data);
       if (data.data.code === true) {
         setCode(true)
       } else if (data.data.code != true && isUserSubmit) {
@@ -185,40 +177,39 @@ function Session(){
     }
   }
 
-    const handleGoToQuestionnaireClick = async () =>{
-      try {
+  const handleGoToQuestionnaireClick = async () =>{
+    try {
 
-        const data = await createSession(questionnaire_id);
-        sessionStorage.clear();
-        setQuestionnaire(data.questionnaire[0]);
-        setSession(data.session[0]);
-        sessionStorage.setItem('session_id',data.session[0].id)
-        sessionStorage.setItem('questionnaire_id',data.questionnaire[0].id)
+      const data = await createSession(questionnaire_id);
+      sessionStorage.clear();
+      setQuestionnaire(data.questionnaire[0]);
+      setSession(data.session[0]);
+      sessionStorage.setItem('session_id',data.session[0].id)
+      sessionStorage.setItem('questionnaire_id',data.questionnaire[0].id)
 
 
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/session/start/${data.session[0].id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-        }})
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/session/start/${data.session[0].id}`, {
+          method: 'PUT',
+          headers: {
+              'Content-Type': 'application/json',
+      }})
 
-        const data2 = await response.json()
-        console.log("data2", data2.success)
-        if (data2.success){
-            navigate(`/session/questionnaire/${data.session[0].id}`)
-        }
-        else {
-            toast.showError("Erreur lors de l'ouverture du questionnaire");
-        }
-      } catch (error) {
-      console.error(error);
+      const data2 = await response.json()
+      if (data2.success){
+          navigate(`/session/questionnaire/${data.session[0].id}`)
       }
+      else {
+          toast.showError("Erreur lors de l'ouverture du questionnaire");
+      }
+    } catch (error) {
+    console.error(error);
     }
+  }
 
-    const handleCodeSubmit = async () => {
-      await codeForSession({session_id: session.id, code: sessionCode, isUserSubmit: true});
-    };
+  const handleCodeSubmit = async () => {
+    await codeForSession({session_id: session.id, code: sessionCode, isUserSubmit: true});
+  };
 
 
   if (isLoading) {
@@ -277,7 +268,8 @@ function Session(){
     } else {
         return (
             <div className="Session px-5 w-full h-full relative grid grid-rows-[2fr_2fr_0.5fr_0.5fr] pb-10 background-new-visual">
-              <img src="/images/NumDiag_new_logo.png" alt="logo de NumDiag" className="h-18 w-18 absolute top-3 left-3" />
+              <img src="/images/NumDiag_new_logo.png" alt="logo de NumDiag" className="h-20 w-20 absolute top-3 left-3" />
+              <img src={`${questionnaire.clientlogo}`} alt="logo" className="h-20 w-20 absolute top-3 right-3" />
 
                 <div className="questionnaires-infos mt-0 w-full py-10 mx-auto self-start">
                   <div className="md:w-2/3 w-full mx-auto border-b border-calypso-700 px-6 py-2 rounded-xl shadow-lg">

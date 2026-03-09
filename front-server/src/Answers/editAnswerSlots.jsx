@@ -10,7 +10,6 @@ async function getTranches(questionId){
             throw new Error('Erreur lors du chargement des tranches');
         }
         const data = await response.json();
-        console.log('tranches : ', data);
         return data;
     } catch (error) {
         console.error('Error fetching questionnaire:', error);
@@ -32,7 +31,7 @@ function PopUpEditAnswerSlots({ answer, answerType, onClose, onSave,questionId})
             }
             fetchTranches();
         }, [questionId]);
-    
+
 
 
     const addTranche = () => {
@@ -47,7 +46,7 @@ function PopUpEditAnswerSlots({ answer, answerType, onClose, onSave,questionId})
         const updated = [...tranches];
         updated[index] = { ...updated[index], [field]: value };
         setTranches(updated);
-        
+
         // Effacer l'erreur pour ce champ
         if (errors[`${index}-${field}`]) {
             const newErrors = { ...errors };
@@ -58,7 +57,7 @@ function PopUpEditAnswerSlots({ answer, answerType, onClose, onSave,questionId})
 
     const validate = () => {
         const newErrors = {};
-        
+
         tranches.forEach((tranche, index) => {
             if (tranche.min === '' || tranche.min === null) {
                 newErrors[`${index}-min`] = 'Min requis';
@@ -69,15 +68,15 @@ function PopUpEditAnswerSlots({ answer, answerType, onClose, onSave,questionId})
             if (tranche.value === '' || tranche.value === null) {
                 newErrors[`${index}-value`] = 'Valeur requise';
             }
-            
+
             const min = parseInt(tranche.min);
             const max = parseInt(tranche.max);
-            
+
             if (!isNaN(min) && !isNaN(max) && min > max) {
                 newErrors[`${index}-range`] = 'Min doit être <= Max';
             }
         });
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -87,7 +86,7 @@ function PopUpEditAnswerSlots({ answer, answerType, onClose, onSave,questionId})
             toast.showError('Veuillez corriger les erreurs');
             return;
         }
-        
+
         const formattedTranches = tranches.map(t => ({
             ...t,
             min: parseInt(t.min),
@@ -96,7 +95,7 @@ function PopUpEditAnswerSlots({ answer, answerType, onClose, onSave,questionId})
             recommandation: t.recommandation || null,
             plafond: t.plafond ? parseInt(t.plafond) : null
         }));
-        
+
 
         try {
             await onSave({ ...answer, tranches: formattedTranches });
@@ -116,7 +115,7 @@ function PopUpEditAnswerSlots({ answer, answerType, onClose, onSave,questionId})
                     <h2 style={styles.title}>Modifier les tranches</h2>
                     <button style={styles.closeBtn} onClick={onClose}>×</button>
                 </div>
-                
+
                 <div style={styles.content}>
 
                     <div style={styles.tranchesContainer}>
@@ -194,11 +193,11 @@ function PopUpEditAnswerSlots({ answer, answerType, onClose, onSave,questionId})
                                     >
                                         🗑️
                                     </button>
-                                    
+
                                     {errors[`${index}-range`] && (
                                         <span style={styles.errorTextFull}>{errors[`${index}-range`]}</span>
                                     )}
-                                    
+
                                     <div style={styles.fullWidthInput}>
                                         <label style={styles.label}>Recommandation (optionnelle)</label>
                                         <textarea

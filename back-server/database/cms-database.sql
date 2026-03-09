@@ -15,6 +15,7 @@ CREATE TABLE Questionnaires (
   isPublished BOOLEAN NOT NULL DEFAULT FALSE,
   isfunded BOOLEAN NOT NULL DEFAULT FALSE,
   clientlogo VARCHAR,
+  logoname VARCHAR,
   default_question_type VARCHAR,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

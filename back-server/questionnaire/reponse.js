@@ -16,8 +16,8 @@ function updateReponse(idReponse, label, tooltip, plafond, recommandation, valeu
     console.log('--------')
         console.log(valeurScore)
     return executeQuery(
-        numdiagPool, 
-        'UPDATE reponses SET label = $1, tooltip = $2, plafond = $3, recommandation = $4, valeurScore = $5 WHERE id = $6 RETURNING *', 
+        numdiagPool,
+        'UPDATE reponses SET label = $1, tooltip = $2, plafond = $3, recommandation = $4, valeurScore = $5 WHERE id = $6 RETURNING *',
         [label, tooltip, plafond, recommandation, valeurScore, idReponse]
     )
 }
@@ -28,23 +28,25 @@ async function createReponse(  question_id,
     tooltip,
     plafond,
     recommandation,
+    position,
     valeurScore){
     console.log('--------')
         console.log(valeurScore)
         try{
     const insertReponseQuery = `
             INSERT INTO Reponses (
-                question_id, 
-                label, 
-                tooltip, 
-                plafond, 
-                recommandation, 
-                valeurScore
-            ) 
-            VALUES ($1, $2, $3, $4, $5, $6) 
+                question_id,
+                label,
+                tooltip,
+                plafond,
+                recommandation,
+                valeurScore,
+                position
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *
         `;
-        
+
         const result = await executeQuery(
             numdiagPool,
             insertReponseQuery,
@@ -54,7 +56,8 @@ async function createReponse(  question_id,
                 tooltip || null,
                 plafond || 0,
                 recommandation || null,
-                valeurScore || 0
+                valeurScore || 0,
+                position
             ]
         );
 
@@ -83,4 +86,3 @@ export {
     updateReponse,
     createReponse
 }
-

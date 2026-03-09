@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "./createQuestion.css";
 import { useToast } from "../../ToastSystem";
 import ReactDOM from "react-dom";
@@ -11,6 +11,7 @@ function PopUpCreateQuestion({
   allPublics,
   allThemes,
   defaultQuestionType,
+  defaultPosition
 }) {
   const toast = useToast();
   const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ function PopUpCreateQuestion({
     label: "",
     mandatory: false,
     page: 1,
-    position: 1,
+    position: defaultPosition,
     questiontype:
       defaultQuestionType === null
         ? "choix_simple"
@@ -27,6 +28,12 @@ function PopUpCreateQuestion({
   });
   const [selectedThemesQuestion, setSelectedThemesQuestion] = useState([]);
   const [selectedPublicsQuestion, setSelectedPublicsQuestion] = useState([]);
+  const inputRef = useRef(null);
+
+    useEffect(() => {
+      inputRef.current?.focus();
+    }, []);
+
 
   // Listes fixes pour les select
   const questionTypes = [
@@ -47,7 +54,6 @@ function PopUpCreateQuestion({
 
     setSelectedThemesQuestion(themes);
     setSelectedPublicsQuestion(publics);
-    console.log(defaultQuestionType)
   }, [themesAndPublicsFromQuestionnaire]);
 
   const handleInputChange = (e) => {
@@ -119,6 +125,7 @@ function PopUpCreateQuestion({
           <div className="form-group">
             <label htmlFor="label">Intitulé de la question :</label>
             <input
+            ref={inputRef}
               type="text"
               id="label"
               name="label"

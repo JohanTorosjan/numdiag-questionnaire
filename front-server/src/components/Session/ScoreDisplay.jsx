@@ -65,7 +65,8 @@ function ScoreDisplay() {
 
     return (
         <div className="w-full background-new-visual relative">
-          <img src="/images/NumDiag_new_logo.png" alt="logo de NumDiag" className="h-18 w-18 absolute top-3 left-3" />
+          <img src="/images/NumDiag_new_logo.png" alt="logo de NumDiag" className="h-20 w-20 absolute top-3 left-3" />
+          <img src={`${questionnaire.clientlogo}`} alt="logo" className="h-20 w-20 absolute top-3 right-3" />
           <div className="max-w-4xl mx-auto pt-20 px-5 text-white">
 
             <h1 className="text-center mx-auto w-fit text-xl px-5 pb-1 rounded-3xl border-b border-calypso-600">Vous obtenez un score de {answers.scoreQuestionnaire}</h1>

@@ -3,7 +3,7 @@ import { useToast } from '../ToastSystem';
 import ReactDOM from "react-dom";
 import './createAnswers.css';
 
-function PopUpCreateAnswer({ answerType, onClose, onSave }) {
+function PopUpCreateAnswer({ answerType, onClose, onSave, position }) {
     const toast = useToast();
     const [formData, setFormData] = useState({
         label: '',
@@ -12,6 +12,7 @@ function PopUpCreateAnswer({ answerType, onClose, onSave }) {
         plafond: 0,
         recommandation: '',
     });
+
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -79,6 +80,7 @@ function PopUpCreateAnswer({ answerType, onClose, onSave }) {
                             required
                         />
                     </div>
+
 
                     <div className="form-row">
                         {/* Valeur Score */}

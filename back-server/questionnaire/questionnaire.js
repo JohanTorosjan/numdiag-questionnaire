@@ -537,13 +537,13 @@ async function displaySponsor({questionnaireId, sponsorsDisplay}) {
     }
 }
 
-async function clientLogo({url, questionnaireId}) {
+async function clientLogo({url, name, questionnaireId}) {
   console.log('ici')
   try {
     const display = await executeQuery(
         numdiagPool,
-        "UPDATE questionnaires SET clientlogo = $1 WHERE id = $2;",
-        [url, questionnaireId]
+        "UPDATE questionnaires SET clientlogo = $1, logoname= $2 WHERE id = $3;",
+        [url,name, questionnaireId]
         );
   } catch (error) {
         console.error("Erreur lors de l'insertion de l'url logo client:", error);

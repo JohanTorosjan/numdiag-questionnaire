@@ -56,9 +56,11 @@ function QuestionResume({
       setThemes(data.themesAndPublics.themeLabels);
       setPublics(data.themesAndPublics.publicLabels);
     };
+    console.log("Répoonses:",question.reponses)
 
     fetchThemesAndPublics();
   }, [question]);
+
 
   const handleDeleteQuestion = async () => {
     try {
@@ -83,7 +85,6 @@ function QuestionResume({
           }
 
           const data = await responseQ.json();
-          console.log("Questionnaire :", data);
           toast.showSuccess("Question supprimée");
 
           setQuestionnaire(data);
@@ -100,7 +101,6 @@ function QuestionResume({
   };
 
   const handleSaveAnswers = async (newAnswers) => {
-    console.log(newAnswers);
     const response = await fetch(`${import.meta.env.VITE_API_URL}/reponses`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -111,6 +111,7 @@ function QuestionResume({
         plafond: newAnswers.plafond,
         recommandation: newAnswers.recommandation,
         valeurScore: newAnswers.valeurScore,
+        position: newAnswers.position
       }),
     });
 
@@ -125,7 +126,7 @@ function QuestionResume({
           throw new Error("Erreur lors du chargement des sections");
         }
         const dataQ = await responseQ.json();
-        console.log("Questionnaire : ", dataQ);
+
         setQuestionnaire(dataQ);
         setIsCreateAnswersOpen(false);
         return;
@@ -200,7 +201,6 @@ function QuestionResume({
             },
           },
         );
-        console.log(deletingResponse);
       }
 
       const response = await fetch(
@@ -257,8 +257,6 @@ function QuestionResume({
 
   const saveAnswersSlots = async (updatedSlots) => {
     try {
-      console.log("aaa");
-      console.log(updatedSlots);
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/questions/${question.id}/tranches`,
         {
@@ -430,7 +428,9 @@ function QuestionResume({
           className={`answers-container ${isAnswersOpen ? "open" : "closed"}`}
         >
           {Array.isArray(question.reponses) &&
-            question.reponses.map((answer) => (
+            [...question.reponses]
+            .sort((a, b) => a.position - b.position)
+            .map((answer) => (
               <AnswersResume
                 key={answer.id}
                 answer={answer}
@@ -472,9 +472,9 @@ function QuestionResume({
           </button>
         </div>
       )}
-
       {isCreateAnswersOpen && (
         <PopUpCreateAnswer
+          key={question.reponses?.length}
           answerType={question.questiontype}
           onClose={closeCreateAnswers}
           onSave={handleSaveAnswers}

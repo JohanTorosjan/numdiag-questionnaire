@@ -72,8 +72,6 @@ function QuestionnaireDisplayer({ questionnaire, session, onSessionUpdate }) {
             ...prev,
             [answer.questionId]: answer
         }));
-      //  debugger
-        console.log(answers)
     };
 
 

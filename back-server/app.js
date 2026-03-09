@@ -508,7 +508,8 @@ app.post('/reponses', async (req, res) => {
         tooltip,
         plafond,
         recommandation,
-        valeurScore
+        valeurScore,
+        position
     } = req.body;
 
     try {
@@ -518,7 +519,8 @@ app.post('/reponses', async (req, res) => {
             tooltip,
             plafond,
             recommandation,
-            valeurScore
+            valeurScore,
+            position
         );
 
         res.status(201).json({
@@ -1034,15 +1036,15 @@ app.post('/clientlogo/:questionnaireId', upload.single('image'), async (req,res)
       ).end(req.file.buffer);
     });
     url = result.secure_url;
-    req.file.buffer = null; // release the buffer from memory
   }
   catch (error) {
     console.error('Error uploading file to cloudinary:', error)
     return res.status(500).json({ error: 'Failed to upload file to cloudinary' })
   }
   try {
-    console.log("ici")
-    const insertUrl = await clientLogo({url, questionnaireId})
+    console.log("file name", req.file.originalname)
+    const insertUrl = await clientLogo({url, name: req.file.originalname, questionnaireId})
+    req.file.buffer = null; // release the buffer from memory
   }
   catch (error) {
     console.error('Failed to insert url of client logo in DB')

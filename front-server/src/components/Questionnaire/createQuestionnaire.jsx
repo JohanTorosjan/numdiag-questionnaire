@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../popups/editQuestion.css";
 import {
   getAllActivePublics,
@@ -22,6 +22,11 @@ function CreateQuestionnaire({ onSave, onClose, questionTypes }) {
   });
   const [allPublics, setAllPublics] = useState([]);
   const [allThemes, setAllThemes] = useState([]);
+  const inputRef = useRef(null);
+
+      useEffect(() => {
+        inputRef.current?.focus();
+      }, []);
 
   useEffect(() => {
     const fetchThemes = async () => {
@@ -93,6 +98,7 @@ function CreateQuestionnaire({ onSave, onClose, questionTypes }) {
           <div className="form-group">
             <label htmlFor="label">Titre du questionnaire</label>
             <input
+            ref={inputRef}
               type="text"
               id="label"
               name="label"

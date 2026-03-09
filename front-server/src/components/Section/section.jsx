@@ -1,9 +1,9 @@
 import QuestionResume from "../Question/questionResume";
 import SectionUpdateForm from "./sectionUpdateForm";
 import "./Section.css";
-import React from "react";
+import React, { useEffect } from "react";
 import PopUpCreateQuestion from '../popups/createQuestion';
-import { useToast } from '../../ToastSystem';
+import { useToast} from '../../ToastSystem';
 
 function Section({
   section,
@@ -22,10 +22,13 @@ function Section({
 
   const [isSection, setSection] = React.useState(section);
   const [buttonUpdateSection, setButtonUpdateSection] = React.useState("Modifier");
+  const [isLastQuestionPosition, setLastQuestionPosition] = React.useState(0)
     const toast = useToast();
 
-
-
+  useEffect(()=> {
+    const max = section.questions.length > 0 ? Math.max(...section.questions.map(q => q.position)) : 0
+    setLastQuestionPosition(max);
+  }, [section.questions])
 
 
     const openCreateQuestion = () => {
@@ -46,12 +49,11 @@ function Section({
       ...prev,
       [name]: value
     }));
+
   };
 
 
   const handleSaveQuestion = async (newQuestion, publics, themes) =>{
-    console.log(newQuestion)
-
 
     const response = await fetch(`${import.meta.env.VITE_API_URL}/questions`, {
     method: 'POST',
@@ -73,6 +75,7 @@ function Section({
 
   if(response.status==201){
     toast.showSuccess("Question créee")
+
     console.log("Reponse back:",response)
      try {
         const responseQ = await fetch(`${import.meta.env.VITE_API_URL}/questionnaire/${questionnaireId}`);
@@ -146,6 +149,7 @@ function Section({
       const data = await updateSection(section_id, { isActive: newStatus });
       console.log('Mise à jour de la section isActive :', data);
       setSection(prev => ({ ...prev, isactive: newStatus }));
+
       onUpdateSection(section_id, { isactive: newStatus });
       return data;
     } catch (error) {
@@ -267,6 +271,7 @@ function Section({
                     allPublics={allPublics}
                     allThemes={allThemes}
                     defaultQuestionType={defaultQuestionType}
+                    defaultPosition={isLastQuestionPosition+1}
                 />
             )}
 

@@ -8,6 +8,7 @@ function CreateThemePublic({ onSave, onClose, type }) {
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+  
 
 
     const [formData, setFormData] = useState({

@@ -18,8 +18,6 @@ async function getSessionQuestionnaire(session_id){
 
 async function updateSession(session_id, sessionData){
     try{
-
-        console.log(sessionData)
         const response = await fetch(`${import.meta.env.VITE_API_URL}/sessionUpdate/${session_id}`, {
             method: 'PUT',
             headers: {
@@ -28,7 +26,6 @@ async function updateSession(session_id, sessionData){
             body: JSON.stringify(sessionData)
         });
         const data = await response.json()
-        console.log(data)
         return data
     }
     catch(error){
@@ -69,7 +66,6 @@ function QuestionnaireDisplay(){
 
     // Gérer la mise à jour de la session
     const handleSessionUpdate = async (updatedSession) => {
-        console.log(updatedSession)
         //
         setSession(updatedSession);
        // debugger
@@ -96,7 +92,8 @@ function QuestionnaireDisplay(){
 
     return (
         <div className="background-new-visual px-5 w-full text-lg relative">
-          <img src="/images/NumDiag_new_logo.png" alt="logo de NumDiag" className="h-18 w-18 absolute top-3 left-3" />
+          <img src="/images/NumDiag_new_logo.png" alt="logo de NumDiag" className="h-20 w-20 absolute top-3 left-3" />
+          <img src={`${questionnaire.clientlogo}`} alt="logo" className="h-20 w-20 absolute top-3 right-3" />
 
             <QuestionnaireDisplayer
                 questionnaire={questionnaire}

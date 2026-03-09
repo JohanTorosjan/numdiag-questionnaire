@@ -11,7 +11,7 @@ connect to db : docker exec -it numdiagcmsdb psql -U postgres -d numdiagcmsdb
 
 compose in dev :
 docker-compose -f docker-compose.dev.yml up -d
-docker-compose -f docker-compose.dev.yml logs -f : pour les logs
+docker-compose -f docker-compose.dev.yml up logs -f : pour les logs
 
 compose in prod :
 docker-compose -f docker-compose.prod.yml up -d
