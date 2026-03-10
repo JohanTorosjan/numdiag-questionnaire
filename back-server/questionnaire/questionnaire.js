@@ -538,16 +538,106 @@ async function displaySponsor({questionnaireId, sponsorsDisplay}) {
 }
 
 async function clientLogo({url, name, questionnaireId}) {
-  console.log('ici')
+  console.log("ici")
+  let logoClientId=0
+  // on commence par désactiver le logo existant pour le questionnaire => current_logo set to false
   try {
-    const display = await executeQuery(
-        numdiagPool,
-        "UPDATE questionnaires SET clientlogo = $1, logoname= $2 WHERE id = $3;",
-        [url,name, questionnaireId]
-        );
-  } catch (error) {
-        console.error("Erreur lors de l'insertion de l'url logo client:", error);
+      // si existe déjà une entrée avec même questionnaireID et même logo, ne sera pas écrit => primary key constraint
+      // AJOUTER : si le questionnaire a déjà une image en current_logo : changer en false
+      const currentLogoQuestionnaire = await executeQuery(
+          numdiagPool,
+          "UPDATE JoinClientLogoQuestionnaires SET current_logo = false WHERE questionnaire_id = $1;",
+          [questionnaireId]
+          );
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour des statuts des logos:", error);
   }
+
+    //on vérifie si on a déjà le logo en db (avec le nom de fichier) => si oui on set son current_logo à true et on return
+  try {
+    const clientImageName = await executeQuery(
+        numdiagPool,
+        "SELECT * FROM clientLogo WHERE client_name = $1;",
+        [name]
+        );
+    console.log("image name", clientImageName)
+    if (clientImageName.length >0) {
+      const current_logo_id = clientImageName[0].id;
+      try {
+        const changeCurrent = await executeQuery(
+            numdiagPool,
+            "UPDATE JoinClientLogoQuestionnaires SET current_logo = true WHERE questionnaire_id = $1 AND clientlogo_id = $2;",
+            [questionnaireId, current_logo_id]
+            );
+      } catch (error) {
+          console.error("Erreur lors de la mise à jour des statuts des logos:", error);
+      }
+      return ;
+    }
+  } catch (error) {
+        console.error("Erreur lors de l'enregistrement de l'url logo client:", error);
+  }
+
+
+  try {
+    logoClientId = await executeQuery(
+        numdiagPool,
+        "INSERT INTO clientlogo  (url_logo, client_name) VALUES ($1, $2) RETURNING id;",
+        [url,name]
+        );
+    } catch (error) {
+          console.error("Erreur lors de l'enregistrement de l'url logo client:", error);
+    }
+
+    try {
+      const joinLogoQuestionnaire = await executeQuery(
+          numdiagPool,
+          "INSERT INTO JoinClientLogoQuestionnaires (questionnaire_id, clientlogo_id, current_logo) VALUES ($1, $2, $3);",
+          [questionnaireId,logoClientId[0].id, true]
+          );
+    } catch (error) {
+          console.error("Erreur lors de l'insertion de l'url logo client:", error);
+    }
+}
+
+async function searchLogoByName(name) {
+  try {
+      const logo = await executeQuery(
+          numdiagPool,
+          "SELECT * FROM clientlogo WHERE client_name=$1;",
+          [name]
+          );
+      if (logo.length > 0) {
+         return logo[0];
+       } else {return '';}
+    } catch (error) {
+          console.error("Erreur lors de l'insertion de l'url logo client:", error);
+    }
+
+}
+async function searchLogo(questionnaireId) {
+  let logo=[]
+  try {
+      logo = await executeQuery(
+          numdiagPool,
+          "SELECT clientlogo_id FROM joinclientlogoquestionnaires WHERE questionnaire_id=$1 AND current_logo=true;",
+          [questionnaireId]
+          );
+        } catch (error) {
+          console.error("Erreur lors de la recherche dans table jointure:", error);
+        }
+
+  try {
+      const clientName = await executeQuery(
+          numdiagPool,
+          "SELECT client_name FROM clientlogo WHERE id=$1;",
+          [logo[0].clientlogo_id]
+          );
+
+      return clientName[0].client_name;
+    } catch (error) {
+          console.error("Erreur lors de la recherche du nom de fichier du logo:", error);
+    }
 }
 
 
@@ -566,5 +656,7 @@ export {
     publishQuestionnaire,
     exportJson,
     displaySponsor,
-    clientLogo
+    clientLogo,
+    searchLogoByName,
+    searchLogo
 }

@@ -14,8 +14,6 @@ CREATE TABLE Questionnaires (
   scoremax INTEGER NOT NULL DEFAULT 100, -- plus pris en compte
   isPublished BOOLEAN NOT NULL DEFAULT FALSE,
   isfunded BOOLEAN NOT NULL DEFAULT FALSE,
-  clientlogo VARCHAR,
-  logoname VARCHAR,
   default_question_type VARCHAR,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -201,6 +199,22 @@ CREATE TABLE JoinScoresQuestionnaires (
     PRIMARY KEY (questionnaire_id, score_id),
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE,
     FOREIGN KEY (score_id) REFERENCES Scores(id) ON DELETE CASCADE
+);
+
+CREATE TABLE ClientLogo (
+  id SERIAL PRIMARY KEY,
+  url_logo VARCHAR NOT NULL,
+  client_name VARCHAR NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE JoinClientLogoQuestionnaires (
+  questionnaire_id INTEGER NOT NULL,
+  clientlogo_id INTEGER NOT NULL,
+  current_logo BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (questionnaire_id, clientlogo_id),
+  FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE,
+  FOREIGN KEY (clientlogo_id) REFERENCES ClientLogo(id) ON DELETE CASCADE
 );
 
 INSERT INTO Scores (lettre) VALUES

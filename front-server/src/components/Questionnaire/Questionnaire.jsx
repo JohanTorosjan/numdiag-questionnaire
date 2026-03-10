@@ -140,6 +140,21 @@ async function getAssociatedThemesAndPublics(questionnaire_id) {
   }
 }
 
+async function searchLogo(questionnaire_id) {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/logo/${questionnaire_id}`,
+    );
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    }
+  } catch (error) {
+    console.error("Error fetching logo file name:", error);
+    return [];
+  }
+}
+
 async function editQuestionnaireThemesAndPublics({
   questionnaire_id,
   theme,
@@ -197,6 +212,8 @@ function Questionnaire() {
   const [sponsorsDisplay, setSponsorsDisplay] = useState(false)
   const [file, setFile] = useState(null);
   const [statusClientLogo, setStatusClientLogo] = useState(null);
+  const [transferImageOn, setTransfertImage] = useState(false);
+  const [logoName, setLogoName] = useState('')
 
   // Listes fixes pour les select
   const questionTypes = [
@@ -239,6 +256,14 @@ function Questionnaire() {
         console.error("Error fetching associated themes and publics:", error);
       }
     };
+    const fetchLogoFileName = async () => {
+      try {
+        const data = await searchLogo(questionnaire.id);
+        setLogoName(data);
+      } catch (error) {
+        console.error("Error fetching logo name:", error);
+      }
+    };
 
     let defaultQuestionDisplay = "";
     if (
@@ -261,6 +286,7 @@ function Questionnaire() {
       setSponsorsDisplay(true)
     }
     fetchAssociateThemesAndPublics();
+    fetchLogoFileName();
 
   }, [questionnaire]);
 
@@ -300,8 +326,6 @@ function Questionnaire() {
 
   useEffect(() => {
     const resultScores = validateScores(scores);
-
-
       if (resultScores.isValid) {
           console.log('✓ Les scores sont valides');
           setScoresOk(true)
@@ -789,10 +813,15 @@ function Questionnaire() {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/clientlogo/${questionnaire.id}`, { method: "POST", body: formData });
       setStatusClientLogo(res.ok ? "success" : "error");
+      setTransfertImage(false)
     } catch {
       setStatusClientLogo("error");
     }
   };
+
+  function transferingImage() {
+    setTransfertImage(true)
+  }
 
 
 
@@ -1047,7 +1076,16 @@ function Questionnaire() {
             />
             <label htmlFor="sponsorsCheck">Afficher les sponsors</label>
           </div>
-          <div className="w-1/2">
+          <div className="w-1/2 flex justify-end space-x-8">
+          <div className="rounded bg-blue-400 px-2 py-2 text-white">
+            <p>Logo associé au questionnaire</p>
+          {file ?
+              <p className="text-black text-center">{file.name}</p> :
+              logoName ?
+              <p className="text-black text-center">{logoName}</p> :
+              <div className="hidden"></div>
+              }
+          </div>
           <form onSubmit={handleClientLogo}
                 >
               <input
@@ -1063,17 +1101,19 @@ function Questionnaire() {
               >
                 Importer un logo client
               </label>
-              {file ?
-              <p className="text-black text-end">{file.name}</p> :
-              questionnaire.logoname ?
-              <p className="text-black text-end">{questionnaire.logoname}</p> :
-              <div className="hidden"></div>
-              }
-            <button type="submit" disabled={!file} className={`mr-0 ml-auto block mt-3 rounded w-fit px-3 py-1  ${file? "bg-blue-500 text-white" : "bg-gray-300 text-gray-200"}`}>
+
+            <button type="submit" disabled={!file} onClick={()=> transferingImage()} className={`mr-0 ml-auto block mt-3 rounded w-fit px-3 py-1  ${file? "bg-blue-500 text-white" : "bg-gray-300 text-gray-200"}`}>
               Enregistrer l'image
             </button>
-            {!file  ? '' : statusClientLogo ? <p className="text-blue-400 text-end mt-1">✔️ image enregistrée</p> : <p className="text-red-400 text-end mt-1">❌ image non enregistrée, veilleur recommencer</p>}
-          </form>
+            {!file  ? (<div className="hidden"></div>) :
+            statusClientLogo && !transferImageOn ? <p className="text-blue-400 text-end mt-1">✔️ image enregistrée</p> :
+            !statusClientLogo && !transferImageOn ? <p className="text-red-400 text-end mt-1">❌ image non enregistrée</p> :
+            transferImageOn  ?
+              (<div className="flex mr-0 ml-auto w-fit items-center">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-700 mx-auto"></div>
+                <p className="text-blue-400 text-end mt-1">Enregistrement de l'image</p>
+              </div>) : <div className="hidden"></div>}
+        </form>
         </div>
         </div>
 

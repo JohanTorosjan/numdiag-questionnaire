@@ -12,7 +12,7 @@ cloudinary.config({
 
 
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagScores } from './database/client.js'
-import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion, publishQuestionnaire, exportJson, displaySponsor, clientLogo } from './questionnaire/questionnaire.js'
+import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion, publishQuestionnaire, exportJson, displaySponsor, clientLogo, searchLogoByName, searchLogo } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection} from './questionnaire/section.js'
 import {updateQuestion,updatePositions,deleteReponses,createQuestion, deleteQuestion} from './questionnaire/question.js'
 import {createSection, updateSection} from './questionnaire/section.js'
@@ -1029,26 +1029,51 @@ const upload = multer({ storage: multer.memoryStorage() });
 app.post('/clientlogo/:questionnaireId', upload.single('image'), async (req,res) => {
   const {questionnaireId} = req.params;
   let url =''
+  const name = req.file.originalname;
+  console.log("name", name)
   try {
-    const result = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream({ folder: 'your-folder' },
-        (error, result) => error ? reject(error) : resolve(result)
-      ).end(req.file.buffer);
-    });
-    url = result.secure_url;
+    const insertUrl = await searchLogoByName(name)
+    url = insertUrl.url_logo;
+    console.log("url",url)
+  } catch (error) {
+    console.error('Error searching logos in db', error)
+    return res.status(500).json({ error: 'Failed to search logos in db' })
   }
-  catch (error) {
-    console.error('Error uploading file to cloudinary:', error)
-    return res.status(500).json({ error: 'Failed to upload file to cloudinary' })
+
+  if (url.length === 0) {
+    try {
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream({ folder: 'your-folder' },
+          (error, result) => error ? reject(error) : resolve(result)
+        ).end(req.file.buffer);
+      });
+      url = result.secure_url;
+      console.log("Image uploaded to cloudinary")
+    }
+    catch (error) {
+      console.error('Error uploading file to cloudinary:', error)
+      return res.status(500).json({ error: 'Failed to upload file to cloudinary' })
+    }
   }
   try {
-    console.log("file name", req.file.originalname)
-    const insertUrl = await clientLogo({url, name: req.file.originalname, questionnaireId})
+    const insertUrl = await clientLogo({url, name, questionnaireId})
     req.file.buffer = null; // release the buffer from memory
+    console.log("Url and logo name inserted in db along with join questionnaire")
   }
   catch (error) {
     console.error('Failed to insert url of client logo in DB')
     return res.status(500).json({ error: 'Failed to to insert url of client logo in DB' })
   }
   res.status(200).json({success: "File sent to cloudinary and url in db"})
+})
+
+app.get('/logo/:questionnaireId', async (req,res) => {
+  const {questionnaireId} = req.params;
+  try {
+    const logoName = await searchLogo(questionnaireId)
+    return res.json(logoName);
+  } catch (error) {
+    console.error('Error getting logo of questionnaire ', questionnaireId)
+    return res.status(500).json({error: 'failed to get file name of logo for questionnaire'})
+  }
 })
