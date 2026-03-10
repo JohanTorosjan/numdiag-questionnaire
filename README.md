@@ -3,6 +3,9 @@
 front : http://127.0.0.1:8081/
 
 initdb : curl -X POST http://127.0.0.1:3008/initDatabase
+
+sur la db si besoin:
+curl -X POST https://api.questionnaires.numdiag.fr/initDatabase
 populate default scores : curl -X POST http://127.0.0.1:3008/populateScores
 
 connect to db : docker exec -it numdiagcmsdb psql -U postgres -d numdiagcmsdb
@@ -25,4 +28,4 @@ git checkout mars-deployed
 git merge <branch>
 git push o.. mars-deployed
 
-sur vm: ./deployed.sh
+sur vm: ./deployed.sh ou ./deployed_no_cache.sh quand changement/update de package json
