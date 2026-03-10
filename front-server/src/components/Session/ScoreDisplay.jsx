@@ -8,8 +8,10 @@ function ScoreDisplay() {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({})
   const [recoSections, setRecoSections] = useState([]);
-  const [questionnaire, setQuestionnaire] = useState({})
-  const [lettre, setLettre] = useState('')
+  const [questionnaire, setQuestionnaire] = useState({});
+  const [isLoading, setIsLoading] = useState(true)
+  const [logoUrl, setLogoUrl] = useState('');
+  const [lettre, setLettre] = useState('');
 
   async function getScoreAndReco(session_id){
     try{
@@ -22,6 +24,20 @@ function ScoreDisplay() {
         return {success: false}
     }
   }
+
+  async function getLogo(idQuestionnaire) {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/logoUrl/${idQuestionnaire}`);
+    if (!response.ok) {
+      throw new Error("Erreur lors de la récupération du logo du questionnaire");
+    }
+    const data = await response.json();
+    return data.url
+  } catch (error) {
+    console.error("Error getting questionnaire code:", error);
+    return null;
+  }
+}
 
 
   useEffect(() => {
@@ -49,6 +65,27 @@ function ScoreDisplay() {
       fetchData()
     }, [session_id]);
 
+     useEffect(() => {
+        async function fetchLogo(){
+        const logo = await getLogo(questionnaire.id)
+        if (logo) {
+          setLogoUrl(logo)
+          console.log("logo:",logo)
+        }
+      }
+        fetchLogo();
+      }, [questionnaire]);
+
+      useEffect(() => {
+      if (questionnaire) {
+        setIsLoading(false)
+      } else {
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1000); // Wait 1 second before showing error
+      }
+    }, [questionnaire])
+
     useEffect(() => {
       const newReco = [];
 
@@ -66,7 +103,9 @@ function ScoreDisplay() {
     return (
         <div className="w-full background-new-visual relative">
           <img src="/images/NumDiag_new_logo.png" alt="logo de NumDiag" className="h-20 w-20 absolute top-3 left-3" />
-          <img src={`${questionnaire.clientlogo}`} alt="logo" className="h-20 w-20 absolute top-3 right-3" />
+          {logoUrl &&
+           <img src={logoUrl} alt="logo" className="h-20 w-20 absolute top-3 right-3" />
+          }
           <div className="max-w-4xl mx-auto pt-20 px-5 text-white">
 
             <h1 className="text-center mx-auto w-fit text-xl px-5 pb-1 rounded-3xl border-b border-calypso-600">Vous obtenez un score de {answers.scoreQuestionnaire}</h1>

@@ -34,12 +34,27 @@ async function updateSession(session_id, sessionData){
     }
 }
 
+async function getLogo(idQuestionnaire) {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/logoUrl/${idQuestionnaire}`);
+    if (!response.ok) {
+      throw new Error("Erreur lors de la récupération du logo du questionnaire");
+    }
+    const data = await response.json();
+    return data.url
+  } catch (error) {
+    console.error("Error getting questionnaire code:", error);
+    return null;
+  }
+}
+
 function QuestionnaireDisplay(){
     const navigate = useNavigate();
     const { session_id } = useParams();
     const [isLoading, setIsLoading] = useState(false);
     const [questionnaire, setQuestionnaire] = useState(null);
     const [session, setSession] = useState(null);
+    const [logoUrl, setLogoUrl] = useState('')
     const toast = useToast();
 
     useEffect(() => {
@@ -63,6 +78,27 @@ function QuestionnaireDisplay(){
         }
         fetchSessionQuestionnaire();
     }, [session_id]);
+
+    useEffect(() => {
+          async function fetchLogo(){
+          const logo = await getLogo(questionnaire.id)
+          if (logo) {
+            setLogoUrl(logo)
+            console.log("logo:",logo)
+          }
+        }
+          fetchLogo();
+        }, [questionnaire]);
+
+        useEffect(() => {
+        if (questionnaire) {
+          setIsLoading(false)
+        } else {
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 1000); // Wait 1 second before showing error
+        }
+      }, [questionnaire])
 
     // Gérer la mise à jour de la session
     const handleSessionUpdate = async (updatedSession) => {
@@ -93,7 +129,9 @@ function QuestionnaireDisplay(){
     return (
         <div className="background-new-visual px-5 w-full text-lg relative">
           <img src="/images/NumDiag_new_logo.png" alt="logo de NumDiag" className="h-20 w-20 absolute top-3 left-3" />
-          <img src={`${questionnaire.clientlogo}`} alt="logo" className="h-20 w-20 absolute top-3 right-3" />
+          {logoUrl &&
+            <img src={logoUrl} alt="logo" className="h-20 w-20 absolute top-3 right-3" />
+          }
 
             <QuestionnaireDisplayer
                 questionnaire={questionnaire}

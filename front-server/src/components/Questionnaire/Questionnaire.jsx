@@ -92,23 +92,6 @@ async function getReco(idQuestionnaire) {
     return null;
   }
 }
-async function getScores(idQuestionnaire) {
-  try {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/scores/${idQuestionnaire}`,
-    );
-    if (!response.ok) {
-      throw new Error("Erreur lors du chargement des scores");
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching scores:", error);
-    return null;
-  }
-}
-
-
 
 async function getAllScores(questionnaire_id) {
   try {
@@ -140,21 +123,6 @@ async function getAssociatedThemesAndPublics(questionnaire_id) {
   }
 }
 
-async function searchLogo(questionnaire_id) {
-  try {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/logo/${questionnaire_id}`,
-    );
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    }
-  } catch (error) {
-    console.error("Error fetching logo file name:", error);
-    return [];
-  }
-}
-
 async function editQuestionnaireThemesAndPublics({
   questionnaire_id,
   theme,
@@ -178,6 +146,37 @@ async function editQuestionnaireThemesAndPublics({
   } catch (error) {
     console.error("Error editing associated themes and publics:", error);
     return [];
+  }
+}
+
+async function searchLogo(questionnaire_id) {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/logo/${questionnaire_id}`,
+    );
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    }
+  } catch (error) {
+    console.error("Error fetching logo file name:", error);
+    return [];
+  }
+}
+
+async function getAllLogos() {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/all-logos`,
+    );
+    if (!response.ok) {
+      throw new Error("Erreur lors du chargement des logos");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching scores:", error);
+    return null;
   }
 }
 
@@ -213,7 +212,9 @@ function Questionnaire() {
   const [file, setFile] = useState(null);
   const [statusClientLogo, setStatusClientLogo] = useState(null);
   const [transferImageOn, setTransfertImage] = useState(false);
-  const [logoName, setLogoName] = useState('')
+  const [logoName, setLogoName] = useState('');
+  const [allLogos, setAllLogos] = useState([]);
+  const [selectedLogo, setSelectedLogo] = useState([]);
 
   // Listes fixes pour les select
   const questionTypes = [
@@ -241,9 +242,15 @@ function Questionnaire() {
       setAllPublics(data.data);
     };
 
+    const fetchLogos = async () => {
+      const data = await getAllLogos();
+      setAllLogos(data)
+    }
+
     fetchQuestionnaire();
     fetchThemes();
     fetchPublics();
+    fetchLogos()
   }, [id]);
 
   useEffect(() => {
@@ -260,6 +267,7 @@ function Questionnaire() {
       try {
         const data = await searchLogo(questionnaire.id);
         setLogoName(data);
+        setSelectedLogo(data);
       } catch (error) {
         console.error("Error fetching logo name:", error);
       }
@@ -817,13 +825,48 @@ function Questionnaire() {
     } catch {
       setStatusClientLogo("error");
     }
+    try {
+        const data = await searchLogo(questionnaire.id);
+        setLogoName(data);
+        setSelectedLogo(data);
+      } catch (error) {
+        console.error("Error fetching logo name:", error);
+      }
+    try {
+        const data = await getAllLogos();
+        setAllLogos(data)
+      } catch (error) {
+        console.error("Error fetching logo name:", error);
+      }
+
+
   };
 
   function transferingImage() {
     setTransfertImage(true)
   }
 
+  async function selectLogo(logo) {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/selectLogo/${questionnaire.id}`,
+        { method: "POST",
+          headers: {
+            "Content-Type": "application/json", // ✅ important
+          },
+          body: JSON.stringify({
+          logo
+          }),
+      });
+      if (response.ok) {
+        setSelectedLogo(logo)
+        setLogoName(logo);
+      }
 
+    } catch (error) {
+        console.error("Error selecting the logo:", error);
+    }
+    setSelectedLogo()
+  }
 
   ////////////////////////////////
   // html component part
@@ -1066,7 +1109,7 @@ function Questionnaire() {
         {/* Sponsors et logo client */}
         <hr className="w-4/5 text-zinc-300 mx-auto mt-7 mb-4" />
         <div className="w-full flex justify-between items-start">
-          <div className="w-1/2">
+          <div className="w-1/4">
             <input type="checkbox"
               id="sponsorsCheck"
               name="sponsorsCheck"
@@ -1076,18 +1119,32 @@ function Questionnaire() {
             />
             <label htmlFor="sponsorsCheck">Afficher les sponsors</label>
           </div>
-          <div className="w-1/2 flex justify-end space-x-8">
-          <div className="rounded bg-blue-400 px-2 py-2 text-white">
-            <p>Logo associé au questionnaire</p>
-          {file ?
-              <p className="text-black text-center">{file.name}</p> :
-              logoName ?
-              <p className="text-black text-center">{logoName}</p> :
+          <div className="w-fit flex bg-blue-400/90 rounded-md divide-x divide-white/30 py-2">
+            <div className="text-center px-4 w-fit text-white">
+              <label htmlFor="select-a-logo" className="w-fit block">
+                -- Choisir un logo --
+              </label>
+              <select
+                id="select-a-logo"
+                value={logoName}
+                onChange={(e) => selectLogo(e.target.value)}
+                className="w-fit border border-gray-200 px-2 py-1 rounded mt-2"
+              >
+                {allLogos.map((logo) =>
+                  <option value={logo.client_name} key={logo.client_name}>{logo.client_name}</option>)}
+              </select>
+            </div>
+
+          <div className="px-4 text-center text-white">
+            <p className=" ">Logo associé au questionnaire :</p>
+            <hr className="text-white w-7 mx-auto my-1"/>
+            { logoName ?
+              <p>{logoName}</p> :
               <div className="hidden"></div>
-              }
+            }
           </div>
           <form onSubmit={handleClientLogo}
-                >
+              className="text-white px-4"  >
               <input
                 id="file-upload"
                 type="file"
@@ -1097,23 +1154,28 @@ function Questionnaire() {
               />
               <label
                 htmlFor="file-upload"
-                className="mr-0 ml-auto rounded block px-3 py-1 w-fit bg-blue-400 text-white shadow hover:-translate-y-0.5 hover:shadow-lg hover:bg-blue-400/80 easein)out duration-150"
+                className="mx-auto block px-3 py-1 w-fit bg-blue-600 rounded text-blue-100 shadow hover:-translate-y-0.5 hover:shadow-lg hover:bg-blue-600/60 ease-in-out duration-150"
               >
                 Importer un logo client
               </label>
+              {file && !transferImageOn ?
+              <p className="text-black text-center">{file.name}</p> : <div className="hidden"></div>
+}
 
-            <button type="submit" disabled={!file} onClick={()=> transferingImage()} className={`mr-0 ml-auto block mt-3 rounded w-fit px-3 py-1  ${file? "bg-blue-500 text-white" : "bg-gray-300 text-gray-200"}`}>
+            <button type="submit" disabled={!file} onClick={()=> transferingImage()} className={`block mt-3 mx-auto rounded w-fit px-3 py-1  ${file? "bg-blue-600 text-blue-100 hover:-translate-y-0.5 hover:shadow-lg hover:bg-blue-600/60 ease-in-out duration-150" : "bg-gray-300 text-gray-200"}`}>
               Enregistrer l'image
             </button>
             {!file  ? (<div className="hidden"></div>) :
-            statusClientLogo && !transferImageOn ? <p className="text-blue-400 text-end mt-1">✔️ image enregistrée</p> :
-            !statusClientLogo && !transferImageOn ? <p className="text-red-400 text-end mt-1">❌ image non enregistrée</p> :
-            transferImageOn  ?
-              (<div className="flex mr-0 ml-auto w-fit items-center">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-700 mx-auto"></div>
-                <p className="text-blue-400 text-end mt-1">Enregistrement de l'image</p>
-              </div>) : <div className="hidden"></div>}
-        </form>
+              statusClientLogo && !transferImageOn ? <p className="text-green-200 bg-green-600/70 px-3 py-0.5 rounded text-sm mt-1 text-center">Image enregistrée 👍</p> :
+              !statusClientLogo && !transferImageOn ? <p className="text-red-200 bg-red-600/70 px-3 py-0.5 rounded text-center text-sm mt-1">Image non enregistrée 👎</p> :
+              transferImageOn  ?
+                (<div className="flex mr-0 ml-auto w-fit items-center">
+                  <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mx-auto"></div>
+                  <p className="ml-2 text-white-400 text-end mt-1 text-sm">Enregistrement de l'image</p>
+                </div>) :
+                <div className="hidden"></div>
+            }
+          </form>
         </div>
         </div>
 

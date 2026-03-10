@@ -65,6 +65,21 @@ async function codeQuestionnaire(idQuestionnaire) {
   }
 }
 
+async function getLogo(idQuestionnaire) {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/logoUrl/${idQuestionnaire}`);
+    if (!response.ok) {
+      throw new Error("Erreur lors de la récupération du logo du questionnaire");
+    }
+    const data = await response.json();
+    return data.url
+  } catch (error) {
+    console.error("Error getting questionnaire code:", error);
+    return null;
+  }
+}
+
+
 
 
 function Session(){
@@ -77,6 +92,7 @@ function Session(){
     const [code, setCode] = useState(false)
     const [sessionCode, setSessionCode] = useState("")
     const [errorCode, setErrorCode]= useState(false)
+    const [logoUrl, setLogoUrl]=useState('')
     const toast = useToast();
 
 
@@ -86,25 +102,38 @@ function Session(){
 
 
     useEffect(() => {
+      console.log("ici")
     async function fetchCodeQuestionnaire() {
+      if (questionnaire) {
+          document.title = `Numdiag - ${questionnaire.label}`;
+          const data = await codeQuestionnaire(questionnaire.id);
 
-    if (questionnaire) {
-        document.title = `Numdiag - ${questionnaire.label}`;
-        const data = await codeQuestionnaire(questionnaire.id);
-
-        if (data) {
-            const testCode = await codeForSession({session_id: session.id,
-            code: session.code})
-            if (testCode) {
-              setCode(true)
-            }
-        } else {
-          setCode(true)
-        }
+          if (data) {
+              const testCode = await codeForSession({session_id: session.id,
+              code: session.code})
+              if (testCode) {
+                setCode(true)
+              }
+          } else {
+            setCode(true)
+          }
+      }
     }
-  }
-  fetchCodeQuestionnaire()
+
+  fetchCodeQuestionnaire();
+
     }, [questionnaire, session]);
+
+    useEffect(() => {
+      async function fetchLogo(){
+      const logo = await getLogo(questionnaire.id)
+      if (logo) {
+        setLogoUrl(logo)
+        console.log("logo:",logo)
+      }
+    }
+      fetchLogo();
+    }, [questionnaire]);
 
     useEffect(() => {
     if (questionnaire) {
@@ -114,7 +143,7 @@ function Session(){
         setIsLoading(false);
       }, 1000); // Wait 1 second before showing error
     }
-  }, [questionnaire_id])
+  }, [questionnaire])
 
 
 
@@ -269,7 +298,9 @@ function Session(){
         return (
             <div className="Session px-5 w-full h-full relative grid grid-rows-[2fr_2fr_0.5fr_0.5fr] pb-10 background-new-visual">
               <img src="/images/NumDiag_new_logo.png" alt="logo de NumDiag" className="h-20 w-20 absolute top-3 left-3" />
-              <img src={`${questionnaire.clientlogo}`} alt="logo" className="h-20 w-20 absolute top-3 right-3" />
+              {logoUrl &&
+                <img src={logoUrl} alt="logo" className="h-20 w-20 absolute top-3 right-3" />
+              }
 
                 <div className="questionnaires-infos mt-0 w-full py-10 mx-auto self-start">
                   <div className="md:w-2/3 w-full mx-auto border-b border-calypso-700 px-6 py-2 rounded-xl shadow-lg">

@@ -12,7 +12,7 @@ cloudinary.config({
 
 
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagScores } from './database/client.js'
-import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion, publishQuestionnaire, exportJson, displaySponsor, clientLogo, searchLogoByName, searchLogo } from './questionnaire/questionnaire.js'
+import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion, publishQuestionnaire, exportJson, displaySponsor, clientLogo, searchLogoByName, searchLogo, searchALLlogo, selectLogo, searchLogoImage } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection} from './questionnaire/section.js'
 import {updateQuestion,updatePositions,deleteReponses,createQuestion, deleteQuestion} from './questionnaire/question.js'
 import {createSection, updateSection} from './questionnaire/section.js'
@@ -1031,9 +1031,10 @@ app.post('/clientlogo/:questionnaireId', upload.single('image'), async (req,res)
   let url =''
   const name = req.file.originalname;
   console.log("name", name)
+  console.log("url", url)
   try {
     const insertUrl = await searchLogoByName(name)
-    url = insertUrl.url_logo;
+    url = insertUrl.url_logo ? insertUrl.url_logo : '';
     console.log("url",url)
   } catch (error) {
     console.error('Error searching logos in db', error)
@@ -1075,5 +1076,40 @@ app.get('/logo/:questionnaireId', async (req,res) => {
   } catch (error) {
     console.error('Error getting logo of questionnaire ', questionnaireId)
     return res.status(500).json({error: 'failed to get file name of logo for questionnaire'})
+  }
+})
+
+app.get('/all-logos', async (req,res) => {
+  const {questionnaireId} = req.params;
+  try {
+    const logoNames = await searchALLlogo(questionnaireId)
+    return res.json(logoNames);
+  } catch (error) {
+    console.error('Error getting all logos file names', questionnaireId)
+    return res.status(500).json({error: 'failed to get file names of all logos'})
+  }
+})
+
+app.post('/selectLogo/:questionnaireId', async (req, res) => {
+  const { questionnaireId } = req.params;
+  const {logo} = req.body;
+  try {
+    const logoName = await selectLogo(questionnaireId, logo)
+    return res.json({name:logo})
+  } catch (error) {
+    console.error('Error getting logo of questionnaire ', questionnaireId)
+    return res.status(500).json({error: 'failed to get file name of logo for questionnaire'})
+  }
+})
+
+app.get('/logoUrl/:questionnaireId', async (req,res) => {
+  const {questionnaireId} = req.params;
+  try {
+    const logoUrl = await searchLogoImage(questionnaireId)
+    console.log(logoUrl)
+    return res.json({url: logoUrl});
+  } catch (error) {
+    console.error('Error getting logo url', questionnaireId)
+    return res.status(500).json({error: 'failed to get logo url'})
   }
 })

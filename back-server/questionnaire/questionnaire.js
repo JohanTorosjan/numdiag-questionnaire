@@ -541,9 +541,9 @@ async function clientLogo({url, name, questionnaireId}) {
   console.log("ici")
   let logoClientId=0
   // on commence par désactiver le logo existant pour le questionnaire => current_logo set to false
+  // sunr la table jointure questionnaire/logo si existe déjà une entrée avec même questionnaireID et même logo, ne sera pas écrit => primary key constraint
   try {
-      // si existe déjà une entrée avec même questionnaireID et même logo, ne sera pas écrit => primary key constraint
-      // AJOUTER : si le questionnaire a déjà une image en current_logo : changer en false
+      // si le questionnaire a déjà une image en current_logo : changer en false
       const currentLogoQuestionnaire = await executeQuery(
           numdiagPool,
           "UPDATE JoinClientLogoQuestionnaires SET current_logo = false WHERE questionnaire_id = $1;",
@@ -640,6 +640,104 @@ async function searchLogo(questionnaireId) {
     }
 }
 
+async function searchLogoImage(questionnaireId) {
+  let logo=[]
+  try {
+      logo = await executeQuery(
+          numdiagPool,
+          "SELECT clientlogo_id FROM joinclientlogoquestionnaires WHERE questionnaire_id=$1 AND current_logo=$2;",
+          [questionnaireId, true]
+          );
+        } catch (error) {
+          console.error("Erreur lors de la recherche dans table jointure:", error);
+        }
+        try {
+          const clientName = await executeQuery(
+            numdiagPool,
+            "SELECT url_logo FROM clientlogo WHERE id=$1;",
+            [logo[0].clientlogo_id]
+          );
+
+      return clientName[0].url_logo;
+    } catch (error) {
+          console.error("Erreur lors de la recherche du nom de fichier du logo:", error);
+    }
+}
+
+async function searchALLlogo(questionnaireId) {
+  try {
+      const logos = await executeQuery(
+          numdiagPool,
+          "SELECT client_name FROM clientlogo;",
+          []
+          );
+
+      return logos;
+    } catch (error) {
+          console.error("Erreur lors de la recherche des noms de fichiers logos:", error);
+    }
+}
+
+async function selectLogo(questionnaireId, logoName) {
+  let logoId = []
+  try {
+      // si le questionnaire a déjà une image en current_logo : changer en false
+      const deactivateCurrent = await executeQuery(
+          numdiagPool,
+          "UPDATE JoinClientLogoQuestionnaires SET current_logo = false WHERE questionnaire_id = $1;",
+          [questionnaireId]
+          );
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour des statuts des logos:", error);
+  }
+  try {
+      logoId = await executeQuery(
+          numdiagPool,
+          "SELECT id FROM clientlogo WHERE client_name = $1;",
+          [logoName]
+          );
+    } catch (error) {
+        console.error("Erreur lors de la recherche du logo:", error);
+  }
+  console.log("logo_id", logoId)
+  //besoin de tester le cas ou c'est un client qui n'a pas été utilisé sur ce questionnaire
+  let logoLinked=[]
+  try {
+    logoLinked = await executeQuery(
+          numdiagPool,
+          "SELECT * FROM joinclientlogoquestionnaires WHERE questionnaire_id = $1 AND clientlogo_id = $2;",
+          [questionnaireId, logoId[0].id]
+          );
+  } catch (error) {
+    console.error("Erreur lors du test du lien logo questionnaire:", error);
+  }
+  if (logoLinked.length === 0) {
+    try {
+          const logos = await executeQuery(
+              numdiagPool,
+              "INSERT INTO joinclientlogoquestionnaires (current_logo, questionnaire_id, clientlogo_id) VALUES ($1, $2, $3);",
+              [true, questionnaireId, logoId[0].id]
+              );
+
+          return logos;
+        } catch (error) {
+              console.error("Erreur lors de l'update du current logo:", error);
+        }
+  } else {
+      try {
+          const logos = await executeQuery(
+              numdiagPool,
+              "UPDATE joinclientlogoquestionnaires SET current_logo = $3 WHERE questionnaire_id = $1 AND clientlogo_id = $2;",
+              [questionnaireId, logoId[0].id, true]
+              );
+
+          return logos;
+        } catch (error) {
+              console.error("Erreur lors de l'update du current logo:", error);
+        }
+  }
+}
+
 
 
 
@@ -658,5 +756,8 @@ export {
     displaySponsor,
     clientLogo,
     searchLogoByName,
-    searchLogo
+    searchLogo,
+    searchALLlogo,
+    selectLogo,
+    searchLogoImage
 }
