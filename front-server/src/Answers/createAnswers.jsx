@@ -9,7 +9,7 @@ function PopUpCreateAnswer({ answerType, onClose, onSave, position }) {
         label: '',
         valeurScore: 0,
         tooltip: '',
-        plafond: 0,
+        plafond: 100,
         recommandation: '',
     });
 
