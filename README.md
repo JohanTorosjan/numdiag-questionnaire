@@ -4,7 +4,7 @@ front : http://127.0.0.1:8081/
 
 initdb : curl -X POST http://127.0.0.1:3008/initDatabase
 
-sur la db si besoin:
+sur la vm si besoin:
 curl -X POST https://api.questionnaires.numdiag.fr/initDatabase
 populate default scores : curl -X POST http://127.0.0.1:3008/populateScores
 
