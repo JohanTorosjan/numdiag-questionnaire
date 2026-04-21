@@ -226,7 +226,6 @@ app.put('/updateSection/:sectionId', async (req, res) => {
   const { label, description, tooltip, nbpages, isActive } = req.body;
 
   try {
-    console.log('section_id:', sectionId);
     // Get max position
     // const lastSectionResult = await executeQuery(
       //   numdiagPool,
@@ -366,7 +365,6 @@ app.put('/updateSection/:sectionId', async (req, res) => {
     app.put('/reponses/:reponseId', async (req, res) => {
       const { reponseId } = req.params;
       const { label, tooltip, plafond, recommandation, valeurScore } = req.body;
-      console.log(label, tooltip, plafond, recommandation, valeurScore )
       try {
 
         const result = await updateReponse(
@@ -419,7 +417,6 @@ app.put('/updateSection/:sectionId', async (req, res) => {
       const { recommandation, min, max } = req.body;
 
       try {
-        console.log('recommandation_id:', recoId);
         // Get max position
         // const lastSectionResult = await executeQuery(
           //   numdiagPool,
@@ -443,8 +440,6 @@ app.delete('/deletereco/:recoId', async (req, res) => {
   const { recoId } = req.params;  // Fixed: was idSection, but route param is recoId
 
   try {
-    console.log('recommandation_id:', recoId);
-
     const recoDelete = await deleteReco(recoId)
 
     console.log('recommandation has been deleted: ',recoDelete);
@@ -657,10 +652,10 @@ app.put('/sessionUpdate/:id_session', async (req, res) => {
     }
 });
 
-app.get('/score/:id_session',async (req,res) => {
-    const { id_session } = req.params;
+app.get('/score/:session_id',async (req,res) => {
+    const { session_id } = req.params;
     try {
-        const result = await getScore(id_session)
+        const result = await getScore(session_id)
         res.status(200).json({
             success: true,
             message: 'Score computed and got successfully',
@@ -846,7 +841,6 @@ app.put('/updateTheme/:themeId', async (req, res) => {
 })
 
 app.post('/deactivateTheme/:themeId', async (req, res) => {
-  console.log("Hello")
   const { themeId } = req.params;
   const { themeState } = req.body; // Get data from request body
   try {
@@ -871,7 +865,6 @@ app.put('/updatePublic/:publicId', async (req, res) => {
 })
 
 app.post('/deactivatePublic/:publicId', async (req, res) => {
-  console.log("Hello")
   const { publicId } = req.params;
   const { publicState } = req.body; // Get data from request body
   try {
@@ -996,10 +989,8 @@ app.post('/createnewscore', async (req,res) => {
 app.post('/deletescore/:scoreId', async (req, res) => {
   const {scoreId} = req.params;
   const { questionnaireId } = req.body;
-  console.log(questionnaireId)
   try {
     const scoreDeleted = await deleteScore(scoreId, questionnaireId)
-    console.log(scoreDeleted)
     console.log('score', scoreDeleted[0], ' has been deleted: ',scoreDeleted[1]);
     res.status(200).json({success: true})
   }
@@ -1012,7 +1003,6 @@ app.post('/deletescore/:scoreId', async (req, res) => {
 app.post('/displaysponsors/:questionnaireId', async (req,res) => {
   const {questionnaireId} = req.params;
   const { sponsorsDisplay } = req.body;
-  console.log("coucou")
   try {
     const toggleDisplay = await displaySponsor({questionnaireId, sponsorsDisplay})
     res.status(200).json({success: true})
@@ -1030,12 +1020,10 @@ app.post('/clientlogo/:questionnaireId', upload.single('image'), async (req,res)
   const {questionnaireId} = req.params;
   let url =''
   const name = req.file.originalname;
-  console.log("name", name)
-  console.log("url", url)
+
   try {
     const insertUrl = await searchLogoByName(name)
     url = insertUrl.url_logo ? insertUrl.url_logo : '';
-    console.log("url",url)
   } catch (error) {
     console.error('Error searching logos in db', error)
     return res.status(500).json({ error: 'Failed to search logos in db' })
@@ -1106,7 +1094,6 @@ app.get('/logoUrl/:questionnaireId', async (req,res) => {
   const {questionnaireId} = req.params;
   try {
     const logoUrl = await searchLogoImage(questionnaireId)
-    console.log(logoUrl)
     return res.json({url: logoUrl});
   } catch (error) {
     console.error('Error getting logo url', questionnaireId)

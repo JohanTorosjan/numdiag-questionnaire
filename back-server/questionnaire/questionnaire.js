@@ -514,7 +514,6 @@ const exportJson = async (id) => {
 
 async function displaySponsor({questionnaireId, sponsorsDisplay}) {
     if (sponsorsDisplay) {
-      console.log("ici")
       try {
         const display = await executeQuery(
         numdiagPool,
@@ -652,6 +651,7 @@ async function searchLogoImage(questionnaireId) {
           console.error("Erreur lors de la recherche dans table jointure:", error);
         }
         try {
+          console.log("Logo", logo[0].clientlogo_id)
           const clientName = await executeQuery(
             numdiagPool,
             "SELECT url_logo FROM clientlogo WHERE id=$1;",

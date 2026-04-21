@@ -80,14 +80,16 @@ function QuestionnaireDisplay(){
     }, [session_id]);
 
     useEffect(() => {
-          async function fetchLogo(){
-          const logo = await getLogo(questionnaire.id)
-          if (logo) {
-            setLogoUrl(logo)
-            console.log("logo:",logo)
-          }
+        if (questionnaire) {
+            async function fetchLogo(){
+              const logo = await getLogo(questionnaire.id)
+              if (logo) {
+                setLogoUrl(logo)
+                console.log("logo:",logo)
+              }
+            }
+            fetchLogo();
         }
-          fetchLogo();
         }, [questionnaire]);
 
         useEffect(() => {

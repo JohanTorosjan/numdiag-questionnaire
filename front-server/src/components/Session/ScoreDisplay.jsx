@@ -65,16 +65,17 @@ function ScoreDisplay() {
       fetchData()
     }, [session_id]);
 
-     useEffect(() => {
+    useEffect(() => {
+      if (questionnaire) {
         async function fetchLogo(){
-        const logo = await getLogo(questionnaire.id)
-        if (logo) {
-          setLogoUrl(logo)
-          console.log("logo:",logo)
+          const logo = await getLogo(questionnaire.id)
+          if (logo) {
+            setLogoUrl(logo)
+          }
         }
-      }
         fetchLogo();
-      }, [questionnaire]);
+      }
+    }, [questionnaire]);
 
       useEffect(() => {
       if (questionnaire) {

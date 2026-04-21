@@ -125,14 +125,17 @@ function Session(){
     }, [questionnaire, session]);
 
     useEffect(() => {
-      async function fetchLogo(){
-      const logo = await getLogo(questionnaire.id)
-      if (logo) {
-        setLogoUrl(logo)
-        console.log("logo:",logo)
+      if (questionnaire) {
+        console.log(questionnaire.id)
+        async function fetchLogo(){
+          const logo = await getLogo(questionnaire.id)
+          if (logo) {
+            setLogoUrl(logo)
+            console.log("logo:",logo)
+          }
+        }
+        fetchLogo();
       }
-    }
-      fetchLogo();
     }, [questionnaire]);
 
     useEffect(() => {
@@ -321,7 +324,7 @@ function Session(){
                 </div>
 
 
-              {(existingSessionId && !session.score) ? (
+              {(existingSessionId && session && !session.score) ? (
                 <div className="questionnaires-start-buttons self-center md:w-2/3 w-full mx-auto grid grid-cols-[3fr_1fr_3fr] md:grid-cols-[minmax(300px,3fr)_minmax(20px,1fr)_minmax(300px,3fr)]">
 
                     <button
@@ -340,7 +343,7 @@ function Session(){
                     </button>
                 </div>
 
-              ) : (existingSessionId && session.state==='finished') ?
+              ) : (existingSessionId && session && session.state==='finished') ?
                 <div className="questionnaires-start-buttons self-center md:w-2/3 w-full mx-auto grid grid-cols-[3fr_1fr_3fr] md:grid-cols-[minmax(300px,3fr)_minmax(20px,1fr)_minmax(300px,3fr)]">
 
                   <button
