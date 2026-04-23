@@ -642,26 +642,26 @@ async function searchLogo(questionnaireId) {
 async function searchLogoImage(questionnaireId) {
   let logo=[]
   try {
-      logo = await executeQuery(
-          numdiagPool,
-          "SELECT clientlogo_id FROM joinclientlogoquestionnaires WHERE questionnaire_id=$1 AND current_logo=$2;",
-          [questionnaireId, true]
-          );
-        } catch (error) {
-          console.error("Erreur lors de la recherche dans table jointure:", error);
-        }
-        try {
-          console.log("Logo", logo[0].clientlogo_id)
+    logo = await executeQuery(
+        numdiagPool,
+        "SELECT clientlogo_id FROM joinclientlogoquestionnaires WHERE questionnaire_id=$1 AND current_logo=$2;",
+        [questionnaireId, true]
+        );
+      } catch (error) {
+        console.error("Erreur lors de la recherche dans table jointure:", error);
+      }
+      try {
+        if (logo.length > 0) {
           const clientName = await executeQuery(
             numdiagPool,
             "SELECT url_logo FROM clientlogo WHERE id=$1;",
             [logo[0].clientlogo_id]
           );
-
-      return clientName[0].url_logo;
-    } catch (error) {
-          console.error("Erreur lors de la recherche du nom de fichier du logo:", error);
-    }
+          return clientName[0].url_logo;
+        }
+      } catch (error) {
+            console.error("Erreur lors de la recherche du nom de fichier du logo:", error);
+   }
 }
 
 async function searchALLlogo(questionnaireId) {

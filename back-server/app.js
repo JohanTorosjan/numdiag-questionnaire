@@ -616,6 +616,7 @@ app.get('/sessionBack/questionnaire/:id_session',async (req,res) => {
     const { id_session } = req.params;
     try {
         const result = await getSessionQuestionnaire(id_session)
+        console.log("Launching questionnaire")
         res.status(200).json({
             success: true,
             message: 'Session questionnaire getted successfully',
@@ -656,6 +657,7 @@ app.get('/score/:session_id',async (req,res) => {
     const { session_id } = req.params;
     try {
         const result = await getScore(session_id)
+        console.log("Lauching score compute and display")
         res.status(200).json({
             success: true,
             message: 'Score computed and got successfully',
@@ -713,6 +715,7 @@ app.get('/code/:id_questionnaire',async (req,res) => {
     const { id_questionnaire } = req.params;
     try {
         const result = await getQuestionnaireCode(id_questionnaire)
+        console.log("Launching session")
         console.log("Code got from questionnaire",id_questionnaire,":", result)
         res.status(200).json({
             success: true,
@@ -1093,8 +1096,10 @@ app.post('/selectLogo/:questionnaireId', async (req, res) => {
 app.get('/logoUrl/:questionnaireId', async (req,res) => {
   const {questionnaireId} = req.params;
   try {
-    const logoUrl = await searchLogoImage(questionnaireId)
-    return res.json({url: logoUrl});
+    if (questionnaireId) {
+      const logoUrl = await searchLogoImage(questionnaireId)
+      return res.json({url: logoUrl});
+    }
   } catch (error) {
     console.error('Error getting logo url', questionnaireId)
     return res.status(500).json({error: 'failed to get logo url'})

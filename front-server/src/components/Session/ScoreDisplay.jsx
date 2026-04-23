@@ -66,7 +66,8 @@ function ScoreDisplay() {
     }, [session_id]);
 
     useEffect(() => {
-      if (questionnaire) {
+      if (questionnaire.id) {
+        console.log(questionnaire)
         async function fetchLogo(){
           const logo = await getLogo(questionnaire.id)
           if (logo) {

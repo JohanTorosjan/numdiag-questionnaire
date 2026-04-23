@@ -102,7 +102,6 @@ function Session(){
 
 
     useEffect(() => {
-      console.log("ici")
     async function fetchCodeQuestionnaire() {
       if (questionnaire) {
           document.title = `Numdiag - ${questionnaire.label}`;
@@ -126,12 +125,10 @@ function Session(){
 
     useEffect(() => {
       if (questionnaire) {
-        console.log(questionnaire.id)
         async function fetchLogo(){
           const logo = await getLogo(questionnaire.id)
           if (logo) {
             setLogoUrl(logo)
-            console.log("logo:",logo)
           }
         }
         fetchLogo();
