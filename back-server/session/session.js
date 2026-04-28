@@ -583,7 +583,7 @@ async function getScore(session_id) {
       value = value * question[0].coeff;
       coeffs.push(question[0].coeff);
       values.push(value);
-      recommandations.push({reco: recommandation, criticite: critique});
+      recommandations.push({text: recommandation, criticite: critique});
 
       // ATTENTION !!!!
       ///////////////////////////////////////////////////////////////////
