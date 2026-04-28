@@ -23,16 +23,16 @@ function updateReponse(idReponse, label, tooltip, plafond, recommandation, criti
 }
 
 
-async function createReponse(  question_id,
+async function createReponse(  {question_id,
     label,
     tooltip,
     plafond,
     recommandation,
     critique,
     position,
-    valeurScore){
+    valeurScore}){
     console.log('--------')
-        console.log(valeurScore)
+    console.log(valeurScore)
         try{
     const insertReponseQuery = `
             INSERT INTO Reponses (

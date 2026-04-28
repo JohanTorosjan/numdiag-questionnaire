@@ -510,9 +510,10 @@ app.post('/reponses', async (req, res) => {
         valeurScore,
         position
     } = req.body;
+    console.log('Valeur score:', valeurScore)
 
     try {
-        const result = await createReponse(
+        const result = await createReponse({
             question_id,
             label,
             tooltip,
@@ -520,7 +521,7 @@ app.post('/reponses', async (req, res) => {
             recommandation,
             critique,
             valeurScore,
-            position
+            position}
         );
 
         res.status(201).json({
