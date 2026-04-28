@@ -5,7 +5,7 @@ function addReponsesTranches(questionId, tranches) {
         return executeQuery(
             numdiagPool,
             `INSERT INTO ReponsesTranches (question_id, min, max, value, tooltip, plafond, recommandation, critique)
-             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
             [
                 questionId,
                 tranche.min,

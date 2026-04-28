@@ -393,9 +393,9 @@ app.put('/updateSection/:sectionId', async (req, res) => {
     // Recommandations
 
     app.post('/createreco', async (req,res) => {
-      let { recommandation, min, max, questionnaire_id } = req.body; // Get data from request body
+      let { recommandation, critique, min, max, questionnaire_id } = req.body; // Get data from request body
       try {
-        const RecoCreate = await createReco( questionnaire_id, recommandation, min, max )
+        const RecoCreate = await createReco( questionnaire_id, recommandation, critique, min, max )
         console.log('Recommandation has been created: ',RecoCreate);
         res.status(200).json({success: true})
       } catch (error) {
@@ -417,7 +417,7 @@ app.put('/updateSection/:sectionId', async (req, res) => {
 
     app.put('/updatereco/:recoId', async (req, res) => {
       const { recoId } = req.params;  // Fixed: was idSection, but route param is recoId
-      const { recommandation, min, max } = req.body;
+      const { recommandation, critique, min, max } = req.body;
 
       try {
         // Get max position
@@ -427,7 +427,7 @@ app.put('/updateSection/:sectionId', async (req, res) => {
           //   [questionnaireId]
           // )
 
-          const recoUpdate = await updateReco(recoId, { recommandation, min, max })
+          const recoUpdate = await updateReco(recoId, { recommandation, critique, min, max })
 
           console.log('recommandation has been updated: ',recoUpdate);
           res.status(200).json({success: true})
@@ -528,6 +528,7 @@ app.post('/reponses', async (req, res) => {
             message: 'Reponse created successfully',
             data: result
         });
+        console.log("Enregistrement réponse id:", result.reponse.id)
     } catch (error) {
         console.error('Error creating reponse:', error);
         res.status(500).json({ error: 'Failed to create reponse' });

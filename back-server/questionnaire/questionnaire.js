@@ -259,6 +259,7 @@ async function getAllQuestionsByQuestionnaire(questionnaireId) {
           tooltip: row.answer_tooltip,
           plafond: row.answer_plafond,
           recommandation: row.answer_recommandation,
+          critique: row.answer_critique,
           valeurScore: row.answer_value_score
         });
       }

@@ -1,6 +1,6 @@
 import { numdiagPool, executeQuery } from '../database/client.js'
 
-function createReco(questionnaire_id, recommandation= null, min= null, max = null) {
+function createReco(questionnaire_id, recommandation= null, critique=0, min= null, max = null) {
     const fields = [];
     const placeholders=[];
     const values = [];
@@ -10,6 +10,11 @@ function createReco(questionnaire_id, recommandation= null, min= null, max = nul
       fields.push(`recommandation`);
       placeholders.push(`$${index++}`);
       values.push(recommandation);
+    }
+    if (critique !== null && critique!=='') {
+      fields.push(`critique`);
+      placeholders.push(`$${index++}`);
+      values.push(critique);
     }
     if (min !== null && min!=='') {
       fields.push(`min`);
@@ -40,7 +45,7 @@ function getAllReco(idQuestionnaire) {
 }
 
 
-function updateReco(idReco, {recommandation= null, min= null, max  = null}) {
+function updateReco(idReco, {recommandation= null, critique=0, min= null, max= null}) {
     const fields = []
     const values = []
     let index = 1
@@ -48,6 +53,10 @@ function updateReco(idReco, {recommandation= null, min= null, max  = null}) {
     if (recommandation !== null) {
         fields.push(`recommandation = $${index++}`)
         values.push(recommandation)
+    }
+    if (critique !== null) {
+        fields.push(`critique = $${index++}`)
+        values.push(critique)
     }
     if (min !== null) {
         fields.push(`min = $${index++}`)

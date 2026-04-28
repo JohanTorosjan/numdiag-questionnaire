@@ -101,6 +101,10 @@ function ScoreDisplay() {
       setRecoSections(newReco);
     }, [answers]);
 
+    useEffect(() => {
+      console.log("Reco:", recoSections)
+    }, [recoSections])
+
 
     return (
         <div className="w-full background-new-visual relative">
@@ -122,7 +126,10 @@ function ScoreDisplay() {
               </div>
 
               {answers.recommandationQuestionnaire?.map((reco,i) =>
-              <p key={i} className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-xl">{reco.recommandation}</p>
+              <div>
+                <p key={`reco+${i}`} className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-xl">{reco.recommandation}</p>
+                <p key={`crit+${i}`} className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-xl">{reco.critique}</p>
+              </div>
               )}
               </div>
 
@@ -131,9 +138,12 @@ function ScoreDisplay() {
               <hr className="w-1/3 text-calypso-500 mt-1 mr-0 ml-auto"/>
             </div>
             <div className="w-full">
-              {recoSections.map((reco,i) =>
-              <p key={i} className="text-end">{reco.reco}</p>
-              )}
+              {/* {recoSections.map((reco,i) =>
+              <div>
+                <p key={`reco+${i}`} className="text-end">{reco.reco}</p>
+                <p key={`crit+${i}`} className="text-end">{reco.criticite}</p>
+              </div>
+              )} */}
             </div>
           </div>
 
