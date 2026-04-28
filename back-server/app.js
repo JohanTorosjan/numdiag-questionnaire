@@ -11,6 +11,8 @@ cloudinary.config({
 });
 
 
+
+
 import { numdiagPool, toHeroPool, connectToDatabase, executeQuery, initNumdiagDatabase, populateNumdiagScores } from './database/client.js'
 import { getQuestionnaireById, createQuestionnaire, getAllQuestionnaires, getAllInfosQuestionnaire, getAllQuestionnaireResume, updateQuestionnaireInfo, getAllQuestionsByQuestionnaire,getDependenciesForQuestion, publishQuestionnaire, exportJson, displaySponsor, clientLogo, searchLogoByName, searchLogo, searchALLlogo, selectLogo, searchLogoImage } from './questionnaire/questionnaire.js'
 import { getAllQuestionBySection} from './questionnaire/section.js'
@@ -364,7 +366,7 @@ app.put('/updateSection/:sectionId', async (req, res) => {
 
     app.put('/reponses/:reponseId', async (req, res) => {
       const { reponseId } = req.params;
-      const { label, tooltip, plafond, recommandation, valeurScore } = req.body;
+      const { label, tooltip, plafond, recommandation, critique, valeurScore } = req.body;
       try {
 
         const result = await updateReponse(
@@ -373,6 +375,7 @@ app.put('/updateSection/:sectionId', async (req, res) => {
           tooltip,
           plafond,
           recommandation,
+          critique,
           valeurScore
         )
         res.status(200).json({
@@ -503,6 +506,7 @@ app.post('/reponses', async (req, res) => {
         tooltip,
         plafond,
         recommandation,
+        critique,
         valeurScore,
         position
     } = req.body;
@@ -514,6 +518,7 @@ app.post('/reponses', async (req, res) => {
             tooltip,
             plafond,
             recommandation,
+            critique,
             valeurScore,
             position
         );

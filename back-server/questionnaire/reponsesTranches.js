@@ -4,7 +4,7 @@ function addReponsesTranches(questionId, tranches) {
     const queries = tranches.map(tranche => {
         return executeQuery(
             numdiagPool,
-            `INSERT INTO ReponsesTranches (question_id, min, max, value, tooltip, plafond, recommandation) 
+            `INSERT INTO ReponsesTranches (question_id, min, max, value, tooltip, plafond, recommandation, critique)
              VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
             [
                 questionId,
@@ -14,6 +14,7 @@ function addReponsesTranches(questionId, tranches) {
                 tranche.tooltip || null,
                 tranche.plafond || null,
                 tranche.recommandation || null,
+                tranche.critique || 0
             ]
         )
     })

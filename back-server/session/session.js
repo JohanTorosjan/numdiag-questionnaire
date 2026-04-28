@@ -209,6 +209,7 @@ async function getSessionQuestionnaire(session_id) {
             r.tooltip,
             r.plafond,
             r.recommandation,
+            r.critique,
             r.valeurScore
         FROM Reponses r
         WHERE r.question_id = ANY($1)
@@ -230,7 +231,8 @@ async function getSessionQuestionnaire(session_id) {
             rt.value,
             rt.tooltip,
             rt.plafond,
-            rt.recommandation
+            rt.recommandation,
+            rt.critique
         FROM ReponsesTranches rt
         WHERE rt.question_id = ANY($1)
         ORDER BY rt.question_id, rt.min
@@ -490,6 +492,7 @@ async function getScore(session_id) {
   r.question_id,
   r.plafond,
   r.recommandation,
+  r.critique,
   r.valeurScore
   FROM Reponses r
   WHERE r.question_id = ANY($1)
@@ -508,7 +511,8 @@ async function getScore(session_id) {
   rt.question_id,
   rt.value,
   rt.plafond,
-  rt.recommandation
+  rt.recommandation,
+  rt.critique
   FROM ReponsesTranches rt
   WHERE rt.question_id = ANY($1)
   ORDER BY rt.question_id, rt.min
@@ -608,7 +612,7 @@ async function getScore(session_id) {
 
   // RecommandationsQuestionnaires recommandation -> nvelle query en fonction du score au questionnaire
   const recoQuestionnaireQuery = `
-  SELECT recommandation
+  SELECT recommandation, critique
   FROM recommandationsquestionnaires
   WHERE questionnaire_id = $1
   AND $2 BETWEEN min AND max;

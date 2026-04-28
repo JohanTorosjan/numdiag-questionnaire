@@ -207,6 +207,7 @@ async function getAllQuestionsByQuestionnaire(questionnaireId) {
         r.tooltip as answer_tooltip,
         r.plafond as answer_plafond,
         r.recommandation as answer_recommandation,
+        r.critique as answer_critique,
         r.valeurScore as answer_value_score
       FROM Questions q
       INNER JOIN Sections s ON q.section_id = s.id
@@ -379,7 +380,7 @@ const exportJson = async (id) => {
     // 6. Récupérer toutes les réponses
     const reponses = await executeQuery(
       numdiagPool,
-      `SELECT id, question_id, label, position, tooltip, plafond, recommandation, valeurscore
+      `SELECT id, question_id, label, position, tooltip, plafond, recommandation, critique, valeurscore
        FROM Reponses
        WHERE question_id = ANY($1)
        ORDER BY question_id, position`,
