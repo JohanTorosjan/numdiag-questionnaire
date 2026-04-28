@@ -7,6 +7,7 @@ function CreateReco({ onSave, onClose }) {
     min: "",
     max: "",
     recommandation: "",
+    critique: 0
   });
 
   const handleInputChange = (e) => {
@@ -61,6 +62,21 @@ function CreateReco({ onSave, onClose }) {
               placeholder="Contenu"
               required
             ></textarea>
+          </div>
+          <div className="form-group">
+            <label htmlFor="critique">Niveau de criticité</label>
+            <input
+              type="number"
+              id="critique"
+              name="critique"
+              value={formData.critique}
+              onChange={handleInputChange}
+              min="0"
+              placeholder="Un entier"
+              onKeyDown={(e) =>["e", "E", "+", "-", ".", ","].includes(e.key) && e.preventDefault() }
+
+              required
+            />
           </div>
           <div className="form-group">
             <p>

@@ -207,6 +207,7 @@ async function getAllQuestionsByQuestionnaire(questionnaireId) {
         r.tooltip as answer_tooltip,
         r.plafond as answer_plafond,
         r.recommandation as answer_recommandation,
+        r.critique as answer_critique,
         r.valeurScore as answer_value_score
       FROM Questions q
       INNER JOIN Sections s ON q.section_id = s.id
@@ -258,6 +259,7 @@ async function getAllQuestionsByQuestionnaire(questionnaireId) {
           tooltip: row.answer_tooltip,
           plafond: row.answer_plafond,
           recommandation: row.answer_recommandation,
+          critique: row.answer_critique,
           valeurScore: row.answer_value_score
         });
       }
@@ -379,7 +381,7 @@ const exportJson = async (id) => {
     // 6. Récupérer toutes les réponses
     const reponses = await executeQuery(
       numdiagPool,
-      `SELECT id, question_id, label, position, tooltip, plafond, recommandation, valeurscore
+      `SELECT id, question_id, label, position, tooltip, plafond, recommandation, critique, valeurscore
        FROM Reponses
        WHERE question_id = ANY($1)
        ORDER BY question_id, position`,
@@ -514,7 +516,6 @@ const exportJson = async (id) => {
 
 async function displaySponsor({questionnaireId, sponsorsDisplay}) {
     if (sponsorsDisplay) {
-      console.log("ici")
       try {
         const display = await executeQuery(
         numdiagPool,
@@ -643,25 +644,26 @@ async function searchLogo(questionnaireId) {
 async function searchLogoImage(questionnaireId) {
   let logo=[]
   try {
-      logo = await executeQuery(
-          numdiagPool,
-          "SELECT clientlogo_id FROM joinclientlogoquestionnaires WHERE questionnaire_id=$1 AND current_logo=$2;",
-          [questionnaireId, true]
-          );
-        } catch (error) {
-          console.error("Erreur lors de la recherche dans table jointure:", error);
-        }
-        try {
+    logo = await executeQuery(
+        numdiagPool,
+        "SELECT clientlogo_id FROM joinclientlogoquestionnaires WHERE questionnaire_id=$1 AND current_logo=$2;",
+        [questionnaireId, true]
+        );
+      } catch (error) {
+        console.error("Erreur lors de la recherche dans table jointure:", error);
+      }
+      try {
+        if (logo.length > 0) {
           const clientName = await executeQuery(
             numdiagPool,
             "SELECT url_logo FROM clientlogo WHERE id=$1;",
             [logo[0].clientlogo_id]
           );
-
-      return clientName[0].url_logo;
-    } catch (error) {
-          console.error("Erreur lors de la recherche du nom de fichier du logo:", error);
-    }
+          return clientName[0].url_logo;
+        }
+      } catch (error) {
+            console.error("Erreur lors de la recherche du nom de fichier du logo:", error);
+   }
 }
 
 async function searchALLlogo(questionnaireId) {

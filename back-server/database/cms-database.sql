@@ -53,6 +53,7 @@ CREATE TABLE Reponses (
     tooltip VARCHAR,
     plafond INTEGER,
     recommandation TEXT,
+    critique INTEGER,
     valeurScore INTEGER,
     FOREIGN KEY (question_id) REFERENCES Questions(id) ON DELETE CASCADE
 );
@@ -66,6 +67,7 @@ CREATE TABLE ReponsesTranches (
     tooltip VARCHAR,
     plafond INTEGER,
     recommandation TEXT,
+    critique INTEGER,
     FOREIGN KEY (question_id) REFERENCES Questions(id) ON DELETE CASCADE
 );
 -- Recommandation en fonction du questionnaire
@@ -75,6 +77,7 @@ CREATE TABLE RecommandationsQuestionnaires (
     min NUMERIC NOT NULL,
     max NUMERIC NOT NULL,
     recommandation TEXT NOT NULL,
+    critique INTEGER,
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE
 );
 
@@ -194,8 +197,8 @@ CREATE TABLE Scores (
 CREATE TABLE JoinScoresQuestionnaires (
     questionnaire_id INTEGER NOT NULL,
     score_id INTEGER NOT NULL,
-    scoremax INTEGER NOT NULL,
-    scoremin INTEGER NOT NULL,
+    scoremax FLOAT NOT NULL,
+    scoremin FLOAT NOT NULL,
     PRIMARY KEY (questionnaire_id, score_id),
     FOREIGN KEY (questionnaire_id) REFERENCES Questionnaires(id) ON DELETE CASCADE,
     FOREIGN KEY (score_id) REFERENCES Scores(id) ON DELETE CASCADE

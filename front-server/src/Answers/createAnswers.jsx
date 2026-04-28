@@ -9,8 +9,9 @@ function PopUpCreateAnswer({ answerType, onClose, onSave, position }) {
         label: '',
         valeurScore: 0,
         tooltip: '',
-        plafond: 0,
+        plafond: 100,
         recommandation: '',
+        critique: 0
     });
 
 
@@ -31,10 +32,10 @@ function PopUpCreateAnswer({ answerType, onClose, onSave, position }) {
         setFormData((prev) => {
            const updated = { ...prev, [name]: newValue };
 
-        // If valeurScore increases past plafond, bump plafond up
-        if (name === 'valeurScore' && Number(updated.plafond) < Number(newValue)) {
-            updated.plafond = newValue;
-        }
+        // // If valeurScore increases past plafond, bump plafond up
+        // if (name === 'valeurScore' && Number(updated.plafond) < Number(newValue)) {
+        //     updated.plafond = newValue;
+        // }
 
         return updated;
     });
@@ -135,6 +136,18 @@ function PopUpCreateAnswer({ answerType, onClose, onSave, position }) {
                             placeholder="Conseil ou recommandation"
                         />
                     </div>
+                     <div className="form-group">
+                            <label htmlFor="critique">Niveau de criticité :</label>
+                            <input
+                                type="number"
+                                id="critique"
+                                name="critique"
+                                value={formData.critique}
+                                onChange={handleInputChange}
+                                min="0"
+                                placeholder="e.g. 5"
+                            />
+                        </div>
 
                     <div className="form-actions flex gap-x-4 gap-y-2">
                         <button type="button" onClick={onClose} className="btn-secondary">

@@ -35,7 +35,7 @@ function PopUpEditAnswerSlots({ answer, answerType, onClose, onSave,questionId})
 
 
     const addTranche = () => {
-        setTranches([...tranches, { min: '', max: '', value: '', recommandation: '', plafond: '' }]);
+        setTranches([...tranches, { min: '', max: '', value: '', recommandation: '', critique: '', plafond: '' }]);
     };
 
     const removeTranche = (index) => {
@@ -93,6 +93,7 @@ function PopUpEditAnswerSlots({ answer, answerType, onClose, onSave,questionId})
             max: parseInt(t.max),
             value: parseInt(t.value),
             recommandation: t.recommandation || null,
+            critique: t.critique || 0,
             plafond: t.plafond ? parseInt(t.plafond) : null
         }));
 
@@ -206,6 +207,17 @@ function PopUpEditAnswerSlots({ answer, answerType, onClose, onSave,questionId})
                                             onChange={(e) => updateTranche(index, 'recommandation', e.target.value)}
                                             placeholder="Ajouter une recommandation..."
                                             rows="2"
+                                        />
+                                    </div>
+
+                                    <div style={styles.inputGroup}>
+                                        <label style={styles.label}>Niveau de criticité </label>
+                                        <input
+                                            type="number"
+                                            style={styles.input}
+                                            value={tranche.critique}
+                                            onChange={(e) => updateTranche(index, 'critique', e.target.value)}
+                                            placeholder="O"
                                         />
                                     </div>
                                 </div>

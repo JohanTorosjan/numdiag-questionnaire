@@ -99,7 +99,6 @@ async function launchSession(session_id) {
   try {
     const launchSessionQuerry = `UPDATE session SET page = 1, state = 'launched' WHERE id=${session_id}  RETURNING *`;
     const response = await executeQuery(numdiagPool, launchSessionQuerry);
-    console.log(response);
     return { success: true };
   } catch {
     console.log("erreur launching");
@@ -210,6 +209,7 @@ async function getSessionQuestionnaire(session_id) {
             r.tooltip,
             r.plafond,
             r.recommandation,
+            r.critique,
             r.valeurScore
         FROM Reponses r
         WHERE r.question_id = ANY($1)
@@ -231,7 +231,8 @@ async function getSessionQuestionnaire(session_id) {
             rt.value,
             rt.tooltip,
             rt.plafond,
-            rt.recommandation
+            rt.recommandation,
+            rt.critique
         FROM ReponsesTranches rt
         WHERE rt.question_id = ANY($1)
         ORDER BY rt.question_id, rt.min
@@ -421,6 +422,7 @@ async function getScore(session_id) {
     session_id,
   ]);
 
+
   if (!sessionResult || sessionResult.length === 0) {
     throw new Error("Session not found");
   }
@@ -431,14 +433,14 @@ async function getScore(session_id) {
   // // 2. Récupérer le questionnaire
   const questionnaireQuery = `
         SELECT
-            id,
-            label,
-            isfunded,
-            scoremax,
-            created_at
+        id,
+        label,
+        isfunded,
+        scoremax,
+        created_at
         FROM Questionnaires
         WHERE id = $1
-    `;
+        `;
 
   const questionnaireResult = await executeQuery(
     numdiagPool,
@@ -451,13 +453,13 @@ async function getScore(session_id) {
   // 3. Récupérer toutes les sections du questionnaire
   const sectionsQuery = `
         SELECT
-            id,
-            questionnaire_id,
-            scoremax
+        id,
+        questionnaire_id,
+        scoremax
         FROM Sections
         WHERE questionnaire_id = $1
         ORDER BY id
-    `;
+        `;
 
   const sections = await executeQuery(numdiagPool, sectionsQuery, [
     questionnaireId,
@@ -467,15 +469,15 @@ async function getScore(session_id) {
   // 4. Récupérer toutes les questions des sections
   const questionsQuery = `
         SELECT
-            q.id,
-            q.section_id,
-            q.questionType,
-            q.coeff,
-            q.mandatory
+        q.id,
+        q.section_id,
+        q.questionType,
+        q.coeff,
+        q.mandatory
         FROM Questions q
         WHERE q.section_id = ANY($1)
         ORDER BY q.section_id, q.position
-    `;
+        `;
 
   const sectionIds = sections.map((s) => s.id);
   const questions = await executeQuery(numdiagPool, questionsQuery, [
@@ -486,15 +488,16 @@ async function getScore(session_id) {
   // 5. Récupérer toutes les réponses des questions
   const reponsesQuery = `
         SELECT
-            r.id,
-            r.question_id,
-            r.plafond,
-            r.recommandation,
-            r.valeurScore
+        r.id,
+        r.question_id,
+        r.plafond,
+        r.recommandation,
+        r.critique,
+        r.valeurScore
         FROM Reponses r
         WHERE r.question_id = ANY($1)
         ORDER BY r.question_id, r.position
-    `;
+        `;
 
   const questionIds = questions.map((q) => q.id);
   const reponses = await executeQuery(numdiagPool, reponsesQuery, [
@@ -504,15 +507,16 @@ async function getScore(session_id) {
   // 6. Récupérer les tranches de réponses si nécessaire
   const tranchesQuery = `
         SELECT
-            rt.id,
-            rt.question_id,
-            rt.value,
-            rt.plafond,
-            rt.recommandation
+        rt.id,
+        rt.question_id,
+        rt.value,
+        rt.plafond,
+        rt.recommandation,
+        rt.critique
         FROM ReponsesTranches rt
         WHERE rt.question_id = ANY($1)
         ORDER BY rt.question_id, rt.min
-    `;
+        `;
 
   const reponsesTranches = await executeQuery(numdiagPool, tranchesQuery, [
     questionIds,
@@ -524,12 +528,12 @@ async function getScore(session_id) {
   const sectionScore = {};
   session.answers.forEach((answer) => {
     // loop on array of answers to make an array of all flatten answers within a section
-      if (!grouped[answer.sectionId]) {
-       grouped[answer.sectionId] = [];  // property on an object, NOT an array index
-     }
-      if (!sectionScore[answer.sectionId]) {
-       sectionScore[answer.sectionId] = {};  // property on an object, NOT an array index
-     }
+    if (!grouped[answer.sectionId]) {
+      grouped[answer.sectionId] = [];  // property on an object, NOT an array index
+    }
+    if (!sectionScore[answer.sectionId]) {
+      sectionScore[answer.sectionId] = {};  // property on an object, NOT an array index
+    }
     answer.reponseIds.forEach((id) => {
       grouped[answer.sectionId].push({
         questionId: answer.questionId,
@@ -538,7 +542,6 @@ async function getScore(session_id) {
         type: answer.questionType,
         sectionId: answer.sectionId,
       });
-
     });
   });
 
@@ -556,6 +559,7 @@ async function getScore(session_id) {
     grouped[section].forEach((qAndA) => {
       let value = 0;
       let recommandation;
+      let critique;
       if (qAndA.type === "entier") {
         // on récupère la tranche de reponse
         let tranches = reponsesTranches.filter((tranche) => tranche.id === qAndA.answerId);
@@ -563,6 +567,7 @@ async function getScore(session_id) {
         plafond = plafond > tranches[0].plafond ? tranches[0].plafond : plafond;
         value = tranches[0].value;
         recommandation = tranches[0].recommandation;
+        critique = tranches[0].critique;
       } else if (qAndA.type === "choix_simple" || qAndA.type === "choix_multiple"){
         // les questions sont déjà mises à plat donc 1 rép par question dans tous les cas
         // on récupère les infos de la réponse
@@ -571,13 +576,14 @@ async function getScore(session_id) {
         value = answers[0].valeurscore;
         plafond = plafond > answers[0].plafond ? answers[0].plafond : plafond;
         recommandation = answers[0].recommandation
+        critique = answers[0].critique
       }
       // on calcule la valeur finale de la réponse en prenant en compte le coeff qui est dans la question
       let question = questions.filter((question) => question.id === qAndA.questionId);
       value = value * question[0].coeff;
       coeffs.push(question[0].coeff);
       values.push(value);
-      recommandations.push(recommandation);
+      recommandations.push({text: recommandation, criticite: critique});
 
       // ATTENTION !!!!
       ///////////////////////////////////////////////////////////////////
@@ -585,6 +591,7 @@ async function getScore(session_id) {
       // dans quel cas cette table est-elle utilisée ? à garder ?
     });
     grouped[section].plafond = plafond;
+
 
     const initialValue = 0;
     const sumValues = values.reduce(
@@ -597,6 +604,7 @@ async function getScore(session_id) {
       initialValue,
     );
     let score = sumValues / sumCoeffs;
+    // let score = sumValues;
     sectionScore[section].score = score > plafond ? plafond : score;
 
     scores.push(sectionScore[section].score)
@@ -608,11 +616,11 @@ async function getScore(session_id) {
 
   // RecommandationsQuestionnaires recommandation -> nvelle query en fonction du score au questionnaire
   const recoQuestionnaireQuery = `
-  SELECT recommandation
-  FROM recommandationsquestionnaires
-  WHERE questionnaire_id = $1
-  AND $2 BETWEEN min AND max;
-  `;
+        SELECT recommandation, critique
+        FROM recommandationsquestionnaires
+        WHERE questionnaire_id = $1
+        AND $2 BETWEEN min AND max;
+        `;
 
   const recoQuestionnaireResult = await executeQuery(
     numdiagPool,
@@ -626,10 +634,10 @@ async function getScore(session_id) {
   // update la session pour un state 'finished'
   // update le score
   const updateSessionQuery = `
-  UPDATE Session
-  SET state = $2, score = $3
-  WHERE id = $1 RETURNING *;
-  `;
+        UPDATE Session
+        SET state = $2, score = $3
+        WHERE id = $1 RETURNING *;
+        `;
 
   const updateSessionResult = await executeQuery(
     numdiagPool,
@@ -639,11 +647,11 @@ async function getScore(session_id) {
 
   const scoreIdQuery = `
         SELECT
-            score_id
+        score_id
         FROM JoinScoresQuestionnaires
         WHERE questionnaire_id = $1
         AND $2 <= scoremax AND $2 >= scoremin
-    `;
+        `;
 
   const scoreIdResult = await executeQuery(numdiagPool, scoreIdQuery, [
     questionnaireInfos.id, sectionScore.scoreQuestionnaire

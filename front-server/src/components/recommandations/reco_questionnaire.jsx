@@ -35,6 +35,7 @@ function RecoQuestionnaire({recommandation,onUpdateReco, onDeleteReco}) {
         const updatereco = await updateReco(
           {
             recommandation: isRecommandation.recommandation,
+            critique: isRecommandation.critique,
             min: isRecommandation.min,
             max: isRecommandation.max,
           }
@@ -91,6 +92,10 @@ function RecoQuestionnaire({recommandation,onUpdateReco, onDeleteReco}) {
             <span className="metadata-item">
               <span className="metadata-label">Score maximum:</span>{" "}
               {recommandation.max}
+            </span>
+            <span className="metadata-item">
+              <span className="metadata-label">Criticité:</span>{" "}
+              {recommandation.critique}
             </span>
           </div>
           <h3 className="section-title">{recommandation.recommandation}</h3>

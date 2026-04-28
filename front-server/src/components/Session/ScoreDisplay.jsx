@@ -65,16 +65,18 @@ function ScoreDisplay() {
       fetchData()
     }, [session_id]);
 
-     useEffect(() => {
+    useEffect(() => {
+      if (questionnaire.id) {
+        console.log(questionnaire)
         async function fetchLogo(){
-        const logo = await getLogo(questionnaire.id)
-        if (logo) {
-          setLogoUrl(logo)
-          console.log("logo:",logo)
+          const logo = await getLogo(questionnaire.id)
+          if (logo) {
+            setLogoUrl(logo)
+          }
         }
-      }
         fetchLogo();
-      }, [questionnaire]);
+      }
+    }, [questionnaire]);
 
       useEffect(() => {
       if (questionnaire) {
@@ -99,6 +101,10 @@ function ScoreDisplay() {
       setRecoSections(newReco);
     }, [answers]);
 
+    useEffect(() => {
+      console.log("Reco:", recoSections)
+    }, [recoSections])
+
 
     return (
         <div className="w-full background-new-visual relative">
@@ -120,7 +126,10 @@ function ScoreDisplay() {
               </div>
 
               {answers.recommandationQuestionnaire?.map((reco,i) =>
-              <p key={i} className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-xl">{reco.recommandation}</p>
+              <div key={`recoQuest+${i}`}>
+                <p className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-xl">{reco.recommandation}</p>
+                <p className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-xl">{reco.critique}</p>
+              </div>
               )}
               </div>
 
@@ -129,8 +138,11 @@ function ScoreDisplay() {
               <hr className="w-1/3 text-calypso-500 mt-1 mr-0 ml-auto"/>
             </div>
             <div className="w-full">
-              {recoSections.map((reco,i) =>
-              <p key={i} className="text-end">{reco.reco}</p>
+              {recoSections.map((recommandations,i) =>
+              <div key={`recoRep+${i}`}>
+                <p className="text-end">{recommandations.reco.text}</p>
+                <p className="text-end">{recommandations.reco.criticite}</p>
+              </div>
               )}
             </div>
           </div>

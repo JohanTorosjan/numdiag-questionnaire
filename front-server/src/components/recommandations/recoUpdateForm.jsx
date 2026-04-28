@@ -47,6 +47,20 @@ function RecoUpdateForm({ recommandation, onChange }) {
         required
         className="block w-full h-30 border border-gray-300 rounded px-2 py-1 mb-4"
       ></textarea>
+      <label htmlFor="critique" className="font-light block text-xl">Niveau de criticité :</label>
+      <input
+        type="number"
+        name="critique"
+        id="critique"
+        required
+        value={recommandation.critique != null ? recommandation.critique : ""}
+        onChange={onChange}
+
+        onKeyDown={(e) =>
+          ["e", "E", "+", "-", ".", ","].includes(e.key) && e.preventDefault()
+        }
+        className="block w-30 border border-gray-300 rounded px-2 py-1"
+      />
     </form>
   );
 }

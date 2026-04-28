@@ -56,7 +56,7 @@ function QuestionResume({
       setThemes(data.themesAndPublics.themeLabels);
       setPublics(data.themesAndPublics.publicLabels);
     };
-    console.log("Répoonses:",question.reponses)
+    console.log("Réponses:",question.reponses)
 
     fetchThemesAndPublics();
   }, [question]);
@@ -110,6 +110,7 @@ function QuestionResume({
         tooltip: newAnswers.tooltip,
         plafond: newAnswers.plafond,
         recommandation: newAnswers.recommandation,
+        critique: newAnswers.critique,
         valeurScore: newAnswers.valeurScore,
         position: newAnswers.position
       }),

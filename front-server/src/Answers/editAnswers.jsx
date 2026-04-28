@@ -10,6 +10,7 @@ function PopUpEditAnswers({ answer, answerType, onClose, onSave }) {
         tooltip: answer?.tooltip || '',
         plafond: answer?.plafond || 0,
         recommandation: answer?.recommandation || '',
+        critique: answer?.critique || 0
     });
 
     const handleInputChange = (e) => {
@@ -129,6 +130,18 @@ function PopUpEditAnswers({ answer, answerType, onClose, onSave }) {
                             value={formData.recommandation}
                             onChange={handleInputChange}
                             placeholder="Conseil ou recommandation"
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="critique">Niveau de criticité :</label>
+                        <input
+                            type="number"
+                            id="critique"
+                            name="critique"
+                            value={formData.critique}
+                            onChange={handleInputChange}
+                            placeholder="0"
                         />
                     </div>
 

@@ -59,15 +59,6 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
       }
     };
 
-
-
-
-
-
-
-
-
-
   const onSaveAnswer = async (updatedAnswer) => {
     console.log("updated")
 
@@ -83,6 +74,7 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
                 tooltip: updatedAnswer.tooltip,
                 plafond: updatedAnswer.plafond,
                 recommandation: updatedAnswer.recommandation,
+                critique: updatedAnswer.critique,
                 valeurScore: updatedAnswer.valeurScore
             })
         })
@@ -114,7 +106,7 @@ function AnswersResume({answer, answerType, setQuestionnaire, questionnaireId}) 
       <div className="answer-content">
         <div className="answer-main">
           <p className="answer-label">{answer.label}</p>
-                                  <p className='question-tooltip-text'>{answer.tooltip}  </p>
+          <p className='question-tooltip-text'>{answer.tooltip}  </p>
 
         </div>
 
